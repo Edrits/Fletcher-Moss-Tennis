@@ -8,18 +8,14 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        /* General Styles */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Outfit', sans-serif; line-height: 1.6; color: #333; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 60px 20px; }
+        .section { margin-bottom: 60px; }
+        h2 { font-size: 2.2em; margin-bottom: 30px; color: #2d5016; text-align: center; }
 
-        body {
-            font-family: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            line-height: 1.6;
-            color: #333;
-        }
-
+        /* Hero Section - Using .jpg.jpeg as requested */
         .hero {
             background: linear-gradient(rgba(45, 80, 22, 0.6), rgba(45, 80, 22, 0.6)), url('hero-autumn.jpg.jpeg');
             background-size: cover;
@@ -28,546 +24,209 @@
             color: white;
             padding: 100px 20px;
             text-align: center;
-            position: relative;
         }
+        .hero h1 { font-size: 3.5em; margin-bottom: 10px; }
+        .hero p { font-size: 1.3em; opacity: 0.9; }
 
-        .hero-content {
-            position: relative;
-            max-width: 800px;
-            margin: 0 auto;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-        }
-
-        .hero h1 {
-            font-size: 3em;
-            margin-bottom: 20px;
-            font-weight: 700;
-        }
-
-        .hero p {
-            font-size: 1.3em;
-            margin-bottom: 10px;
-            opacity: 0.95;
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 60px 20px;
-        }
-
-        .section {
-            margin-bottom: 60px;
-        }
-
-        h2 {
-            font-size: 2.2em;
-            margin-bottom: 30px;
-            color: #2d5016;
-            text-align: center;
-        }
-
+        /* Noticeboard */
         .noticeboard {
-            background: linear-gradient(135deg, #f4e4c1 0%, #e8d4a8 100%);
+            background: #f4e4c1;
             border: 8px solid #8b6f47;
             border-radius: 12px;
             padding: 30px;
-            margin-bottom: 50px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
             position: relative;
         }
-
-        .noticeboard::before {
-            content: '📌';
-            position: absolute;
-            top: -20px;
-            left: 20px;
-            font-size: 2em;
-        }
-
-        .noticeboard h2 {
-            color: #5d4e37;
-            font-size: 1.8em;
-            margin-bottom: 20px;
-        }
-
         .notice-item {
             background: white;
             padding: 20px;
             margin-bottom: 15px;
             border-radius: 8px;
             border-left: 4px solid #4a7c2c;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
             position: relative;
         }
-
-        .notice-item h3 {
-            color: #2d5016;
-            margin-bottom: 8px;
-            font-size: 1.2em;
+        .delete-btn {
+            display: none; 
+            position: absolute; top: 15px; right: 15px;
+            background: #ff4444; color: white; border: none;
+            padding: 5px 10px; border-radius: 4px; cursor: pointer;
         }
+        .admin-active .delete-btn { display: block; }
 
-        .notice-item p {
-            color: #555;
-            margin: 0;
-        }
+        /* Admin Panel */
+        .admin-btn { background: #5d4e37; color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; }
+        .admin-panel { display: none; background: white; padding: 20px; border-radius: 8px; margin-top: 20px; border: 1px solid #ddd; }
+        .admin-panel.active { display: block; }
+        .admin-panel input, .admin-panel textarea { width: 100%; padding: 10px; margin-bottom: 10px; border-radius: 4px; border: 1px solid #ccc; }
+        .admin-panel button { background: #4a7c2c; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; }
 
-        .notice-item small {
-            color: #999;
-            font-size: 0.85em;
-            display: block;
-            margin-top: 8px;
-        }
-
-        .admin-btn {
-            background: #5d4e37;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-family: 'Outfit', sans-serif;
-            font-size: 0.95em;
-            font-weight: 500;
-            transition: background 0.3s;
-            margin-top: 15px;
-        }
-
-        .admin-btn:hover {
-            background: #4a3d2a;
-        }
-
-        .admin-panel {
-            display: none;
-            background: white;
-            padding: 25px;
-            border-radius: 8px;
-            margin-top: 20px;
-            border: 2px solid #8b6f47;
-        }
-
-        .admin-panel.active {
-            display: block;
-        }
-
-        .admin-panel input,
-        .admin-panel textarea {
-            width: 100%;
-            padding: 12px;
-            margin-bottom: 15px;
-            border: 2px solid #ddd;
-            border-radius: 6px;
-            font-family: 'Outfit', sans-serif;
-            font-size: 1em;
-        }
-
-        .admin-panel textarea {
-            min-height: 100px;
-            resize: vertical;
-        }
-
-        .admin-panel button {
-            background: #4a7c2c;
-            color: white;
-            border: none;
-            padding: 12px 25px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-family: 'Outfit', sans-serif;
-            font-size: 1em;
-            font-weight: 600;
-            margin-right: 10px;
-            transition: background 0.3s;
-        }
-
-        .admin-panel button:hover {
-            background: #3a6c1c;
-        }
-
-        .admin-panel button.cancel {
-            background: #999;
-        }
-
-        .admin-panel button.cancel:hover {
-            background: #777;
-        }
-
-        .password-error {
-            color: #d32f2f;
-            background: #ffebee;
+        /* Weather Widget Styling */
+        .weather-container {
+            margin: 40px 0;
+            background: #fff;
             padding: 10px;
-            border-radius: 6px;
-            margin-bottom: 15px;
-            display: none;
-            font-size: 0.95em;
-        }
-
-        .password-error.show {
-            display: block;
-        }
-
-        .empty-notice {
-            text-align: center;
-            color: #8b6f47;
-            padding: 30px;
-            font-style: italic;
-        }
-
-        .schedule {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-            margin-bottom: 40px;
-        }
-
-        .schedule-card {
-            background: #f8f9fa;
-            padding: 30px;
             border-radius: 12px;
-            text-align: center;
-            border: 2px solid #e9ecef;
-            transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
         }
 
-        .schedule-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-        }
+        /* Schedule & Info */
+        .schedule { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; }
+        .schedule-card { background: #f8f9fa; padding: 25px; border-radius: 12px; text-align: center; border: 1px solid #eee; }
+        .info-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; }
+        .info-box { background: white; padding: 30px; border-radius: 12px; border-left: 4px solid #4a7c2c; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
 
-        .schedule-card h3 {
-            color: #2d5016;
-            font-size: 1.5em;
-            margin-bottom: 10px;
-        }
-
-        .schedule-card p {
-            font-size: 1.2em;
-            color: #666;
-        }
-
-        .info-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 30px;
-        }
-
-        .info-box {
-            background: white;
-            padding: 30px;
+        /* Maps Section */
+        .map-wrapper {
+            width: 100%;
+            height: 450px;
             border-radius: 12px;
-            border-left: 4px solid #4a7c2c;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            overflow: hidden;
+            border: 2px solid #2d5016;
+            margin-top: 20px;
         }
 
-        .info-box h3 {
-            color: #2d5016;
-            margin-bottom: 15px;
-            font-size: 1.4em;
-        }
-
-        .info-box p {
-            color: #555;
-            margin-bottom: 10px;
-        }
-
-        .info-box strong {
-            color: #2d5016;
-        }
-
-        .qr-section {
-            background: #f8f9fa;
-            padding: 40px;
-            border-radius: 12px;
-            text-align: center;
-            margin: 40px 0;
-        }
-
-        .qr-placeholder {
-            width: 250px;
-            height: 250px;
-            margin: 20px auto;
-            background: white;
-            border: 3px dashed #ccc;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 12px;
-            color: #999;
-            font-size: 0.9em;
-        }
-
-        .weather-widget {
-            background: linear-gradient(135deg, #5f9ea0 0%, #4a7c8c 100%);
-            color: white;
-            padding: 30px;
-            border-radius: 12px;
-            text-align: center;
-            margin: 40px 0;
-        }
-
-        .weather-widget h3 {
-            margin-bottom: 15px;
-            font-size: 1.5em;
-        }
-
-        .location {
-            background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('courts-aerial.jpg');
+        .location-section {
+            background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('courts-aerial.jpg.jpeg');
             background-size: cover;
-            background-position: center;
-            background-attachment: fixed;
-            color: white;
             padding: 80px 20px;
-            text-align: center;
-        }
-
-        .location h2 {
-            color: white;
-            margin-bottom: 20px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
-        }
-
-        .location p {
-            font-size: 1.2em;
-            margin-bottom: 20px;
-            text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
-        }
-
-        .btn {
-            display: inline-block;
-            background: #4a7c2c;
-            color: white;
-            padding: 15px 40px;
-            text-decoration: none;
-            border-radius: 8px;
-            font-size: 1.1em;
-            font-weight: 600;
-            transition: background 0.3s, transform 0.2s;
-        }
-
-        .btn:hover {
-            background: #3a6c1c;
-            transform: translateY(-2px);
-        }
-
-        .note {
-            background: #fff3cd;
-            border-left: 4px solid #ffc107;
-            padding: 20px;
-            margin: 30px 0;
-            border-radius: 8px;
-        }
-
-        .note p {
-            color: #856404;
-            margin: 0;
-        }
-
-        footer {
-            background: #2d5016;
             color: white;
             text-align: center;
-            padding: 30px 20px;
         }
 
-        @media (max-width: 768px) {
-            .hero h1 {
-                font-size: 2em;
-            }
-            
-            .hero p {
-                font-size: 1.1em;
-            }
-
-            h2 {
-                font-size: 1.8em;
-            }
-
-            .info-grid {
-                grid-template-columns: 1fr;
-            }
-        }
+        footer { background: #2d5016; color: white; text-align: center; padding: 40px; }
     </style>
 </head>
 <body>
+
     <div class="hero">
         <div class="hero-content">
             <h1>🎾 Fletcher Moss Social Tennis</h1>
-            <p>Free social tennis in Didsbury</p>
-            <p>No membership fees. Just show up and play.</p>
+            <p>Free social tennis in Didsbury, Manchester</p>
         </div>
     </div>
 
     <div class="container">
-        <!-- Noticeboard Section -->
+        
         <div class="section">
-            <div class="noticeboard">
+            <div id="noticeboardWrap" class="noticeboard">
                 <h2>📋 Noticeboard</h2>
                 <div id="noticeList">
-                    <div class="empty-notice">No notices at the moment. Check back soon!</div>
+                    <div class="empty-notice" style="text-align: center; color: #8b6f47;">No notices yet.</div>
                 </div>
-                <button class="admin-btn" onclick="toggleAdminPanel()">🔐 Admin: Post Notice</button>
+                <button class="admin-btn" onclick="toggleAdminPanel()">🔐 Admin Panel</button>
                 
                 <div id="adminPanel" class="admin-panel">
-                    <h3 style="color: #2d5016; margin-bottom: 20px;">Post New Notice</h3>
-                    <div id="passwordError" class="password-error">❌ Incorrect password. Please try again.</div>
-                    <input type="password" id="adminPassword" placeholder="Enter admin password">
-                    <input type="text" id="noticeTitle" placeholder="Notice title">
-                    <textarea id="noticeContent" placeholder="Notice content"></textarea>
-                    <button onclick="postNotice()">Post Notice</button>
-                    <button class="cancel" onclick="toggleAdminPanel()">Cancel</button>
+                    <input type="password" id="adminPassword" placeholder="Admin Password">
+                    <input type="text" id="noticeTitle" placeholder="Headline">
+                    <textarea id="noticeContent" placeholder="Details..."></textarea>
+                    <button onclick="postNotice()">Post</button>
+                    <button style="background:#999" onclick="toggleAdminPanel()">Cancel</button>
                 </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>🌤️ Court Weather</h2>
+            <div class="weather-container">
+                <a class="weatherwidget-io" href="https://forecast7.com/en/53p42n2p23/didsbury/" data-label_1="DIDSBURY" data-label_2="WEATHER" data-theme="pure" >DIDSBURY WEATHER</a>
+                <script>
+                !function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src='https://weatherwidget.io/js/widget.min.js';fjs.parentNode.insertBefore(js,fjs);}}(document,'script','weatherwidget-io-js');
+                </script>
             </div>
         </div>
 
         <div class="section">
             <h2>When We Play</h2>
             <div class="schedule">
-                <div class="schedule-card">
-                    <h3>Monday</h3>
-                    <p>6:00 PM - 8:00 PM</p>
-                </div>
-                <div class="schedule-card">
-                    <h3>Thursday</h3>
-                    <p>6:00 PM - 8:00 PM</p>
-                </div>
-                <div class="schedule-card">
-                    <h3>Saturday</h3>
-                    <p>11:00 AM - 1:00 PM</p>
-                </div>
-            </div>
-
-            <div class="weather-widget">
-                <h3>🌤️ Court Conditions</h3>
-                <p style="font-size: 1.1em; margin-top: 15px;">Check the weather before you head out!</p>
-                <p style="font-size: 0.9em; opacity: 0.9; margin-top: 10px;">Weather widget will be added here with live conditions</p>
+                <div class="schedule-card"><h3>Monday</h3><p>6:00 PM - 8:00 PM</p></div>
+                <div class="schedule-card"><h3>Thursday</h3><p>6:00 PM - 8:00 PM</p></div>
+                <div class="schedule-card"><h3>Saturday</h3><p>11:00 AM - 1:00 PM</p></div>
             </div>
         </div>
 
         <div class="section">
-            <h2>How It Works</h2>
             <div class="info-grid">
                 <div class="info-box">
-                    <h3>1. Join the WhatsApp Group</h3>
-                    <p>All coordination happens via WhatsApp. Scan the QR code below to request access to the group.</p>
+                    <h3>1. WhatsApp Group</h3>
+                    <p>Coordination happens on WhatsApp. Scan the QR below to join.</p>
                 </div>
                 <div class="info-box">
-                    <h3>2. One-off £5 Contribution</h3>
-                    <p>We ask for a <strong>£5 one-time payment</strong> to cover tennis balls. We may collect again every 6 months or so as needed.</p>
+                    <h3>2. £5 Contribution</h3>
+                    <p>One-off payment for tennis balls. Friendly & easy.</p>
                 </div>
-            </div>
-
-            <div class="note">
-                <p><strong>Skill Level:</strong> We welcome intermediate to advanced players. If you're a beginner, we recommend getting some lessons first to get comfortable with the basics.</p>
             </div>
         </div>
 
         <div class="section">
-            <div class="qr-section">
-                <h2 style="color: #2d5016;">Join Our WhatsApp Group</h2>
-                <p style="color: #666; margin-bottom: 20px;">Scan this QR code with your phone to request access</p>
-                <div class="qr-placeholder">
-                    [Your WhatsApp Group QR Code Here]
-                </div>
-                <p style="color: #999; font-size: 0.9em; margin-top: 15px;">Replace this placeholder with your actual QR code image</p>
+            <h2>📍 Find the Courts</h2>
+            <div class="map-wrapper">
+                <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2377.3789410191295!2d-2.2359419234850553!3d53.408933072340574!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x487bb3ae076f8097%3A0xc47e30761e06c7e2!2sFletcher%20Moss%20Tennis%20Courts!5e0!3m2!1sen!2suk!4v1700000000000!5m2!1sen!2suk" 
+                    width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
             </div>
         </div>
     </div>
 
-    <div class="location">
-        <div class="container">
-            <h2>Find Us</h2>
-            <p><strong>Fletcher Moss Tennis Courts</strong></p>
-            <p>Fletcher Moss Park, Didsbury, Manchester</p>
-            <a href="https://www.google.com/maps/search/Fletcher+Moss+Tennis+Courts" target="_blank" class="btn">Open in Google Maps</a>
-        </div>
+    <div class="location-section">
+        <h2>See you on the court!</h2>
+        <p>Fletcher Moss Park, Wilmslow Rd, Didsbury</p>
     </div>
 
     <footer>
-        <p>Fletcher Moss Social Tennis &copy; 2025</p>
-        <p style="font-size: 0.9em; opacity: 0.8; margin-top: 10px;">A friendly, informal group for tennis lovers in Didsbury</p>
+        <p>Fletcher Moss Social Tennis © 2025</p>
     </footer>
 
     <script>
         const ADMIN_PASSWORD = 'Fletchertennis909';
-        let notices = [];
-
-        function loadNotices() {
-            const stored = localStorage.getItem('fletcherNotices');
-            if (stored) {
-                notices = JSON.parse(stored);
-                renderNotices();
-            }
-        }
-
-        function saveNotices() {
-            localStorage.setItem('fletcherNotices', JSON.stringify(notices));
-        }
+        let notices = JSON.parse(localStorage.getItem('fletcherNotices') || '[]');
 
         function renderNotices() {
             const list = document.getElementById('noticeList');
             if (notices.length === 0) {
-                list.innerHTML = '<div class="empty-notice">No notices at the moment. Check back soon!</div>';
+                list.innerHTML = '<div style="text-align:center; padding:20px; color:#8b6f47">No notices. Check back soon!</div>';
                 return;
             }
-
-            list.innerHTML = notices.map(notice => `
+            list.innerHTML = notices.map((n, i) => `
                 <div class="notice-item">
-                    <h3>${notice.title}</h3>
-                    <p>${notice.content}</p>
-                    <small>Posted: ${new Date(notice.date).toLocaleDateString('en-GB', { 
-                        day: 'numeric', 
-                        month: 'long', 
-                        year: 'numeric' 
-                    })}</small>
+                    <button class="delete-btn" onclick="deleteNotice(${i})">Delete</button>
+                    <h3>${n.title}</h3>
+                    <p>${n.content}</p>
+                    <small>${new Date(n.date).toLocaleDateString('en-GB')}</small>
                 </div>
             `).join('');
         }
 
         function toggleAdminPanel() {
             const panel = document.getElementById('adminPanel');
-            const errorMsg = document.getElementById('passwordError');
+            const wrap = document.getElementById('noticeboardWrap');
             panel.classList.toggle('active');
-            if (!panel.classList.contains('active')) {
-                document.getElementById('adminPassword').value = '';
-                document.getElementById('noticeTitle').value = '';
-                document.getElementById('noticeContent').value = '';
-                errorMsg.classList.remove('show');
-            }
+            wrap.classList.toggle('admin-active');
         }
 
         function postNotice() {
-            const password = document.getElementById('adminPassword').value;
-            const title = document.getElementById('noticeTitle').value.trim();
-            const content = document.getElementById('noticeContent').value.trim();
-            const errorMsg = document.getElementById('passwordError');
+            const pass = document.getElementById('adminPassword').value;
+            const title = document.getElementById('noticeTitle').value;
+            const content = document.getElementById('noticeContent').value;
 
-            if (password !== ADMIN_PASSWORD) {
-                errorMsg.classList.add('show');
-                document.getElementById('adminPassword').value = '';
-                document.getElementById('adminPassword').focus();
-                return;
-            }
+            if (pass !== ADMIN_PASSWORD) { alert('Wrong password'); return; }
+            if (!title || !content) { alert('Fill in all fields'); return; }
 
-            errorMsg.classList.remove('show');
-
-            if (!title || !content) {
-                alert('Please fill in both title and content');
-                return;
-            }
-
-            notices.unshift({
-                title: title,
-                content: content,
-                date: new Date().toISOString()
-            });
-
-            saveNotices();
+            notices.unshift({ title, content, date: new Date().toISOString() });
+            localStorage.setItem('fletcherNotices', JSON.stringify(notices));
             renderNotices();
             toggleAdminPanel();
-            alert('Notice posted successfully!');
         }
 
-        loadNotices();
+        function deleteNotice(index) {
+            const pass = document.getElementById('adminPassword').value;
+            if (pass !== ADMIN_PASSWORD) { alert('Enter password in admin panel first'); return; }
+            if (confirm('Delete this notice?')) {
+                notices.splice(index, 1);
+                localStorage.setItem('fletcherNotices', JSON.stringify(notices));
+                renderNotices();
+            }
+        }
+
+        renderNotices();
     </script>
 </body>
 </html>
