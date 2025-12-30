@@ -6,12 +6,13 @@
     <title>Fletcher Moss Tennis Club</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cormorant:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Lora:wght@600&display=swap" rel="stylesheet">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
-            font-family: 'Cormorant', serif;
+            font-family: 'Lora', serif;
+            font-weight: 600;
             line-height: 1.6;
             color: #333;
             background: linear-gradient(rgba(45, 80, 22, 0.4), rgba(45, 80, 22, 0.4)), url('hero-autumn.jpg.jpeg');
@@ -21,7 +22,7 @@
             background-repeat: no-repeat;
         }
 
-        /* Sticky Top Bar with Fade Effect */
+        /* Sticky Top Bar with Complete Fade Out */
         .top-bar {
             background: rgba(45, 80, 22, 0.95);
             padding: 20px 30px;
@@ -29,11 +30,13 @@
             position: sticky;
             top: 0;
             z-index: 1000;
-            transition: opacity 0.3s ease;
+            transition: opacity 0.5s ease, visibility 0.5s ease;
         }
 
         .top-bar.faded {
-            opacity: 0.3;
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
         }
 
         .top-bar-inner {
@@ -45,7 +48,7 @@
         }
 
         .top-logo {
-            height: 120px;
+            height: 160px;
             width: auto;
             filter: drop-shadow(4px 3px 6px rgba(0,0,0,0.5));
         }
@@ -164,7 +167,8 @@
             margin-bottom: 15px;
             border: 2px solid #ddd;
             border-radius: 6px;
-            font-family: 'Cormorant', serif;
+            font-family: 'Lora', serif;
+            font-weight: 600;
             font-size: 1.1em;
         }
 
@@ -174,7 +178,8 @@
             margin-bottom: 15px;
             border: 2px solid #ddd;
             border-radius: 6px;
-            font-family: 'Cormorant', serif;
+            font-family: 'Lora', serif;
+            font-weight: 600;
             font-size: 1.1em;
             min-height: 200px;
             resize: vertical;
@@ -187,7 +192,8 @@
             padding: 12px 25px;
             border-radius: 6px;
             cursor: pointer;
-            font-family: 'Cormorant', serif;
+            font-family: 'Lora', serif;
+            font-weight: 600;
             font-size: 1.1em;
             font-weight: 600;
             transition: background 0.3s;
@@ -324,7 +330,14 @@
             background: #2d5016; 
             color: white; 
             text-align: center; 
-            padding: 40px; 
+            padding: 50px 20px; 
+        }
+        
+        .footer-logo {
+            height: 140px;
+            width: auto;
+            margin-bottom: 25px;
+            filter: drop-shadow(4px 3px 6px rgba(0,0,0,0.5));
         }
         
         footer p {
@@ -341,7 +354,11 @@
             }
 
             .top-logo {
-                height: 90px;
+                height: 110px;
+            }
+
+            .footer-logo {
+                height: 100px;
             }
 
             .top-title h1 {
@@ -475,6 +492,7 @@
     </div>
 
     <footer>
+        <img src="Remove background project.png" alt="Fletcher Moss Tennis Club Logo" class="footer-logo">
         <p><strong>Fletcher Moss Tennis Club</strong></p>
         <p style="margin-top: 10px; font-size: 1em;">Hope to see you on the court soon!</p>
     </footer>
