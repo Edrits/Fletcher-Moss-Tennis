@@ -14,7 +14,7 @@
             font-family: 'Outfit', sans-serif;
             line-height: 1.6;
             color: #333;
-            /* Immersive background effect */
+            /* Immersive background effect covering sides */
             background: linear-gradient(rgba(45, 80, 22, 0.4), rgba(45, 80, 22, 0.4)), url('hero-autumn.jpg.jpeg');
             background-size: cover;
             background-position: center;
@@ -22,31 +22,35 @@
             background-repeat: no-repeat;
         }
 
-        /* Top Ribbon */
+        /* Top Ribbon - No borders or solid backgrounds */
         header {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
-            height: 90px;
-            padding: 0 30px;
+            height: 150px; /* Taller to accommodate larger logo */
+            padding: 20px 40px;
             display: flex;
             justify-content: flex-end;
-            align-items: center;
+            align-items: flex-start;
             z-index: 1000;
-            background: linear-gradient(to bottom, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0) 100%);
+            background: linear-gradient(to bottom, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0) 100%);
+            pointer-events: none;
         }
 
+        /* Large, Borderless Circular Logo */
         .logo {
-            height: 65px;
+            height: 120px; /* Increased size */
             width: auto;
-            border-radius: 4px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+            border: none;
+            outline: none;
+            background: none;
+            pointer-events: auto;
         }
 
         /* Hero Section */
         .hero {
-            height: 85vh;
+            height: 80vh;
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -73,7 +77,7 @@
         .section { margin-bottom: 60px; }
         h2 { font-size: 2.2em; margin-bottom: 30px; color: #2d5016; text-align: center; }
 
-        /* Noticeboard Styles */
+        /* Noticeboard */
         .noticeboard {
             background: #f4e4c1;
             border: 8px solid #8b6f47;
@@ -104,8 +108,7 @@
             background: #fff;
             padding: 15px;
             border-radius: 12px;
-            border: 1px solid #eee;
-            margin-top: 10px;
+            min-height: 150px;
         }
         .map-frame {
             width: 100%;
@@ -140,6 +143,7 @@
 
         @media (max-width: 768px) {
             .hero h1 { font-size: 2.2em; }
+            .logo { height: 80px; }
             .main-container { padding: 30px 20px; margin: 0 10px 50px 10px; }
         }
     </style>
@@ -193,16 +197,16 @@
                 <h2>📱 Join the WhatsApp</h2>
                 <p>Coordination and session call-outs happen here:</p>
                 <div class="qr-placeholder">
-                    [Insert QR Image Here]
+                    [Insert WhatsApp QR Image Here]
                 </div>
             </div>
         </div>
 
         <div class="section">
             <h2>📍 Location</h2>
-            <p style="text-align: center; margin-bottom: 15px;">Fletcher Moss Park Courts (Near the Alpine Tea Room)</p>
+            <p style="text-align: center; margin-bottom: 15px;">Fletcher Moss Park Courts (M20 2SW)</p>
             <iframe class="map-frame" 
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d1189.5702220197772!2d-2.234129528742704!3d53.41165448386154!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x487bb2455f5f5f5f%3A0x1d1d1d1d1d1d1d1d!2sFletcher%20Moss%20Tennis%20Courts!5e0!3m2!1sen!2suk!4v1700000000000!5m2!1sen!2suk&zoom=19" 
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d1189.6749216315574!2d-2.2338100259858567!3d53.40939335606117!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x487bb3cc8f53704f%3A0xc3f60f85461937f2!2sFletcher%20Moss%20Tennis%20Courts!5e0!3m2!1sen!2suk!4v1715600000000!5m2!1sen!2suk" 
                 allowfullscreen="" loading="lazy"></iframe>
         </div>
     </div>
@@ -212,7 +216,7 @@
     </footer>
 
     <script>
-        // Force load weather widget
+        // Weather widget initialization script
         window.onload = function() {
             !function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src='https://weatherwidget.io/js/widget.min.js';fjs.parentNode.insertBefore(js,fjs);}}(document,'script','weatherwidget-io-js');
         };
@@ -237,8 +241,11 @@
         }
 
         function toggleAdmin() {
-            document.getElementById('adminPanel').classList.toggle('active');
-            document.getElementById('noticeboardWrap').classList.toggle('admin-active');
+            const panel = document.getElementById('adminPanel');
+            const wrap = document.getElementById('noticeboardWrap');
+            panel.classList.toggle('active');
+            wrap.classList.toggle('admin-active');
+            render(); // Refresh buttons
         }
 
         function addNotice() {
@@ -247,17 +254,20 @@
             const b = document.getElementById('notBody').value;
 
             if (p !== PW) return alert('Invalid Password');
-            if (!t || !b) return alert('Please fill in all fields');
+            if (!t || !b) return alert('Please fill in both title and message');
 
             ns.unshift({ t, c: b, d: new Date().toISOString() });
             localStorage.setItem('fletch_notices', JSON.stringify(ns));
             render();
             toggleAdmin();
             document.getElementById('adminPass').value = '';
+            document.getElementById('notTitle').value = '';
+            document.getElementById('notBody').value = '';
         }
 
         function del(i) {
-            if (document.getElementById('adminPass').value !== PW) return alert('Enter password in panel first');
+            const p = document.getElementById('adminPass').value;
+            if (p !== PW) return alert('Enter password in login panel first to delete');
             if (confirm('Delete this notice?')) {
                 ns.splice(i, 1);
                 localStorage.setItem('fletch_notices', JSON.stringify(ns));
