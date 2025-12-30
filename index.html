@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fletcher Moss Social Tennis</title>
+    <title>Fletcher Moss Tennis Club</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -14,55 +14,68 @@
             font-family: 'Outfit', sans-serif;
             line-height: 1.6;
             color: #333;
-            /* Immersive background effect covering sides */
-            background: linear-gradient(rgba(45, 80, 22, 0.4), rgba(45, 80, 22, 0.4)), url('hero-autumn.jpg.jpeg');
+            background: linear-gradient(rgba(45, 80, 22, 0.4), rgba(45, 80, 22, 0.4)), url('hero-autumn.jpg');
             background-size: cover;
             background-position: center;
             background-attachment: fixed;
             background-repeat: no-repeat;
         }
 
-        /* Top Ribbon - No borders or solid backgrounds */
+        /* Fixed Logo Header */
         header {
             position: fixed;
             top: 0;
-            left: 0;
-            width: 100%;
-            height: 300px; /* Taller to accommodate larger logo */
+            right: 0;
             padding: 20px 40px;
-            display: flex;
-            justify-content: flex-end;
-            align-items: flex-start;
             z-index: 1000;
-            background: linear-gradient(to bottom, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0) 100%);
             pointer-events: none;
         }
 
-        /* Large, Borderless Circular Logo */
         .logo {
-            height: 300px; /* Increased size */
+            height: 180px;
             width: auto;
             border: none;
             outline: none;
             background: none;
             pointer-events: auto;
+            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3));
         }
 
         /* Hero Section */
         .hero {
-            height: 80vh;
+            min-height: 80vh;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
             color: white;
             text-align: center;
-            text-shadow: 0 2px 15px rgba(0,0,0,0.5);
             padding: 20px;
+            padding-top: 120px;
         }
 
-        .hero h1 { font-size: 3.5em; margin-bottom: 10px; }
-        .hero p { font-size: 1.4em; font-weight: 500; }
+        .hero-title-box {
+            background: rgba(45, 80, 22, 0.85);
+            backdrop-filter: blur(10px);
+            padding: 40px 60px;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.4);
+            border: 3px solid rgba(255,255,255,0.2);
+        }
+
+        .hero h1 { 
+            font-size: 3.5em; 
+            margin-bottom: 15px; 
+            font-weight: 700;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .hero .tagline { 
+            font-size: 1.5em; 
+            font-weight: 500;
+            opacity: 0.95;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.3);
+        }
 
         /* Main Content Container */
         .main-container {
@@ -79,12 +92,18 @@
 
         /* Noticeboard */
         .noticeboard {
-            background: #f4e4c1;
+            background: linear-gradient(135deg, #f4e4c1 0%, #e8d4a8 100%);
             border: 8px solid #8b6f47;
             border-radius: 12px;
             padding: 30px;
             position: relative;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
         }
+        
+        .noticeboard h2 {
+            color: #5d4e37;
+        }
+        
         .notice-item {
             background: white;
             padding: 20px;
@@ -92,29 +111,136 @@
             border-radius: 8px;
             border-left: 4px solid #4a7c2c;
             position: relative;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
         }
+        
+        .notice-item h3 {
+            color: #2d5016;
+            margin-bottom: 8px;
+        }
+        
         .delete-btn {
-            display: none; position: absolute; top: 10px; right: 10px;
-            background: #ff4444; color: white; border: none; padding: 5px 10px;
-            border-radius: 4px; cursor: pointer;
+            display: none; 
+            position: absolute; 
+            top: 10px; 
+            right: 10px;
+            background: #d32f2f; 
+            color: white; 
+            border: none; 
+            padding: 5px 12px;
+            border-radius: 4px; 
+            cursor: pointer;
+            font-size: 0.85em;
+            font-weight: 600;
         }
+        
+        .delete-btn:hover {
+            background: #b71c1c;
+        }
+        
         .admin-active .delete-btn { display: block; }
-        .admin-panel { display: none; background: white; padding: 20px; border-radius: 8px; margin-top: 20px; border: 1px solid #ddd; }
-        .admin-panel.active { display: block; }
-        .admin-panel input, .admin-panel textarea { width: 100%; padding: 10px; margin-bottom: 10px; }
-
-        /* Weather and Map */
-        .widget-box {
-            background: #fff;
-            padding: 15px;
-            border-radius: 12px;
-            min-height: 150px;
+        
+        .admin-panel { 
+            display: none; 
+            background: white; 
+            padding: 25px; 
+            border-radius: 8px; 
+            margin-top: 20px; 
+            border: 2px solid #8b6f47;
         }
+        
+        .admin-panel.active { display: block; }
+        
+        .admin-panel input, 
+        .admin-panel textarea { 
+            width: 100%; 
+            padding: 12px; 
+            margin-bottom: 15px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            font-family: 'Outfit', sans-serif;
+            font-size: 1em;
+        }
+        
+        .admin-panel textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+        
+        .btn {
+            background: #4a7c2c;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-family: 'Outfit', sans-serif;
+            font-size: 1em;
+            font-weight: 600;
+            transition: background 0.3s;
+        }
+        
+        .btn:hover {
+            background: #3a6c1c;
+        }
+        
+        .btn-secondary {
+            background: #5d4e37;
+        }
+        
+        .btn-secondary:hover {
+            background: #4a3d2a;
+        }
+
+        /* Weather Widget */
+        .weather-container {
+            background: linear-gradient(135deg, #87CEEB 0%, #4682B4 100%);
+            padding: 30px;
+            border-radius: 12px;
+            color: white;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        
+        .weather-container h3 {
+            font-size: 1.8em;
+            margin-bottom: 20px;
+            color: white;
+        }
+        
+        .weather-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .weather-card {
+            background: rgba(255,255,255,0.2);
+            backdrop-filter: blur(10px);
+            padding: 20px;
+            border-radius: 10px;
+            border: 1px solid rgba(255,255,255,0.3);
+        }
+        
+        .weather-card h4 {
+            font-size: 0.9em;
+            margin-bottom: 10px;
+            opacity: 0.9;
+        }
+        
+        .weather-card p {
+            font-size: 1.8em;
+            font-weight: 700;
+        }
+
+        /* Map */
         .map-frame {
             width: 100%;
             height: 450px;
             border-radius: 12px;
             border: 3px solid #2d5016;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
         }
 
         /* QR Section */
@@ -124,9 +250,10 @@
             padding: 40px;
             border-radius: 12px;
         }
+        
         .qr-placeholder {
-            width: 200px;
-            height: 200px;
+            width: 250px;
+            height: 250px;
             margin: 20px auto;
             border: 3px dashed #ccc;
             display: flex;
@@ -134,29 +261,101 @@
             justify-content: center;
             background: white;
             color: #999;
+            border-radius: 12px;
         }
 
-        .schedule-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; }
-        .card { background: #f0f4ee; padding: 20px; border-radius: 12px; text-align: center; border: 1px solid #dce6d8; }
+        /* Schedule */
+        .schedule-grid { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); 
+            gap: 20px; 
+        }
+        
+        .card { 
+            background: linear-gradient(135deg, #f0f4ee 0%, #e8ede4 100%);
+            padding: 30px; 
+            border-radius: 12px; 
+            text-align: center; 
+            border: 2px solid #dce6d8;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+        }
+        
+        .card h3 {
+            color: #2d5016;
+            font-size: 1.5em;
+            margin-bottom: 10px;
+        }
 
-        footer { background: #2d5016; color: white; text-align: center; padding: 40px; }
+        /* Info boxes */
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+        
+        .info-box {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 12px;
+            border-left: 4px solid #4a7c2c;
+        }
+        
+        .info-box h3 {
+            color: #2d5016;
+            margin-bottom: 12px;
+        }
+
+        .note-box {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 25px 0;
+        }
+        
+        .note-box p {
+            color: #856404;
+            margin: 0;
+        }
+
+        footer { 
+            background: #2d5016; 
+            color: white; 
+            text-align: center; 
+            padding: 40px; 
+        }
+        
+        footer p {
+            opacity: 0.9;
+        }
 
         @media (max-width: 768px) {
             .hero h1 { font-size: 2.2em; }
-            .logo { height: 300px; }
+            .hero .tagline { font-size: 1.2em; }
+            .logo { height: 120px; }
+            .hero-title-box { padding: 30px 40px; }
             .main-container { padding: 30px 20px; margin: 0 10px 50px 10px; }
+            header { padding: 15px 20px; }
         }
     </style>
 </head>
 <body>
 
     <header>
-        <img src="Remove background project.png" alt="Fletcher Moss Logo" class="logo">
+        <img src="Remove background project.png" alt="Fletcher Moss Tennis Club Logo" class="logo">
     </header>
 
     <div class="hero">
-        <h1>🎾 Fletcher Moss Social Tennis</h1>
-        <p>Intermediate & Advanced Social Play in Didsbury</p>
+        <div class="hero-title-box">
+            <h1>🎾 Fletcher Moss Tennis Club</h1>
+            <p class="tagline">Didsbury Social Tennis</p>
+        </div>
     </div>
 
     <div class="main-container">
@@ -165,69 +364,107 @@
             <div id="noticeboardWrap" class="noticeboard">
                 <h2>📋 Noticeboard</h2>
                 <div id="noticeList"></div>
-                <button style="background:#5d4e37; color:white; border:none; padding:10px 15px; border-radius:6px; cursor:pointer; margin-top:10px;" onclick="toggleAdmin()">🔐 Admin Login</button>
+                <button class="btn btn-secondary" style="margin-top:15px;" onclick="toggleAdmin()">🔐 Admin Login</button>
                 
                 <div id="adminPanel" class="admin-panel">
-                    <input type="password" id="adminPass" placeholder="Password">
-                    <input type="text" id="notTitle" placeholder="Update Title">
-                    <textarea id="notBody" placeholder="Message details..."></textarea>
-                    <button style="background:#4a7c2c; color:white; border:none; padding:10px 20px; border-radius:4px; cursor:pointer;" onclick="addNotice()">Post Update</button>
+                    <h3 style="color: #2d5016; margin-bottom: 15px;">Post New Notice</h3>
+                    <input type="password" id="adminPass" placeholder="Enter admin password">
+                    <input type="text" id="notTitle" placeholder="Notice Title">
+                    <textarea id="notBody" placeholder="Notice details..."></textarea>
+                    <button class="btn" onclick="addNotice()">Post Notice</button>
                 </div>
             </div>
         </div>
 
         <div class="section">
-            <h2>🌤️ Court Weather</h2>
-            <div class="widget-box">
-                <a class="weatherwidget-io" href="https://forecast7.com/en/53p42n2p23/didsbury/" data-label_1="DIDSBURY" data-label_2="WEATHER" data-theme="pure" >DIDSBURY WEATHER</a>
+            <h2>🌤️ Weather Check</h2>
+            <div class="weather-container">
+                <h3>Didsbury Conditions</h3>
+                <p style="font-size: 1.1em; opacity: 0.9;">Check the weather before heading to the courts</p>
+                <div class="weather-info">
+                    <div class="weather-card">
+                        <h4>Temperature</h4>
+                        <p id="temp">--°C</p>
+                    </div>
+                    <div class="weather-card">
+                        <h4>Conditions</h4>
+                        <p id="conditions" style="font-size: 1.4em;">--</p>
+                    </div>
+                    <div class="weather-card">
+                        <h4>Rain Chance</h4>
+                        <p id="rain">--%</p>
+                    </div>
+                </div>
+                <p style="margin-top: 20px; font-size: 0.9em; opacity: 0.8;">
+                    <a href="https://www.metoffice.gov.uk/weather/forecast/gcw2m68e2" target="_blank" style="color: white; text-decoration: underline;">View detailed forecast →</a>
+                </p>
             </div>
         </div>
 
         <div class="section">
             <h2>Session Times</h2>
             <div class="schedule-grid">
-                <div class="card"><h3>Mon</h3><p>6pm - 8pm</p></div>
-                <div class="card"><h3>Thu</h3><p>6pm - 8pm</p></div>
-                <div class="card"><h3>Sat</h3><p>11am - 1pm</p></div>
+                <div class="card"><h3>Monday</h3><p>6:00 PM - 8:00 PM</p></div>
+                <div class="card"><h3>Thursday</h3><p>6:00 PM - 8:00 PM</p></div>
+                <div class="card"><h3>Saturday</h3><p>11:00 AM - 1:00 PM</p></div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>How It Works</h2>
+            <div class="info-grid">
+                <div class="info-box">
+                    <h3>1. Join WhatsApp Group</h3>
+                    <p>All coordination happens via WhatsApp. Scan the QR code below to request access.</p>
+                </div>
+                <div class="info-box">
+                    <h3>2. £5 Contribution</h3>
+                    <p>One-time payment to cover tennis balls (may be collected every ~6 months as needed).</p>
+                </div>
+            </div>
+            
+            <div class="note-box">
+                <p><strong>Skill Level:</strong> We welcome intermediate to advanced players. Beginners are advised to get some lessons first to feel comfortable with the basics.</p>
             </div>
         </div>
 
         <div class="section">
             <div class="qr-area">
-                <h2>📱 Request to join the WhatsApp</h2>
-                <p>Coordination and session call-outs happen in the group:</p>
+                <h2>📱 Join Our WhatsApp Group</h2>
+                <p style="color: #666; margin-bottom: 10px;">Scan to request access and get session updates</p>
                 <div class="qr-placeholder">
-                    [Insert WhatsApp QR Image Here]
+                    [Your WhatsApp QR Code Here]
                 </div>
             </div>
         </div>
 
         <div class="section">
-            <h2>📍 Location</h2>
-            <p style="text-align: center; margin-bottom: 15px;">Fletcher Moss Park Courts (M20 2SW)</p>
+            <h2>📍 Find the Courts</h2>
+            <p style="text-align: center; margin-bottom: 20px; font-size: 1.1em;">
+                <strong>Fletcher Moss Park Tennis Courts</strong><br>
+                Stenner Lane, Didsbury, Manchester M20 2SW
+            </p>
             <iframe class="map-frame" 
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d1189.6749216315574!2d-2.2338100259858567!3d53.40939335606117!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x487bb3cc8f53704f%3A0xc3f60f85461937f2!2sFletcher%20Moss%20Tennis%20Courts!5e0!3m2!1sen!2suk!4v1715600000000!5m2!1sen!2suk" 
-                allowfullscreen="" loading="lazy"></iframe>
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2376.8319944183287!2d-2.2359887842345937!3d53.40939338000244!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x487bb3cc8f53704f%3A0xc3f60f85461937f2!2sFletcher%20Moss%20Tennis%20Courts!5e0!3m2!1sen!2suk!4v1735077000000!5m2!1sen!2suk" 
+                allowfullscreen="" 
+                loading="lazy" 
+                referrerpolicy="no-referrer-when-downgrade"></iframe>
         </div>
     </div>
 
     <footer>
-        <p>Fletcher Moss Social Tennis, hope to see you in 2026</p>
+        <p><strong>Fletcher Moss Tennis Club</strong></p>
+        <p style="margin-top: 10px; font-size: 0.95em;">Hope to see you on the courts in 2025!</p>
     </footer>
 
     <script>
-        // Weather widget initialization script
-        window.onload = function() {
-            !function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src='https://weatherwidget.io/js/widget.min.js';fjs.parentNode.insertBefore(js,fjs);}}(document,'script','weatherwidget-io-js');
-        };
-
         const PW = 'Fletchertennis909';
         let ns = JSON.parse(localStorage.getItem('fletch_notices') || '[]');
 
         function render() {
             const container = document.getElementById('noticeList');
             if(ns.length === 0) {
-                container.innerHTML = '<p style="text-align:center; padding:20px; color:#8b6f47;">No current updates.</p>';
+                container.innerHTML = '<p style="text-align:center; padding:20px; color:#8b6f47; font-style: italic;">No current updates - check back soon!</p>';
                 return;
             }
             container.innerHTML = ns.map((n, i) => `
@@ -235,7 +472,7 @@
                     <button class="delete-btn" onclick="del(${i})">Delete</button>
                     <h3>${n.t}</h3>
                     <p>${n.c}</p>
-                    <small style="color:#999">${new Date(n.d).toLocaleDateString('en-GB')}</small>
+                    <small style="color:#999; display: block; margin-top: 10px;">Posted: ${new Date(n.d).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })}</small>
                 </div>
             `).join('');
         }
@@ -245,16 +482,22 @@
             const wrap = document.getElementById('noticeboardWrap');
             panel.classList.toggle('active');
             wrap.classList.toggle('admin-active');
-            render(); // Refresh buttons
+            render();
         }
 
         function addNotice() {
             const p = document.getElementById('adminPass').value;
-            const t = document.getElementById('notTitle').value;
-            const b = document.getElementById('notBody').value;
+            const t = document.getElementById('notTitle').value.trim();
+            const b = document.getElementById('notBody').value.trim();
 
-            if (p !== PW) return alert('Invalid Password');
-            if (!t || !b) return alert('Please fill in both title and message');
+            if (p !== PW) {
+                alert('❌ Incorrect password');
+                return;
+            }
+            if (!t || !b) {
+                alert('⚠️ Please fill in both title and message');
+                return;
+            }
 
             ns.unshift({ t, c: b, d: new Date().toISOString() });
             localStorage.setItem('fletch_notices', JSON.stringify(ns));
@@ -263,11 +506,15 @@
             document.getElementById('adminPass').value = '';
             document.getElementById('notTitle').value = '';
             document.getElementById('notBody').value = '';
+            alert('✅ Notice posted successfully!');
         }
 
         function del(i) {
             const p = document.getElementById('adminPass').value;
-            if (p !== PW) return alert('Enter password in login panel first to delete');
+            if (p !== PW) {
+                alert('🔒 Please enter admin password first to delete notices');
+                return;
+            }
             if (confirm('Delete this notice?')) {
                 ns.splice(i, 1);
                 localStorage.setItem('fletch_notices', JSON.stringify(ns));
@@ -275,7 +522,35 @@
             }
         }
 
+        // Simple weather fetch (Open-Meteo API - free, no key needed)
+        async function getWeather() {
+            try {
+                const response = await fetch('https://api.open-meteo.com/v1/forecast?latitude=53.41&longitude=-2.23&current=temperature_2m,weather_code,precipitation_probability&timezone=Europe/London');
+                const data = await response.json();
+                
+                document.getElementById('temp').textContent = Math.round(data.current.temperature_2m) + '°C';
+                
+                const weatherCodes = {
+                    0: '☀️ Clear', 1: '🌤️ Mostly Clear', 2: '⛅ Partly Cloudy', 3: '☁️ Cloudy',
+                    45: '🌫️ Foggy', 48: '🌫️ Foggy', 51: '🌦️ Drizzle', 53: '🌦️ Drizzle',
+                    61: '🌧️ Rain', 63: '🌧️ Rain', 65: '🌧️ Heavy Rain', 
+                    71: '🌨️ Snow', 73: '🌨️ Snow', 75: '🌨️ Heavy Snow',
+                    80: '🌦️ Showers', 81: '🌧️ Showers', 95: '⛈️ Thunderstorm'
+                };
+                
+                document.getElementById('conditions').textContent = weatherCodes[data.current.weather_code] || '🌤️';
+                document.getElementById('rain').textContent = (data.current.precipitation_probability || 0) + '%';
+            } catch (error) {
+                console.error('Weather fetch failed:', error);
+                document.getElementById('temp').textContent = 'N/A';
+                document.getElementById('conditions').textContent = '⚠️';
+                document.getElementById('rain').textContent = 'N/A';
+            }
+        }
+
         render();
+        getWeather();
+        setInterval(getWeather, 600000); // Update every 10 minutes
     </script>
 </body>
 </html>
