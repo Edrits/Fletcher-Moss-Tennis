@@ -178,58 +178,70 @@
         <p>Fletcher Moss Social Tennis</p>
     </footer>
 
-    <script>
-        const ADMIN_PASSWORD = 'Fletchertennis909';
-        let notices = JSON.parse(localStorage.getItem('fletcherNotices') || '[]');
+<script>
+    const ADMIN_PASSWORD = 'Fletchertennis909';
+    let notices = JSON.parse(localStorage.getItem('fletcherNotices') || '[]');
 
-        function renderNotices() {
-            const list = document.getElementById('noticeList');
-            if (notices.length === 0) {
-                list.innerHTML = '<div style="text-align:center; padding:20px; color:#8b6f47">No notices. Check back soon!</div>';
-                return;
-            }
-            list.innerHTML = notices.map((n, i) => `
-                <div class="notice-item">
-                    <button class="delete-btn" onclick="deleteNotice(${i})">Delete</button>
-                    <h3>${n.title}</h3>
-                    <p>${n.content}</p>
-                    <small>${new Date(n.date).toLocaleDateString('en-GB')}</small>
-                </div>
-            `).join('');
+    // 1. Bulletproof Weather Loader
+    window.onload = function() {
+        !function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src='https://weatherwidget.io/js/widget.min.js';fjs.parentNode.insertBefore(js,fjs);}}(document,'script','weatherwidget-io-js');
+    };
+
+    // 2. Render Notices with Delete Buttons
+    function renderNotices() {
+        const list = document.getElementById('noticeList');
+        if (notices.length === 0) {
+            list.innerHTML = '<div style="text-align:center; padding:20px; color:#8b6f47">No notices. Check back soon!</div>';
+            return;
         }
+        list.innerHTML = notices.map((n, i) => `
+            <div class="notice-item" style="position:relative; background:white; padding:20px; margin-bottom:15px; border-radius:8px; border-left:4px solid #4a7c2c;">
+                <button class="delete-btn" onclick="deleteNotice(${i})" style="position:absolute; top:10px; right:10px; background:#ff4444; color:white; border:none; padding:5px 10px; border-radius:4px; cursor:pointer; display:none;">Delete</button>
+                <h3>${n.title}</h3>
+                <p>${n.content}</p>
+                <small style="color:#999;">${new Date(n.date).toLocaleDateString('en-GB')}</small>
+            </div>
+        `).join('');
+    }
 
-        function toggleAdminPanel() {
-            const panel = document.getElementById('adminPanel');
-            const wrap = document.getElementById('noticeboardWrap');
-            panel.classList.toggle('active');
-            wrap.classList.toggle('admin-active');
-        }
+    // 3. Admin Panel & Delete Logic
+    function toggleAdminPanel() {
+        const panel = document.getElementById('adminPanel');
+        const wrap = document.getElementById('noticeboardWrap');
+        panel.classList.toggle('active');
+        wrap.classList.toggle('admin-active');
+        
+        // Show/Hide delete buttons based on admin mode
+        const deleteBtns = document.querySelectorAll('.delete-btn');
+        deleteBtns.forEach(btn => btn.style.display = panel.classList.contains('active') ? 'block' : 'none');
+    }
 
-        function postNotice() {
-            const pass = document.getElementById('adminPassword').value;
-            const title = document.getElementById('noticeTitle').value;
-            const content = document.getElementById('noticeContent').value;
+    function postNotice() {
+        const pass = document.getElementById('adminPassword').value;
+        const title = document.getElementById('noticeTitle').value;
+        const content = document.getElementById('noticeContent').value;
 
-            if (pass !== ADMIN_PASSWORD) { alert('Wrong password'); return; }
-            if (!title || !content) { alert('Fill in all fields'); return; }
+        if (pass !== ADMIN_PASSWORD) { alert('Incorrect Password'); return; }
+        
+        notices.unshift({ title, content, date: new Date().toISOString() });
+        localStorage.setItem('fletcherNotices', JSON.stringify(notices));
+        renderNotices();
+        toggleAdminPanel();
+    }
 
-            notices.unshift({ title, content, date: new Date().toISOString() });
+    function deleteNotice(index) {
+        if (confirm('Are you sure you want to delete this notice?')) {
+            notices.splice(index, 1);
             localStorage.setItem('fletcherNotices', JSON.stringify(notices));
             renderNotices();
-            toggleAdminPanel();
+            // Keep delete buttons visible if we are still in admin mode
+            const deleteBtns = document.querySelectorAll('.delete-btn');
+            deleteBtns.forEach(btn => btn.style.display = 'block');
         }
+    }
 
-        function deleteNotice(index) {
-            const pass = document.getElementById('adminPassword').value;
-            if (pass !== ADMIN_PASSWORD) { alert('Enter password in admin panel first'); return; }
-            if (confirm('Delete this notice?')) {
-                notices.splice(index, 1);
-                localStorage.setItem('fletcherNotices', JSON.stringify(notices));
-                renderNotices();
-            }
-        }
-
-        renderNotices();
-    </script>
+    renderNotices();
+</script>
+    
 </body>
 </html>
