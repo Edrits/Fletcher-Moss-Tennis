@@ -1,6 +1,6 @@
 // Save this as: netlify/functions/noticeboard.js
 
-exports.handler = async (event, context) => {
+export default async function handler(req, res) {
   const ADMIN_PASSWORD = 'Fletchertennis909';
   const GITHUB_TOKEN = process.env.GITHUB_TOKEN; // Stored securely in Netlify
   const GITHUB_USER = 'Edrits';
