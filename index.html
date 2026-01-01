@@ -305,17 +305,12 @@
         }
         
         .qr-placeholder {
-            width: 250px;
-            height: 250px;
+            width: 300px;
+            height: 300px;
             margin: 20px auto;
-            border: 3px dashed #ccc;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: white;
-            color: #999;
+            display: block;
             border-radius: 12px;
-            font-size: 1.1em;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
         }
 
         /* Info boxes */
@@ -532,9 +527,7 @@
             <div class="qr-area">
                 <h2>📱 Join Our WhatsApp Group</h2>
                 <p style="color: #666; margin-bottom: 10px; font-size: 1.1em;">Scan to request access and get session updates</p>
-                <div class="qr-placeholder">
-                    [TBC]
-                </div>
+                <img src="Signup QR code.jpg" alt="WhatsApp Group QR Code" class="qr-placeholder">
             </div>
         </div>
 
@@ -564,24 +557,19 @@
     <script>
         const PW = 'Fletchertennis909';
         
-        // GitHub repository details
-        const GITHUB_USER = 'Edrits';
-        const GITHUB_REPO = 'Fletcher-Moss-Tennis';
-        const GITHUB_TOKEN = 'YOUR_GITHUB_PERSONAL_ACCESS_TOKEN'; // Create at: https://github.com/settings/tokens
-        const NOTICE_FILE = 'noticeboard.json';
+        // Netlify function endpoint (will be your-site.netlify.app)
+        const API_URL = '/.netlify/functions/noticeboard';
 
         // Load and display notice
         async function loadNotice() {
             const display = document.getElementById('noticeDisplay');
             
             try {
-                // Try to fetch from GitHub
-                const response = await fetch(`https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/contents/${NOTICE_FILE}`);
+                const response = await fetch(API_URL);
                 
                 if (response.ok) {
                     const data = await response.json();
-                    const content = atob(data.content); // Decode base64
-                    const notice = JSON.parse(content).message || '';
+                    const notice = data.message || '';
                     
                     if (notice.trim()) {
                         display.textContent = notice;
@@ -591,7 +579,6 @@
                         display.classList.add('notice-empty');
                     }
                 } else {
-                    // File doesn't exist yet
                     display.textContent = 'No current updates - check back soon!';
                     display.classList.add('notice-empty');
                 }
@@ -611,14 +598,11 @@
             panel.classList.toggle('active');
             
             if (isOpening) {
-                // Load current content into textarea when opening
                 try {
-                    const response = await fetch(`https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/contents/${NOTICE_FILE}`);
+                    const response = await fetch(API_URL);
                     if (response.ok) {
                         const data = await response.json();
-                        const content = atob(data.content);
-                        const notice = JSON.parse(content).message || '';
-                        textarea.value = notice;
+                        textarea.value = data.message || '';
                     } else {
                         textarea.value = '';
                     }
@@ -629,7 +613,7 @@
             }
         }
 
-        // Save notice to GitHub
+        // Save notice via secure function
         async function saveNotice() {
             const password = document.getElementById('adminPass').value;
             const text = document.getElementById('noticeText').value;
@@ -640,48 +624,33 @@
             }
 
             try {
-                // Get current file SHA (needed for updates)
-                let sha = null;
-                const getResponse = await fetch(`https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/contents/${NOTICE_FILE}`);
-                if (getResponse.ok) {
-                    const getData = await getResponse.json();
-                    sha = getData.sha;
-                }
-
-                // Prepare content
-                const content = btoa(JSON.stringify({ message: text, updated: new Date().toISOString() }));
-
-                // Save to GitHub
-                const saveResponse = await fetch(`https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/contents/${NOTICE_FILE}`, {
-                    method: 'PUT',
+                const response = await fetch(API_URL, {
+                    method: 'POST',
                     headers: {
-                        'Authorization': `token ${GITHUB_TOKEN}`,
-                        'Content-Type': 'application/json',
+                        'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
-                        message: 'Update noticeboard',
-                        content: content,
-                        sha: sha // Include if updating existing file
+                        password: password,
+                        message: text
                     })
                 });
 
-                if (saveResponse.ok) {
+                const result = await response.json();
+
+                if (response.ok && result.success) {
                     await loadNotice();
                     toggleAdmin();
                     alert('✅ Noticeboard updated successfully!');
                 } else {
-                    const error = await saveResponse.json();
-                    console.error('Save error:', error);
-                    alert('❌ Failed to save. Check console for details.');
+                    alert('❌ ' + (result.error || 'Failed to save'));
                 }
             } catch (error) {
                 console.error('Error saving notice:', error);
-                alert('❌ Error saving notice. Check your GitHub token and repository settings.');
+                alert('❌ Error saving notice. Please try again.');
             }
         }
 
         // Fade banner on scroll
-        let lastScroll = 0;
         window.addEventListener('scroll', () => {
             const currentScroll = window.pageYOffset;
             const banner = document.getElementById('topBar');
