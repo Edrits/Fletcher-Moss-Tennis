@@ -49,13 +49,14 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            gap: 30px;
+            gap: 20px;
         }
 
         .top-bar-left {
             display: flex;
             align-items: center;
-            gap: 25px;
+            gap: 20px;
+            flex: 1;
         }
 
         .top-logo {
@@ -65,28 +66,31 @@
         }
 
         .top-title h1 {
-            font-size: 2.5em;
+            font-size: 2.2em;
             font-weight: 700;
             color: white;
             margin-bottom: 5px;
+            white-space: nowrap;
         }
 
         .top-title p {
-            font-size: 1.3em;
+            font-size: 1.2em;
             color: rgba(255,255,255,0.9);
+            white-space: nowrap;
         }
 
         /* Navigation Links */
         .nav-links {
             display: flex;
-            gap: 25px;
+            gap: 20px;
             align-items: center;
+            flex-shrink: 0;
         }
 
         .nav-links a {
             color: white;
             text-decoration: none;
-            font-size: 1.05em;
+            font-size: 1em;
             font-weight: 600;
             transition: opacity 0.3s, transform 0.2s;
             white-space: nowrap;
@@ -305,12 +309,17 @@
         }
         
         .qr-placeholder {
-            width: 300px;
-            height: 300px;
+            width: 250px;
+            height: 250px;
             margin: 20px auto;
-            display: block;
+            border: 3px dashed #ccc;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: white;
+            color: #999;
             border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            font-size: 1.1em;
         }
 
         /* Info boxes */
@@ -527,7 +536,9 @@
             <div class="qr-area">
                 <h2>📱 Join Our WhatsApp Group</h2>
                 <p style="color: #666; margin-bottom: 10px; font-size: 1.1em;">Scan to request access and get session updates</p>
-                <img src="Signup QR code.jpg" alt="WhatsApp Group QR Code" class="qr-placeholder">
+                <div class="qr-placeholder">
+                    [TBC]
+                </div>
             </div>
         </div>
 
@@ -557,8 +568,8 @@
     <script>
         const PW = 'Fletchertennis909';
         
-        // Netlify function endpoint (will be your-site.netlify.app)
-        const API_URL = '/.netlify/functions/noticeboard';
+        // Vercel serverless function endpoint
+        const API_URL = '/api/noticeboard';
 
         // Load and display notice
         async function loadNotice() {
