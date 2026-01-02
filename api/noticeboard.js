@@ -2,7 +2,7 @@
 
 export default async function handler(req, res) {
   const ADMIN_PASSWORD = 'Fletchertennis909';
-  const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
+  const GITHUB_TOKEN = process.env.GIT_TOKEN;
   const GITHUB_USER = 'Edrits';
   const GITHUB_REPO = 'Fletcher-Moss-Tennis';
   const NOTICE_FILE = 'noticeboard.json';
