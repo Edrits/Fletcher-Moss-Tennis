@@ -3,7 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fletcher Moss Tennis Club</title>
+    <title>Fletcher Moss Tennis Club | Free Social Tennis in Didsbury, Manchester</title>
+    <meta name="description" content="Free community tennis in Didsbury at Fletcher Moss Park. Social tennis sessions Monday, Thursday evenings and Saturday mornings. No membership fees, all abilities welcome. South Manchester.">
+    <meta name="keywords" content="free tennis didsbury, social tennis manchester, fletcher moss tennis, community tennis south manchester, tennis didsbury, free tennis sessions, social tennis group">
+    
+    <!-- Open Graph / Social Media -->
+    <meta property="og:title" content="Fletcher Moss Tennis Club - Free Social Tennis in Didsbury">
+    <meta property="og:description" content="Join our friendly community tennis group in Didsbury. Free sessions, no membership fees, all abilities welcome.">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="Remove background project.png">
+    
+    <!-- Favicon -->
     <link rel="icon" type="image/png" href="Remove background project.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -20,7 +30,7 @@
             font-weight: 600;
             line-height: 1.6;
             color: #333;
-            background: linear-gradient(rgba(45, 80, 22, 0.4), rgba(45, 80, 22, 0.4)), url('hero-autumn.jpg.jpeg');
+            background: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)), url('courts-drone-aerial.jpg');
             background-size: cover;
             background-position: center;
             background-attachment: fixed;
@@ -105,7 +115,7 @@
         /* Main Content Container */
         .main-container {
             max-width: 1000px;
-            margin: 80px auto 100px auto;
+            margin: 0 auto 100px auto;
             background: rgba(255, 255, 255, 0.98);
             padding: 60px 40px;
             border-radius: 20px;
@@ -445,7 +455,7 @@
     <header class="top-bar" id="topBar">
         <div class="top-bar-inner">
             <div class="top-bar-left">
-                <img src="Remove background project.png" alt="Fletcher Moss Tennis Club Logo" class="top-logo">
+                <img src="Remove background project.png" alt="Fletcher Moss Tennis Club - Free Social Tennis in Didsbury Manchester" class="top-logo">
                 <div class="top-title">
                     <h1>🎾 Fletcher Moss Tennis Club</h1>
                     <p>Didsbury Social Tennis</p>
@@ -462,6 +472,18 @@
         </div>
     </header>
 
+    <!-- Hero Showcase Section -->
+    <div style="min-height: 70vh; display: flex; align-items: center; justify-content: center; text-align: center; padding: 40px 20px;">
+        <div style="background: rgba(255, 255, 255, 0.95); padding: 50px 60px; border-radius: 20px; box-shadow: 0 20px 60px rgba(0,0,0,0.4); max-width: 800px; backdrop-filter: blur(10px);">
+            <h1 style="font-size: 3em; color: #2d5016; margin-bottom: 20px; font-weight: 700;">Welcome to Fletcher Moss Tennis</h1>
+            <p style="font-size: 1.4em; color: #555; margin-bottom: 30px; line-height: 1.6;">Free community tennis in the heart of Didsbury. Join us for social sessions in beautiful Fletcher Moss Park.</p>
+            <div style="display: flex; gap: 20px; justify-content: center; flex-wrap: wrap;">
+                <a href="#about" style="background: #4a7c2c; color: white; padding: 15px 35px; border-radius: 8px; text-decoration: none; font-size: 1.1em; font-weight: 600; transition: transform 0.2s, background 0.3s; display: inline-block;">Learn More</a>
+                <a href="#join" style="background: white; color: #4a7c2c; padding: 15px 35px; border-radius: 8px; text-decoration: none; font-size: 1.1em; font-weight: 600; border: 2px solid #4a7c2c; transition: transform 0.2s, background 0.3s; display: inline-block;">Join Now</a>
+            </div>
+        </div>
+    </div>
+
     <div class="main-container">
         
         <div class="section" id="about">
@@ -471,7 +493,7 @@
                 <div style="background: white; padding: 30px; border-radius: 12px; margin-bottom: 25px; box-shadow: 0 2px 10px rgba(0,0,0,0.05);">
                     <h3 style="color: #2d5016; font-size: 1.5em; margin-bottom: 15px; font-weight: 600;">About Us</h3>
                     <p style="font-size: 1.15em; line-height: 1.8; color: #555;">
-                        Community-run tennis organised by volunteers who give their time freely, supported by 
+                        Community-run tennis organized by volunteers who give their time freely, supported by 
                         <a href="https://mcractive.com/" target="_blank" style="color: #4a7c2c; font-weight: 600; text-decoration: none; border-bottom: 2px solid #4a7c2c;">McrActive</a> 
                         to provide accessible tennis for Didsbury and South Manchester. An inclusive, friendly environment where fun and social connection are at the heart of every session.
                     </p>
@@ -601,10 +623,57 @@
     </div>
 
     <footer>
-        <img src="Remove background project.png" alt="Fletcher Moss Tennis Club Logo" class="footer-logo">
+        <img src="Remove background project.png" alt="Fletcher Moss Tennis Club Logo - Free Social Tennis Didsbury" class="footer-logo">
         <p><strong>Fletcher Moss Tennis Club</strong></p>
         <p style="margin-top: 10px; font-size: 1em;">Hope to see you on the court soon!</p>
     </footer>
+
+    <!-- Structured Data for Local Business SEO -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "SportsActivityLocation",
+      "name": "Fletcher Moss Tennis Club",
+      "description": "Free community-run social tennis group in Didsbury, South Manchester. No membership fees.",
+      "url": "https://fletcher-moss-tennis.vercel.app",
+      "telephone": "",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "Fletcher Moss Park",
+        "addressLocality": "Didsbury",
+        "addressRegion": "Manchester",
+        "postalCode": "M20 2SW",
+        "addressCountry": "GB"
+      },
+      "geo": {
+        "@type": "GeoCoordinates",
+        "latitude": "53.40991468235338",
+        "longitude": "-2.229813496534618"
+      },
+      "openingHoursSpecification": [
+        {
+          "@type": "OpeningHoursSpecification",
+          "dayOfWeek": "Monday",
+          "opens": "18:00",
+          "closes": "20:00"
+        },
+        {
+          "@type": "OpeningHoursSpecification",
+          "dayOfWeek": "Thursday",
+          "opens": "18:00",
+          "closes": "20:00"
+        },
+        {
+          "@type": "OpeningHoursSpecification",
+          "dayOfWeek": "Saturday",
+          "opens": "11:00",
+          "closes": "13:00"
+        }
+      ],
+      "priceRange": "Free",
+      "sport": "Tennis"
+    }
+    </script>
 
     <script>
         const PW = 'Fletchertennis909';
