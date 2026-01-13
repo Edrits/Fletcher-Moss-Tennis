@@ -124,13 +124,11 @@
     /* Main Content Container */
     .main-container {
         max-width: 1000px;
-        margin: -60px auto 100px auto;
+        margin: 60px auto 100px auto;
         background: rgba(255, 255, 255, 0.98);
         padding: 60px 40px;
         border-radius: 20px;
         box-shadow: 0 15px 50px rgba(0,0,0,0.3);
-        position: relative;
-        z-index: 20;
     }
 
     .section { margin-bottom: 60px; }
@@ -535,20 +533,20 @@
 </header>
 
 <!-- Full Screen Hero with Image -->
-<div class="mobile-hero" style="position: relative; width: 100%; height: 100vh; min-height: 650px; overflow: hidden; margin-top: -80px;">
+<div class="mobile-hero" style="position: relative; width: 100%; height: 100vh; min-height: 100vh; overflow: hidden;">
     <!-- Background Image -->
     <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-image: url('courts-drone-aerial.jpg'); background-size: cover; background-position: center center; background-repeat: no-repeat;"></div>
     
     <!-- Dark Overlay -->
-    <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(to bottom, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.5) 100%);"></div>
+    <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(to bottom, rgba(0,0,0,0.35) 0%, rgba(0,0,0,0.55) 100%);"></div>
     
     <!-- Content -->
-    <div style="position: relative; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 20px; z-index: 10;">
-        <h1 class="mobile-hero" style="font-size: 3.5em; color: white; margin-bottom: 25px; font-weight: 700; text-shadow: 3px 3px 10px rgba(0,0,0,0.9), 0 0 40px rgba(0,0,0,0.7); line-height: 1.2; max-width: 900px;">Welcome to Fletcher Moss Tennis</h1>
-        <p class="mobile-hero" style="font-size: 1.6em; color: white; margin-bottom: 45px; line-height: 1.5; text-shadow: 2px 2px 8px rgba(0,0,0,0.9), 0 0 30px rgba(0,0,0,0.7); font-weight: 500; max-width: 800px;">Free community tennis in the heart of Didsbury</p>
-        <div style="display: flex; gap: 18px; justify-content: center; flex-wrap: wrap; max-width: 500px;">
-            <a class="mobile-hero" href="#about" style="background: rgba(255, 255, 255, 0.95); color: #2d5016; padding: 15px 32px; border-radius: 10px; text-decoration: none; font-size: 1.1em; font-weight: 600; transition: transform 0.2s, box-shadow 0.2s; display: inline-block; box-shadow: 0 4px 20px rgba(0,0,0,0.4); flex: 1; min-width: 140px;">Learn More</a>
-            <a class="mobile-hero" href="#join" style="background: rgba(74, 124, 44, 0.95); color: white; padding: 15px 32px; border-radius: 10px; text-decoration: none; font-size: 1.1em; font-weight: 600; transition: transform 0.2s, box-shadow 0.2s; display: inline-block; box-shadow: 0 4px 20px rgba(0,0,0,0.4); flex: 1; min-width: 140px;">Join Now</a>
+    <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 20px; z-index: 10;">
+        <h1 style="font-size: 3.5em; color: white; margin-bottom: 20px; font-weight: 700; text-shadow: 2px 2px 12px rgba(0,0,0,1), 0 0 30px rgba(0,0,0,0.8); line-height: 1.2; max-width: 900px;">Welcome to Fletcher Moss Tennis</h1>
+        <p style="font-size: 1.5em; color: white; margin-bottom: 40px; line-height: 1.4; text-shadow: 2px 2px 10px rgba(0,0,0,1), 0 0 25px rgba(0,0,0,0.8); font-weight: 500; max-width: 700px;">Free community tennis in the heart of Didsbury</p>
+        <div style="display: inline-flex; gap: 15px; flex-wrap: wrap; justify-content: center;">
+            <a href="#about" style="background: rgba(255, 255, 255, 0.95); color: #2d5016; padding: 14px 30px; border-radius: 8px; text-decoration: none; font-size: 1.05em; font-weight: 600; transition: transform 0.2s; display: inline-block; box-shadow: 0 4px 15px rgba(0,0,0,0.4); white-space: nowrap;">Learn More</a>
+            <a href="#join" style="background: #4a7c2c; color: white; padding: 14px 30px; border-radius: 8px; text-decoration: none; font-size: 1.05em; font-weight: 600; transition: transform 0.2s; display: inline-block; box-shadow: 0 4px 15px rgba(0,0,0,0.4); white-space: nowrap;">Join Now</a>
         </div>
     </div>
 </div>
@@ -557,31 +555,26 @@
     /* Mobile hero adjustments */
     @media (max-width: 768px) {
         .mobile-hero {
-            height: 100vh !important;
-            min-height: 600px !important;
-            margin-top: -60px !important;
+            min-height: 100vh !important;
         }
         
         .mobile-hero h1 {
-            font-size: 2em !important;
+            font-size: 2.2em !important;
             margin-bottom: 18px !important;
-            padding: 0 15px;
         }
         
         .mobile-hero p {
-            font-size: 1.15em !important;
+            font-size: 1.2em !important;
             margin-bottom: 35px !important;
-            padding: 0 15px;
         }
         
         .mobile-hero a {
-            padding: 13px 28px !important;
-            font-size: 1em !important;
-            min-width: 130px !important;
+            padding: 13px 26px !important;
+            font-size: 0.95em !important;
         }
         
         .main-container {
-            margin: -40px 15px 80px 15px !important;
+            margin: 40px 15px 80px 15px !important;
         }
     }
 </style>
