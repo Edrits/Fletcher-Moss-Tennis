@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -7,903 +6,897 @@
     <title>Fletcher Moss Tennis Club | Free Social Tennis in Didsbury, Manchester</title>
     <meta name="description" content="Free community tennis in Didsbury at Fletcher Moss Park. Social tennis sessions Monday, Thursday evenings and Saturday mornings. No membership fees, all abilities welcome. South Manchester.">
     <meta name="keywords" content="free tennis didsbury, social tennis manchester, fletcher moss tennis, community tennis south manchester, tennis didsbury, free tennis sessions, social tennis group">
-
-```
-<!-- Open Graph / Social Media -->
-<meta property="og:title" content="Fletcher Moss Tennis Club - Free Social Tennis in Didsbury">
-<meta property="og:description" content="Join our friendly community tennis group in Didsbury. Free sessions, no membership fees, all abilities welcome.">
-<meta property="og:type" content="website">
-<meta property="og:image" content="Remove background project.png">
-
-<!-- Favicon -->
-<link rel="icon" type="image/png" href="Remove background project.png">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Lora:wght@600&display=swap" rel="stylesheet">
-<style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-
-    html {
-        scroll-behavior: smooth;
-    }
-
-    body {
-        font-family: 'Lora', serif;
-        font-weight: 600;
-        line-height: 1.6;
-        color: #333;
-        background: linear-gradient(to bottom, #e8f5e9 0%, #f1f8f4 50%, #ffffff 100%);
-    }
-
-    /* Sticky Top Bar with Complete Fade Out */
-    .top-bar {
-        background: rgba(45, 80, 22, 0.95);
-        padding: 20px 30px;
-        box-shadow: 0 6px 20px rgba(0,0,0,0.35);
-        position: sticky;
-        top: 0;
-        z-index: 1000;
-        transition: opacity 0.6s ease, visibility 0.6s ease, transform 0.6s ease;
-    }
-
-    .top-bar.faded {
-        opacity: 0;
-        visibility: hidden;
-        pointer-events: none;
-        transform: translateY(-20px);
-    }
     
-    /* Hide top bar on scroll for mobile - show hero image */
-    @media (max-width: 768px) {
+    <!-- Open Graph / Social Media -->
+    <meta property="og:title" content="Fletcher Moss Tennis Club - Free Social Tennis in Didsbury">
+    <meta property="og:description" content="Join our friendly community tennis group in Didsbury. Free sessions, no membership fees, all abilities welcome.">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="Remove background project.png">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="Remove background project.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lora:wght@600&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Lora', serif;
+            font-weight: 600;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(to bottom, #e8f5e9 0%, #f1f8f4 50%, #ffffff 100%);
+        }
+
+        /* Sticky Top Bar with Complete Fade Out */
         .top-bar {
-            transition: transform 0.5s ease, opacity 0.5s ease;
+            background: rgba(45, 80, 22, 0.95);
+            padding: 20px 30px;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.35);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            transition: opacity 0.6s ease, visibility 0.6s ease, transform 0.6s ease;
+        }
+
+        .top-bar.faded {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+            transform: translateY(-20px);
         }
         
-        .top-bar.mobile-hidden {
-            transform: translateY(-100%);
-            opacity: 0;
-        }
-    }
-
-    .top-bar-inner {
-        max-width: 1200px;
-        margin: 0 auto;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 20px;
-    }
-
-    .top-bar-left {
-        display: flex;
-        align-items: center;
-        gap: 20px;
-        flex: 1;
-    }
-
-    .top-logo {
-        height: 160px;
-        width: auto;
-        filter: drop-shadow(4px 3px 6px rgba(0,0,0,0.5));
-    }
-
-    .top-title h1 {
-        font-size: 2.2em;
-        font-weight: 700;
-        color: white;
-        margin-bottom: 5px;
-        white-space: nowrap;
-    }
-
-    .top-title p {
-        font-size: 1.2em;
-        color: rgba(255,255,255,0.9);
-        white-space: nowrap;
-    }
-
-    /* Navigation Links */
-    .nav-links {
-        display: flex;
-        gap: 20px;
-        align-items: center;
-        flex-shrink: 0;
-    }
-
-    .nav-links a {
-        color: white;
-        text-decoration: none;
-        font-size: 1em;
-        font-weight: 600;
-        transition: opacity 0.3s, transform 0.2s;
-        white-space: nowrap;
-    }
-
-    .nav-links a:hover {
-        opacity: 0.8;
-        transform: translateY(-2px);
-    }
-
-    /* Main Content Container */
-    .main-container {
-        max-width: 1000px;
-        margin: 60px auto 100px auto;
-        background: rgba(255, 255, 255, 0.98);
-        padding: 60px 40px;
-        border-radius: 20px;
-        box-shadow: 0 15px 50px rgba(0,0,0,0.3);
-    }
-
-    .section { margin-bottom: 60px; }
-    h2 { 
-        font-size: 2.4em; 
-        margin-bottom: 30px; 
-        color: #2d5016; 
-        text-align: center;
-        font-weight: 600;
-    }
-
-    /* Schedule */
-    .schedule-grid { 
-        display: grid; 
-        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); 
-        gap: 20px;
-        margin-bottom: 40px;
-    }
-    
-    .card { 
-        background: linear-gradient(135deg, #f0f4ee 0%, #e8ede4 100%);
-        padding: 30px; 
-        border-radius: 12px; 
-        text-align: center; 
-        border: 2px solid #dce6d8;
-        transition: transform 0.2s, box-shadow 0.2s;
-    }
-    
-    .card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 8px 20px rgba(0,0,0,0.15);
-    }
-    
-    .card h3 {
-        color: #2d5016;
-        font-size: 1.6em;
-        margin-bottom: 10px;
-        font-weight: 600;
-    }
-
-    .card p {
-        font-size: 1.2em;
-    }
-
-    /* Noticeboard - Single Editable Area */
-    .noticeboard {
-        background: linear-gradient(135deg, #f4e4c1 0%, #e8d4a8 100%);
-        border: 8px solid #8b6f47;
-        border-radius: 12px;
-        padding: 30px;
-        position: relative;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-    }
-    
-    .noticeboard h2 {
-        color: #5d4e37;
-        margin-bottom: 20px;
-    }
-    
-    .notice-display {
-        background: white;
-        padding: 25px;
-        border-radius: 8px;
-        min-height: 150px;
-        white-space: pre-wrap;
-        font-size: 1.1em;
-        line-height: 1.8;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    }
-
-    .notice-empty {
-        color: #8b6f47;
-        font-style: italic;
-        text-align: center;
-        padding: 40px;
-    }
-    
-    .admin-panel { 
-        display: none; 
-        background: white; 
-        padding: 25px; 
-        border-radius: 8px; 
-        margin-top: 20px; 
-        border: 2px solid #8b6f47;
-    }
-    
-    .admin-panel.active { display: block; }
-    
-    .admin-panel input { 
-        width: 100%; 
-        padding: 12px; 
-        margin-bottom: 15px;
-        border: 2px solid #ddd;
-        border-radius: 6px;
-        font-family: 'Lora', serif;
-        font-weight: 600;
-        font-size: 1.1em;
-    }
-
-    .admin-panel textarea { 
-        width: 100%; 
-        padding: 12px; 
-        margin-bottom: 15px;
-        border: 2px solid #ddd;
-        border-radius: 6px;
-        font-family: 'Lora', serif;
-        font-weight: 600;
-        font-size: 1.1em;
-        min-height: 200px;
-        resize: vertical;
-    }
-    
-    .btn {
-        background: #4a7c2c;
-        color: white;
-        border: none;
-        padding: 12px 25px;
-        border-radius: 6px;
-        cursor: pointer;
-        font-family: 'Lora', serif;
-        font-weight: 600;
-        font-size: 1.1em;
-        font-weight: 600;
-        transition: background 0.3s;
-    }
-    
-    .btn:hover {
-        background: #3a6c1c;
-    }
-    
-    .btn-secondary {
-        background: #5d4e37;
-        margin-top: 15px;
-    }
-    
-    .btn-secondary:hover {
-        background: #4a3d2a;
-    }
-
-    /* Weather Widget */
-    .weather-container {
-        background: linear-gradient(135deg, #87CEEB 0%, #4682B4 100%);
-        padding: 30px;
-        border-radius: 12px;
-        color: white;
-        text-align: center;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-    }
-    
-    .weather-container h3 {
-        font-size: 2em;
-        margin-bottom: 20px;
-        color: white;
-        font-weight: 600;
-    }
-    
-    .weather-info {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-        gap: 20px;
-        margin-top: 20px;
-    }
-    
-    .weather-card {
-        background: rgba(255,255,255,0.2);
-        backdrop-filter: blur(10px);
-        padding: 20px;
-        border-radius: 10px;
-        border: 1px solid rgba(255,255,255,0.3);
-    }
-    
-    .weather-card h4 {
-        font-size: 1em;
-        margin-bottom: 10px;
-        opacity: 0.9;
-    }
-    
-    .weather-card p {
-        font-size: 2em;
-        font-weight: 700;
-    }
-
-    /* Map */
-    .map-frame {
-        width: 100%;
-        height: 450px;
-        border-radius: 12px;
-        border: 3px solid #2d5016;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-    }
-
-    /* QR Section */
-    .qr-area {
-        text-align: center;
-        background: #f9f9f9;
-        padding: 40px;
-        border-radius: 12px;
-    }
-    
-    .qr-placeholder {
-        width: 250px;
-        height: 250px;
-        margin: 20px auto;
-        border: 3px dashed #ccc;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        background: white;
-        color: #999;
-        border-radius: 12px;
-        font-size: 1.1em;
-    }
-
-    /* Info boxes */
-    .info-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-        gap: 25px;
-        margin-bottom: 30px;
-    }
-    
-    .info-box {
-        background: #f8f9fa;
-        padding: 25px;
-        border-radius: 12px;
-        border-left: 4px solid #4a7c2c;
-    }
-    
-    .info-box h3 {
-        color: #2d5016;
-        margin-bottom: 12px;
-        font-size: 1.4em;
-        font-weight: 600;
-    }
-
-    .info-box p {
-        font-size: 1.1em;
-    }
-
-    .note-box {
-        background: #fff3cd;
-        border-left: 4px solid #ffc107;
-        padding: 20px;
-        border-radius: 8px;
-        margin: 25px 0;
-    }
-    
-    .note-box p {
-        color: #856404;
-        margin: 0;
-        font-size: 1.1em;
-    }
-
-    footer { 
-        background: #2d5016; 
-        color: white; 
-        text-align: center; 
-        padding: 50px 20px; 
-    }
-    
-    .footer-logo {
-        height: 140px;
-        width: auto;
-        margin-bottom: 25px;
-        filter: drop-shadow(4px 3px 6px rgba(0,0,0,0.5));
-    }
-    
-    footer p {
-        opacity: 0.9;
-        font-size: 1.1em;
-    }
-
-    /* Mobile adjustments */
-    @media (max-width: 768px) {
-        body {
-            /* Remove fixed attachment on mobile for better performance */
-            background-attachment: scroll;
-        }
-
-        .top-bar {
-            padding: 15px 20px;
+        /* Hide top bar on scroll for mobile - show hero image */
+        @media (max-width: 768px) {
+            .top-bar {
+                transition: transform 0.5s ease, opacity 0.5s ease;
+            }
+            
+            .top-bar.mobile-hidden {
+                transform: translateY(-100%);
+                opacity: 0;
+            }
         }
 
         .top-bar-inner {
-            flex-direction: column;
-            text-align: center;
-            gap: 15px;
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
         }
 
         .top-bar-left {
-            flex-direction: column;
-        }
-
-        .nav-links {
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 15px;
-        }
-
-        .nav-links a {
-            font-size: 0.95em;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            flex: 1;
         }
 
         .top-logo {
-            height: 110px;
-        }
-
-        .footer-logo {
-            height: 100px;
+            height: 160px;
+            width: auto;
+            filter: drop-shadow(4px 3px 6px rgba(0,0,0,0.5));
         }
 
         .top-title h1 {
-            font-size: 1.8em;
+            font-size: 2.2em;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 5px;
+            white-space: nowrap;
         }
 
         .top-title p {
+            font-size: 1.2em;
+            color: rgba(255,255,255,0.9);
+            white-space: nowrap;
+        }
+
+        /* Navigation Links */
+        .nav-links {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            flex-shrink: 0;
+        }
+
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            font-size: 1em;
+            font-weight: 600;
+            transition: opacity 0.3s, transform 0.2s;
+            white-space: nowrap;
+        }
+
+        .nav-links a:hover {
+            opacity: 0.8;
+            transform: translateY(-2px);
+        }
+
+        /* Main Content Container */
+        .main-container {
+            max-width: 1000px;
+            margin: 60px auto 100px auto;
+            background: rgba(255, 255, 255, 0.98);
+            padding: 60px 40px;
+            border-radius: 20px;
+            box-shadow: 0 15px 50px rgba(0,0,0,0.3);
+        }
+
+        .section { margin-bottom: 60px; }
+        h2 { 
+            font-size: 2.4em; 
+            margin-bottom: 30px; 
+            color: #2d5016; 
+            text-align: center;
+            font-weight: 600;
+        }
+
+        /* Schedule */
+        .schedule-grid { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); 
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+        
+        .card { 
+            background: linear-gradient(135deg, #f0f4ee 0%, #e8ede4 100%);
+            padding: 30px; 
+            border-radius: 12px; 
+            text-align: center; 
+            border: 2px solid #dce6d8;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+        }
+        
+        .card h3 {
+            color: #2d5016;
+            font-size: 1.6em;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .card p {
+            font-size: 1.2em;
+        }
+
+        /* Noticeboard - Single Editable Area */
+        .noticeboard {
+            background: linear-gradient(135deg, #f4e4c1 0%, #e8d4a8 100%);
+            border: 8px solid #8b6f47;
+            border-radius: 12px;
+            padding: 30px;
+            position: relative;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        
+        .noticeboard h2 {
+            color: #5d4e37;
+            margin-bottom: 20px;
+        }
+        
+        .notice-display {
+            background: white;
+            padding: 25px;
+            border-radius: 8px;
+            min-height: 150px;
+            white-space: pre-wrap;
+            font-size: 1.1em;
+            line-height: 1.8;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .notice-empty {
+            color: #8b6f47;
+            font-style: italic;
+            text-align: center;
+            padding: 40px;
+        }
+        
+        .admin-panel { 
+            display: none; 
+            background: white; 
+            padding: 25px; 
+            border-radius: 8px; 
+            margin-top: 20px; 
+            border: 2px solid #8b6f47;
+        }
+        
+        .admin-panel.active { display: block; }
+        
+        .admin-panel input { 
+            width: 100%; 
+            padding: 12px; 
+            margin-bottom: 15px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            font-family: 'Lora', serif;
+            font-weight: 600;
             font-size: 1.1em;
         }
 
-        /* More breathing room on mobile */
-        .main-container { 
-            padding: 40px 20px; 
-            margin: 80px 15px 80px 15px;
-            /* Slightly more transparent to show background */
-            background: rgba(255, 255, 255, 0.96);
+        .admin-panel textarea { 
+            width: 100%; 
+            padding: 12px; 
+            margin-bottom: 15px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            font-family: 'Lora', serif;
+            font-weight: 600;
+            font-size: 1.1em;
+            min-height: 200px;
+            resize: vertical;
+        }
+        
+        .btn {
+            background: #4a7c2c;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-family: 'Lora', serif;
+            font-weight: 600;
+            font-size: 1.1em;
+            font-weight: 600;
+            transition: background 0.3s;
+        }
+        
+        .btn:hover {
+            background: #3a6c1c;
+        }
+        
+        .btn-secondary {
+            background: #5d4e37;
+            margin-top: 15px;
+        }
+        
+        .btn-secondary:hover {
+            background: #4a3d2a;
         }
 
-        h2 {
-            font-size: 1.8em;
+        /* Weather Widget */
+        .weather-container {
+            background: linear-gradient(135deg, #87CEEB 0%, #4682B4 100%);
+            padding: 30px;
+            border-radius: 12px;
+            color: white;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
         }
-
-        /* Hero section mobile adjustments */
-        /* Removed - now using inline mobile-hero class */
-
-        /* About section mobile */
-        .about-section {
-            padding: 30px 20px !important;
-            margin-bottom: 30px !important;
+        
+        .weather-container h3 {
+            font-size: 2em;
+            margin-bottom: 20px;
+            color: white;
+            font-weight: 600;
         }
-
-        .about-section h2 {
-            font-size: 1.9em !important;
-        }
-
-        /* Info tiles stack nicely */
-        .about-section > div:last-child {
-            grid-template-columns: 1fr !important;
-        }
-
-        /* Add spacing between sections to show background */
-        .section {
-            margin-bottom: 40px !important;
-        }
-
-        /* Weather cards stack better */
+        
         .weather-info {
-            grid-template-columns: 1fr !important;
-            gap: 15px !important;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .weather-card {
+            background: rgba(255,255,255,0.2);
+            backdrop-filter: blur(10px);
+            padding: 20px;
+            border-radius: 10px;
+            border: 1px solid rgba(255,255,255,0.3);
+        }
+        
+        .weather-card h4 {
+            font-size: 1em;
+            margin-bottom: 10px;
+            opacity: 0.9;
+        }
+        
+        .weather-card p {
+            font-size: 2em;
+            font-weight: 700;
         }
 
-        /* Schedule cards */
-        .schedule-grid {
-            grid-template-columns: 1fr !important;
-            gap: 15px !important;
+        /* Map */
+        .map-frame {
+            width: 100%;
+            height: 450px;
+            border-radius: 12px;
+            border: 3px solid #2d5016;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
         }
 
-        /* Less padding on cards for mobile */
-        .card {
-            padding: 20px !important;
-        }
-
-        /* QR section */
+        /* QR Section */
         .qr-area {
-            padding: 25px 15px !important;
+            text-align: center;
+            background: #f9f9f9;
+            padding: 40px;
+            border-radius: 12px;
         }
-    }
-</style>
-```
+        
+        .qr-placeholder {
+            width: 250px;
+            height: 250px;
+            margin: 20px auto;
+            border: 3px dashed #ccc;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: white;
+            color: #999;
+            border-radius: 12px;
+            font-size: 1.1em;
+        }
 
+        /* Info boxes */
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+        
+        .info-box {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 12px;
+            border-left: 4px solid #4a7c2c;
+        }
+        
+        .info-box h3 {
+            color: #2d5016;
+            margin-bottom: 12px;
+            font-size: 1.4em;
+            font-weight: 600;
+        }
+
+        .info-box p {
+            font-size: 1.1em;
+        }
+
+        .note-box {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 25px 0;
+        }
+        
+        .note-box p {
+            color: #856404;
+            margin: 0;
+            font-size: 1.1em;
+        }
+
+        footer { 
+            background: #2d5016; 
+            color: white; 
+            text-align: center; 
+            padding: 50px 20px; 
+        }
+        
+        .footer-logo {
+            height: 140px;
+            width: auto;
+            margin-bottom: 25px;
+            filter: drop-shadow(4px 3px 6px rgba(0,0,0,0.5));
+        }
+        
+        footer p {
+            opacity: 0.9;
+            font-size: 1.1em;
+        }
+
+        /* Mobile adjustments */
+        @media (max-width: 768px) {
+            body {
+                /* Remove fixed attachment on mobile for better performance */
+                background-attachment: scroll;
+            }
+
+            .top-bar {
+                padding: 15px 20px;
+            }
+
+            .top-bar-inner {
+                flex-direction: column;
+                text-align: center;
+                gap: 15px;
+            }
+
+            .top-bar-left {
+                flex-direction: column;
+            }
+
+            .nav-links {
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 15px;
+            }
+
+            .nav-links a {
+                font-size: 0.95em;
+            }
+
+            .top-logo {
+                height: 110px;
+            }
+
+            .footer-logo {
+                height: 100px;
+            }
+
+            .top-title h1 {
+                font-size: 1.8em;
+            }
+
+            .top-title p {
+                font-size: 1.1em;
+            }
+
+            /* More breathing room on mobile */
+            .main-container { 
+                padding: 40px 20px; 
+                margin: 80px 15px 80px 15px;
+                /* Slightly more transparent to show background */
+                background: rgba(255, 255, 255, 0.96);
+            }
+
+            h2 {
+                font-size: 1.8em;
+            }
+
+            /* Hero section mobile adjustments */
+            /* Removed - now using inline mobile-hero class */
+
+            /* About section mobile */
+            .about-section {
+                padding: 30px 20px !important;
+                margin-bottom: 30px !important;
+            }
+
+            .about-section h2 {
+                font-size: 1.9em !important;
+            }
+
+            /* Info tiles stack nicely */
+            .about-section > div:last-child {
+                grid-template-columns: 1fr !important;
+            }
+
+            /* Add spacing between sections to show background */
+            .section {
+                margin-bottom: 40px !important;
+            }
+
+            /* Weather cards stack better */
+            .weather-info {
+                grid-template-columns: 1fr !important;
+                gap: 15px !important;
+            }
+
+            /* Schedule cards */
+            .schedule-grid {
+                grid-template-columns: 1fr !important;
+                gap: 15px !important;
+            }
+
+            /* Less padding on cards for mobile */
+            .card {
+                padding: 20px !important;
+            }
+
+            /* QR section */
+            .qr-area {
+                padding: 25px 15px !important;
+            }
+        }
+    </style>
 </head>
 <body>
 
-```
-<header class="top-bar" id="topBar">
-    <div class="top-bar-inner">
-        <div class="top-bar-left">
-            <img src="Remove background project.png" alt="Fletcher Moss Tennis Club - Free Social Tennis in Didsbury Manchester" class="top-logo">
-            <div class="top-title">
-                <h1>🎾 Fletcher Moss Tennis Club</h1>
-                <p>Didsbury Social Tennis</p>
+    <header class="top-bar" id="topBar">
+        <div class="top-bar-inner">
+            <div class="top-bar-left">
+                <img src="Remove background project.png" alt="Fletcher Moss Tennis Club - Free Social Tennis in Didsbury Manchester" class="top-logo">
+                <div class="top-title">
+                    <h1>🎾 Fletcher Moss Tennis Club</h1>
+                    <p>Didsbury Social Tennis</p>
+                </div>
+            </div>
+            <nav class="nav-links">
+                <a href="#about">About</a>
+                <a href="#sessions">Sessions</a>
+                <a href="#noticeboard">Noticeboard</a>
+                <a href="#weather">Weather</a>
+                <a href="#join">Join</a>
+                <a href="#location">Location</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Full Screen Hero with Image -->
+    <div class="mobile-hero" style="position: relative; width: 100%; height: 100vh; min-height: 100vh; overflow: hidden;">
+        <!-- Background Image -->
+        <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-image: url('courts-drone-aerial.jpg'); background-size: cover; background-position: center center; background-repeat: no-repeat;"></div>
+        
+        <!-- Dark Overlay -->
+        <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(to bottom, rgba(0,0,0,0.35) 0%, rgba(0,0,0,0.55) 100%);"></div>
+        
+        <!-- Content -->
+        <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 20px; z-index: 10;">
+            <h1 style="font-size: 3.5em; color: white; margin-bottom: 20px; font-weight: 700; text-shadow: 2px 2px 12px rgba(0,0,0,1), 0 0 30px rgba(0,0,0,0.8); line-height: 1.2; max-width: 900px;">Welcome to Fletcher Moss Tennis</h1>
+            <p style="font-size: 1.5em; color: white; margin-bottom: 40px; line-height: 1.4; text-shadow: 2px 2px 10px rgba(0,0,0,1), 0 0 25px rgba(0,0,0,0.8); font-weight: 500; max-width: 700px;">Free community tennis in the heart of Didsbury</p>
+            <div style="display: inline-flex; gap: 15px; flex-wrap: wrap; justify-content: center;">
+                <a href="#about" style="background: rgba(255, 255, 255, 0.95); color: #2d5016; padding: 14px 30px; border-radius: 8px; text-decoration: none; font-size: 1.05em; font-weight: 600; transition: transform 0.2s; display: inline-block; box-shadow: 0 4px 15px rgba(0,0,0,0.4); white-space: nowrap;">Learn More</a>
+                <a href="#join" style="background: #4a7c2c; color: white; padding: 14px 30px; border-radius: 8px; text-decoration: none; font-size: 1.05em; font-weight: 600; transition: transform 0.2s; display: inline-block; box-shadow: 0 4px 15px rgba(0,0,0,0.4); white-space: nowrap;">Join Now</a>
             </div>
         </div>
-        <nav class="nav-links">
-            <a href="#about">About</a>
-            <a href="#sessions">Sessions</a>
-            <a href="#noticeboard">Noticeboard</a>
-            <a href="#weather">Weather</a>
-            <a href="#join">Join</a>
-            <a href="#location">Location</a>
-        </nav>
     </div>
-</header>
 
-<!-- Full Screen Hero with Image -->
-<div class="mobile-hero" style="position: relative; width: 100%; height: 100vh; min-height: 100vh; overflow: hidden;">
-    <!-- Background Image -->
-    <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-image: url('courts-drone-aerial.jpg'); background-size: cover; background-position: center center; background-repeat: no-repeat;"></div>
-    
-    <!-- Dark Overlay -->
-    <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(to bottom, rgba(0,0,0,0.35) 0%, rgba(0,0,0,0.55) 100%);"></div>
-    
-    <!-- Content -->
-    <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 20px; z-index: 10;">
-        <h1 style="font-size: 3.5em; color: white; margin-bottom: 20px; font-weight: 700; text-shadow: 2px 2px 12px rgba(0,0,0,1), 0 0 30px rgba(0,0,0,0.8); line-height: 1.2; max-width: 900px;">Welcome to Fletcher Moss Tennis</h1>
-        <p style="font-size: 1.5em; color: white; margin-bottom: 40px; line-height: 1.4; text-shadow: 2px 2px 10px rgba(0,0,0,1), 0 0 25px rgba(0,0,0,0.8); font-weight: 500; max-width: 700px;">Free community tennis in the heart of Didsbury</p>
-        <div style="display: inline-flex; gap: 15px; flex-wrap: wrap; justify-content: center;">
-            <a href="#about" style="background: rgba(255, 255, 255, 0.95); color: #2d5016; padding: 14px 30px; border-radius: 8px; text-decoration: none; font-size: 1.05em; font-weight: 600; transition: transform 0.2s; display: inline-block; box-shadow: 0 4px 15px rgba(0,0,0,0.4); white-space: nowrap;">Learn More</a>
-            <a href="#join" style="background: #4a7c2c; color: white; padding: 14px 30px; border-radius: 8px; text-decoration: none; font-size: 1.05em; font-weight: 600; transition: transform 0.2s; display: inline-block; box-shadow: 0 4px 15px rgba(0,0,0,0.4); white-space: nowrap;">Join Now</a>
-        </div>
-    </div>
-</div>
-
-<div class="main-container">
-    
-    <div class="section" id="about">
-        <div class="about-section" style="background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%); padding: 40px; border-radius: 16px; border-left: 6px solid #4a7c2c; box-shadow: 0 4px 15px rgba(0,0,0,0.1); margin-bottom: 50px;">
-            <h2 style="margin-bottom: 25px; font-size: 2.2em;">Free Social Tennis in Didsbury!</h2>
-            
-            <div style="background: white; padding: 30px; border-radius: 12px; margin-bottom: 25px; box-shadow: 0 2px 10px rgba(0,0,0,0.05);">
-                <div style="display: flex; align-items: center; gap: 25px; flex-wrap: wrap; justify-content: space-between; margin-bottom: 15px;">
-                    <h3 style="color: #2d5016; font-size: 1.5em; font-weight: 600; flex: 1; min-width: 200px;">About Us</h3>
-                    <img src="MCRactive_Portrait_Logo.jpg" alt="McrActive Logo" style="height: 80px; width: auto;">
+    <div class="main-container">
+        
+        <div class="section" id="about">
+            <div class="about-section" style="background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%); padding: 40px; border-radius: 16px; border-left: 6px solid #4a7c2c; box-shadow: 0 4px 15px rgba(0,0,0,0.1); margin-bottom: 50px;">
+                <h2 style="margin-bottom: 25px; font-size: 2.2em;">Free Social Tennis in Didsbury!</h2>
+                
+                <div style="background: white; padding: 30px; border-radius: 12px; margin-bottom: 25px; box-shadow: 0 2px 10px rgba(0,0,0,0.05);">
+                    <div style="display: flex; align-items: center; gap: 25px; flex-wrap: wrap; justify-content: space-between; margin-bottom: 15px;">
+                        <h3 style="color: #2d5016; font-size: 1.5em; font-weight: 600; flex: 1; min-width: 200px;">About Us</h3>
+                        <img src="MCRactive_Portrait_Logo.jpg" alt="McrActive Logo" style="height: 80px; width: auto;">
+                    </div>
+                    <p style="font-size: 1.15em; line-height: 1.8; color: #555;">
+                        Community-run tennis organized by volunteers who give their time freely, supported by 
+                        <a href="https://mcractive.com/" target="_blank" style="color: #4a7c2c; font-weight: 600; text-decoration: none; border-bottom: 2px solid #4a7c2c;">McrActive</a> 
+                        to provide accessible tennis for Didsbury and South Manchester. An inclusive, friendly environment where fun and social connection are at the heart of every session.
+                    </p>
                 </div>
-                <p style="font-size: 1.15em; line-height: 1.8; color: #555;">
-                    Community-run tennis organised by volunteers who give their time freely, supported by 
-                    <a href="https://mcractive.com/" target="_blank" style="color: #4a7c2c; font-weight: 600; text-decoration: none; border-bottom: 2px solid #4a7c2c;">McrActive</a> 
-                    to provide accessible tennis for Didsbury and South Manchester. An inclusive, friendly environment where fun and social connection are at the heart of every session.
+
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 20px;">
+                    <div style="background: white; padding: 25px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
+                        <div style="font-size: 2em; margin-bottom: 10px;">🤝</div>
+                        <h4 style="color: #2d5016; margin-bottom: 10px; font-size: 1.2em; font-weight: 600;">Sociable & Inclusive</h4>
+                        <p style="color: #666; font-size: 1.05em;">Warm, friendly atmosphere where everyone's welcome. Random partnering keeps things fresh and helps you meet new people.</p>
+                    </div>
+                    
+                    <div style="background: white; padding: 25px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
+                        <div style="font-size: 2em; margin-bottom: 10px;">🎉</div>
+                        <h4 style="color: #2d5016; margin-bottom: 10px; font-size: 1.2em; font-weight: 600;">Fun-Focused</h4>
+                        <p style="color: #666; font-size: 1.05em;">Play without pressure in a supportive, non-judgmental setting. Perfect for practicing and improving while enjoying the game.</p>
+                    </div>
+                    
+                    <div style="background: white; padding: 25px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
+                        <div style="font-size: 2em; margin-bottom: 10px;">🌳</div>
+                        <h4 style="color: #2d5016; margin-bottom: 10px; font-size: 1.2em; font-weight: 600;">Beautiful Location</h4>
+                        <p style="color: #666; font-size: 1.05em;">Set in the lovely surroundings of Fletcher Moss Park - a great way to exercise, unwind, and enjoy nature.</p>
+                    </div>
+                    
+                    <div style="background: white; padding: 25px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
+                        <div style="font-size: 2em; margin-bottom: 10px;">💰</div>
+                        <h4 style="color: #2d5016; margin-bottom: 10px; font-size: 1.2em; font-weight: 600;">No Fees or Contracts</h4>
+                        <p style="color: #666; font-size: 1.05em;">No membership fees or contracts. Just community contributions to equipment and balls to keep the group running.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="section" id="sessions">
+            <h2>Session Times</h2>
+            <div class="schedule-grid">
+                <div class="card"><h3>Monday</h3><p>6:00 PM - 8:00 PM</p></div>
+                <div class="card"><h3>Thursday</h3><p>6:00 PM - 8:00 PM</p></div>
+                <div class="card"><h3>Saturday</h3><p>11:00 AM - 1:00 PM</p></div>
+            </div>
+        </div>
+        
+        <div class="section" id="noticeboard">
+            <div class="noticeboard">
+                <h2>📋 Noticeboard</h2>
+                <div id="noticeDisplay" class="notice-display notice-empty">
+                    No current updates - check back soon!
+                </div>
+                <button class="btn btn-secondary" onclick="toggleAdmin()">🔐 Admin Edit</button>
+                
+                <div id="adminPanel" class="admin-panel">
+                    <h3 style="color: #2d5016; margin-bottom: 15px; font-size: 1.4em;">Edit Noticeboard</h3>
+                    <input type="password" id="adminPass" placeholder="Enter admin password">
+                    <textarea id="noticeText" placeholder="Type your noticeboard content here..."></textarea>
+                    <button class="btn" onclick="saveNotice()">Save Changes</button>
+                    <button class="btn" style="background: #999; margin-left: 10px;" onclick="toggleAdmin()">Cancel</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="section" id="weather">
+            <h2>🌤️ Court Weather Check</h2>
+            <div class="weather-container">
+                <h3>Didsbury Conditions</h3>
+                <p style="font-size: 1.2em; opacity: 0.9;">Check the weather before heading to the courts!</p>
+                <div class="weather-info">
+                    <div class="weather-card">
+                        <h4>Temperature</h4>
+                        <p id="temp">--°C</p>
+                    </div>
+                    <div class="weather-card">
+                        <h4>Conditions</h4>
+                        <p id="conditions" style="font-size: 1.6em;">--</p>
+                    </div>
+                    <div class="weather-card">
+                        <h4>Rain Chance</h4>
+                        <p id="rain">--%</p>
+                    </div>
+                </div>
+                <p style="margin-top: 20px; font-size: 1em; opacity: 0.8;">
+                    <a href="https://www.metoffice.gov.uk/weather/forecast/gcw2m68e2" target="_blank" style="color: white; text-decoration: underline;">View detailed forecast →</a>
                 </p>
             </div>
+        </div>
 
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 20px;">
-                <div style="background: white; padding: 25px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
-                    <div style="font-size: 2em; margin-bottom: 10px;">🤝</div>
-                    <h4 style="color: #2d5016; margin-bottom: 10px; font-size: 1.2em; font-weight: 600;">Sociable & Inclusive</h4>
-                    <p style="color: #666; font-size: 1.05em;">Warm, friendly atmosphere where everyone's welcome. Random partnering keeps things fresh and helps you meet new people.</p>
+        <div class="section">
+            <h2>How It Works</h2>
+            <div class="info-grid">
+                <div class="info-box">
+                    <h3>1. Join WhatsApp Group</h3>
+                    <p>All coordination happens via WhatsApp. Scan the QR code below to request access.</p>
                 </div>
-                
-                <div style="background: white; padding: 25px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
-                    <div style="font-size: 2em; margin-bottom: 10px;">🎉</div>
-                    <h4 style="color: #2d5016; margin-bottom: 10px; font-size: 1.2em; font-weight: 600;">Fun-Focused</h4>
-                    <p style="color: #666; font-size: 1.05em;">Play without pressure in a supportive, non-judgmental setting. Perfect for practicing and improving while enjoying the game.</p>
-                </div>
-                
-                <div style="background: white; padding: 25px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
-                    <div style="font-size: 2em; margin-bottom: 10px;">🌳</div>
-                    <h4 style="color: #2d5016; margin-bottom: 10px; font-size: 1.2em; font-weight: 600;">Beautiful Location</h4>
-                    <p style="color: #666; font-size: 1.05em;">Set in the lovely surroundings of Fletcher Moss Park - a great way to exercise, unwind, and enjoy nature.</p>
-                </div>
-                
-                <div style="background: white; padding: 25px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
-                    <div style="font-size: 2em; margin-bottom: 10px;">💰</div>
-                    <h4 style="color: #2d5016; margin-bottom: 10px; font-size: 1.2em; font-weight: 600;">No Fees or Contracts</h4>
-                    <p style="color: #666; font-size: 1.05em;">No membership fees or contracts. Just community contributions to equipment and balls to keep the group running.</p>
+                <div class="info-box">
+                    <h3>2. £5 Contribution</h3>
+                    <p>Payment is to cover new tennis balls (may be collected every 3-6 months as needed).</p>
                 </div>
             </div>
-        </div>
-    </div>
-    
-    <div class="section" id="sessions">
-        <h2>Session Times</h2>
-        <div class="schedule-grid">
-            <div class="card"><h3>Monday</h3><p>6:00 PM - 8:00 PM</p></div>
-            <div class="card"><h3>Thursday</h3><p>6:00 PM - 8:00 PM</p></div>
-            <div class="card"><h3>Saturday</h3><p>11:00 AM - 1:00 PM</p></div>
-        </div>
-    </div>
-    
-    <div class="section" id="noticeboard">
-        <div class="noticeboard">
-            <h2>📋 Noticeboard</h2>
-            <div id="noticeDisplay" class="notice-display notice-empty">
-                No current updates - check back soon!
-            </div>
-            <button class="btn btn-secondary" onclick="toggleAdmin()">🔐 Admin Edit</button>
             
-            <div id="adminPanel" class="admin-panel">
-                <h3 style="color: #2d5016; margin-bottom: 15px; font-size: 1.4em;">Edit Noticeboard</h3>
-                <input type="password" id="adminPass" placeholder="Enter admin password">
-                <textarea id="noticeText" placeholder="Type your noticeboard content here..."></textarea>
-                <button class="btn" onclick="saveNotice()">Save Changes</button>
-                <button class="btn" style="background: #999; margin-left: 10px;" onclick="toggleAdmin()">Cancel</button>
+            <div class="note-box">
+                <p><strong>Skill Level:</strong> We welcome intermediate to advanced players. Beginners are advised to get some lessons first to feel comfortable with the basics before requesting to join.</p>
             </div>
         </div>
-    </div>
 
-    <div class="section" id="weather">
-        <h2>🌤️ Court Weather Check</h2>
-        <div class="weather-container">
-            <h3>Didsbury Conditions</h3>
-            <p style="font-size: 1.2em; opacity: 0.9;">Check the weather before heading to the courts!</p>
-            <div class="weather-info">
-                <div class="weather-card">
-                    <h4>Temperature</h4>
-                    <p id="temp">--°C</p>
-                </div>
-                <div class="weather-card">
-                    <h4>Conditions</h4>
-                    <p id="conditions" style="font-size: 1.6em;">--</p>
-                </div>
-                <div class="weather-card">
-                    <h4>Rain Chance</h4>
-                    <p id="rain">--%</p>
-                </div>
+        <div class="section" id="join">
+            <div class="qr-area">
+                <h2>📱 Join Our WhatsApp Group</h2>
+                <p style="color: #666; margin-bottom: 10px; font-size: 1.1em;">Scan to request access and get session updates</p>
+                <img src="Signup QR code.jpg" alt="WhatsApp Group QR Code" style="width: 250px; height: 250px; margin: 20px auto; display: block; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
             </div>
-            <p style="margin-top: 20px; font-size: 1em; opacity: 0.8;">
-                <a href="https://www.metoffice.gov.uk/weather/forecast/gcw2m68e2" target="_blank" style="color: white; text-decoration: underline;">View detailed forecast →</a>
+        </div>
+
+        <div class="section" id="location">
+            <h2>📍 Find the Courts</h2>
+            <p style="text-align: center; margin-bottom: 20px; font-size: 1.2em;">
+                <strong>Fletcher Moss Park Tennis Courts</strong><br>
+                Didsbury, Manchester M20 2SW
             </p>
+            <iframe 
+                class="map-frame"
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2376.820484!2d-2.232408!3d53.409915!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x487bb3cc8f53704f%3A0xc3f60f85461937f2!2sFletcher%20Moss%20Tennis%20Courts!5e0!3m2!1sen!2suk!4v1735078000000!5m2!1sen!2suk"
+                allowfullscreen
+                loading="lazy"
+                referrerpolicy="no-referrer-when-downgrade">
+            </iframe>
         </div>
+
     </div>
 
-    <div class="section">
-        <h2>How It Works</h2>
-        <div class="info-grid">
-            <div class="info-box">
-                <h3>1. Join WhatsApp Group</h3>
-                <p>All coordination happens via WhatsApp. Scan the QR code below to request access.</p>
-            </div>
-            <div class="info-box">
-                <h3>2. £5 Contribution</h3>
-                <p>Payment is to cover new tennis balls (may be collected every 3-6 months as needed).</p>
-            </div>
+    <footer>
+        <div style="display: flex; align-items: center; justify-content: center; gap: 40px; flex-wrap: wrap; margin-bottom: 25px;">
+            <img src="Remove background project.png" alt="Fletcher Moss Tennis Club Logo - Free Social Tennis Didsbury" class="footer-logo">
+            <img src="MCRactive_Portrait_Logo.jpg" alt="McrActive - Supporting Community Sports" style="height: 140px; width: auto; filter: drop-shadow(4px 3px 6px rgba(0,0,0,0.5));">
         </div>
-        
-        <div class="note-box">
-            <p><strong>Skill Level:</strong> We welcome intermediate to advanced players. Beginners are advised to get some lessons first to feel comfortable with the basics before requesting to join.</p>
-        </div>
-    </div>
+        <p><strong>Fletcher Moss Tennis Club</strong></p>
+        <p style="margin-top: 10px; font-size: 1em;">Hope to see you on the court soon!</p>
+    </footer>
 
-    <div class="section" id="join">
-        <div class="qr-area">
-            <h2>📱 Join Our WhatsApp Group</h2>
-            <p style="color: #666; margin-bottom: 10px; font-size: 1.1em;">Scan to request access and get session updates</p>
-            <img src="Signup QR code.jpg" alt="WhatsApp Group QR Code" style="width: 250px; height: 250px; margin: 20px auto; display: block; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
-        </div>
-    </div>
-
-    <div class="section" id="location">
-        <h2>📍 Find the Courts</h2>
-        <p style="text-align: center; margin-bottom: 20px; font-size: 1.2em;">
-            <strong>Fletcher Moss Park Tennis Courts</strong><br>
-            Didsbury, Manchester M20 2SW
-        </p>
-        <iframe 
-            class="map-frame"
-            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2376.820484!2d-2.232408!3d53.409915!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x487bb3cc8f53704f%3A0xc3f60f85461937f2!2sFletcher%20Moss%20Tennis%20Courts!5e0!3m2!1sen!2suk!4v1735078000000!5m2!1sen!2suk"
-            allowfullscreen
-            loading="lazy"
-            referrerpolicy="no-referrer-when-downgrade">
-        </iframe>
-    </div>
-
-</div>
-
-<footer>
-    <div style="display: flex; align-items: center; justify-content: center; gap: 40px; flex-wrap: wrap; margin-bottom: 25px;">
-        <img src="Remove background project.png" alt="Fletcher Moss Tennis Club Logo - Free Social Tennis Didsbury" class="footer-logo">
-        <img src="MCRactive_Portrait_Logo.jpg" alt="McrActive - Supporting Community Sports" style="height: 140px; width: auto; filter: drop-shadow(4px 3px 6px rgba(0,0,0,0.5));">
-    </div>
-    <p><strong>Fletcher Moss Tennis Club</strong></p>
-    <p style="margin-top: 10px; font-size: 1em;">Hope to see you on the court soon!</p>
-</footer>
-
-<!-- Structured Data for Local Business SEO -->
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "SportsActivityLocation",
-  "name": "Fletcher Moss Tennis Club",
-  "description": "Free community-run social tennis group in Didsbury, South Manchester. No membership fees.",
-  "url": "https://fletcher-moss-tennis.vercel.app",
-  "telephone": "",
-  "address": {
-    "@type": "PostalAddress",
-    "streetAddress": "Fletcher Moss Park",
-    "addressLocality": "Didsbury",
-    "addressRegion": "Manchester",
-    "postalCode": "M20 2SW",
-    "addressCountry": "GB"
-  },
-  "geo": {
-    "@type": "GeoCoordinates",
-    "latitude": "53.40991468235338",
-    "longitude": "-2.229813496534618"
-  },
-  "openingHoursSpecification": [
+    <!-- Structured Data for Local Business SEO -->
+    <script type="application/ld+json">
     {
-      "@type": "OpeningHoursSpecification",
-      "dayOfWeek": "Monday",
-      "opens": "18:00",
-      "closes": "20:00"
-    },
-    {
-      "@type": "OpeningHoursSpecification",
-      "dayOfWeek": "Thursday",
-      "opens": "18:00",
-      "closes": "20:00"
-    },
-    {
-      "@type": "OpeningHoursSpecification",
-      "dayOfWeek": "Saturday",
-      "opens": "11:00",
-      "closes": "13:00"
+      "@context": "https://schema.org",
+      "@type": "SportsActivityLocation",
+      "name": "Fletcher Moss Tennis Club",
+      "description": "Free community-run social tennis group in Didsbury, South Manchester. No membership fees.",
+      "url": "https://fletcher-moss-tennis.vercel.app",
+      "telephone": "",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "Fletcher Moss Park",
+        "addressLocality": "Didsbury",
+        "addressRegion": "Manchester",
+        "postalCode": "M20 2SW",
+        "addressCountry": "GB"
+      },
+      "geo": {
+        "@type": "GeoCoordinates",
+        "latitude": "53.40991468235338",
+        "longitude": "-2.229813496534618"
+      },
+      "openingHoursSpecification": [
+        {
+          "@type": "OpeningHoursSpecification",
+          "dayOfWeek": "Monday",
+          "opens": "18:00",
+          "closes": "20:00"
+        },
+        {
+          "@type": "OpeningHoursSpecification",
+          "dayOfWeek": "Thursday",
+          "opens": "18:00",
+          "closes": "20:00"
+        },
+        {
+          "@type": "OpeningHoursSpecification",
+          "dayOfWeek": "Saturday",
+          "opens": "11:00",
+          "closes": "13:00"
+        }
+      ],
+      "priceRange": "Free",
+      "sport": "Tennis"
     }
-  ],
-  "priceRange": "Free",
-  "sport": "Tennis"
-}
-</script>
+    </script>
 
-<script>
-    const PW = 'Fletchertennis909';
-    
-    // Vercel serverless function endpoint
-    const API_URL = '/api/noticeboard';
-
-    // Load and display notice
-    async function loadNotice() {
-        const display = document.getElementById('noticeDisplay');
+    <script>
+        const PW = 'Fletchertennis909';
         
-        try {
-            const response = await fetch(API_URL);
+        // Vercel serverless function endpoint
+        const API_URL = '/api/noticeboard';
+
+        // Load and display notice
+        async function loadNotice() {
+            const display = document.getElementById('noticeDisplay');
             
-            if (response.ok) {
-                const data = await response.json();
-                const notice = data.message || '';
+            try {
+                const response = await fetch(API_URL);
                 
-                if (notice.trim()) {
-                    display.textContent = notice;
-                    display.classList.remove('notice-empty');
+                if (response.ok) {
+                    const data = await response.json();
+                    const notice = data.message || '';
+                    
+                    if (notice.trim()) {
+                        display.textContent = notice;
+                        display.classList.remove('notice-empty');
+                    } else {
+                        display.textContent = 'No current updates - check back soon!';
+                        display.classList.add('notice-empty');
+                    }
                 } else {
                     display.textContent = 'No current updates - check back soon!';
                     display.classList.add('notice-empty');
                 }
-            } else {
+            } catch (error) {
+                console.error('Error loading notice:', error);
                 display.textContent = 'No current updates - check back soon!';
                 display.classList.add('notice-empty');
             }
-        } catch (error) {
-            console.error('Error loading notice:', error);
-            display.textContent = 'No current updates - check back soon!';
-            display.classList.add('notice-empty');
         }
-    }
 
-    // Toggle admin panel
-    async function toggleAdmin() {
-        const panel = document.getElementById('adminPanel');
-        const textarea = document.getElementById('noticeText');
-        const isOpening = !panel.classList.contains('active');
-        
-        panel.classList.toggle('active');
-        
-        if (isOpening) {
-            try {
-                const response = await fetch(API_URL);
-                if (response.ok) {
-                    const data = await response.json();
-                    textarea.value = data.message || '';
-                } else {
+        // Toggle admin panel
+        async function toggleAdmin() {
+            const panel = document.getElementById('adminPanel');
+            const textarea = document.getElementById('noticeText');
+            const isOpening = !panel.classList.contains('active');
+            
+            panel.classList.toggle('active');
+            
+            if (isOpening) {
+                try {
+                    const response = await fetch(API_URL);
+                    if (response.ok) {
+                        const data = await response.json();
+                        textarea.value = data.message || '';
+                    } else {
+                        textarea.value = '';
+                    }
+                } catch (error) {
                     textarea.value = '';
                 }
+                document.getElementById('adminPass').value = '';
+            }
+        }
+
+        // Save notice via secure function
+        async function saveNotice() {
+            const password = document.getElementById('adminPass').value;
+            const text = document.getElementById('noticeText').value;
+
+            if (password !== PW) {
+                alert('❌ Incorrect password');
+                return;
+            }
+
+            try {
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        password: password,
+                        message: text
+                    })
+                });
+
+                const result = await response.json();
+
+                if (response.ok && result.success) {
+                    await loadNotice();
+                    toggleAdmin();
+                    alert('✅ Noticeboard updated successfully!');
+                } else {
+                    alert('❌ ' + (result.error || 'Failed to save'));
+                }
             } catch (error) {
-                textarea.value = '';
-            }
-            document.getElementById('adminPass').value = '';
-        }
-    }
-
-    // Save notice via secure function
-    async function saveNotice() {
-        const password = document.getElementById('adminPass').value;
-        const text = document.getElementById('noticeText').value;
-
-        if (password !== PW) {
-            alert('❌ Incorrect password');
-            return;
-        }
-
-        try {
-            const response = await fetch(API_URL, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    password: password,
-                    message: text
-                })
-            });
-
-            const result = await response.json();
-
-            if (response.ok && result.success) {
-                await loadNotice();
-                toggleAdmin();
-                alert('✅ Noticeboard updated successfully!');
-            } else {
-                alert('❌ ' + (result.error || 'Failed to save'));
-            }
-        } catch (error) {
-            console.error('Error saving notice:', error);
-            alert('❌ Error saving notice. Please try again.');
-        }
-    }
-
-    // Fade banner on scroll - slower and smoother
-    let lastScrollPosition = 0;
-    window.addEventListener('scroll', () => {
-        const currentScroll = window.pageYOffset;
-        const banner = document.getElementById('topBar');
-        
-        // Desktop: gradual fade out
-        if (window.innerWidth > 768) {
-            if (currentScroll > 200) {
-                banner.classList.add('faded');
-            } else {
-                banner.classList.remove('faded');
-            }
-        } 
-        // Mobile: hide when scrolling down
-        else {
-            if (currentScroll > 150 && currentScroll > lastScrollPosition) {
-                banner.classList.add('mobile-hidden');
-            } else if (currentScroll < 100) {
-                banner.classList.remove('mobile-hidden');
+                console.error('Error saving notice:', error);
+                alert('❌ Error saving notice. Please try again.');
             }
         }
-        
-        lastScrollPosition = currentScroll;
-    });
 
-    // Weather fetch
-    async function getWeather() {
-        try {
-            const response = await fetch('https://api.open-meteo.com/v1/forecast?latitude=53.41&longitude=-2.23&current=temperature_2m,weather_code,precipitation_probability&timezone=Europe/London');
-            const data = await response.json();
+        // Fade banner on scroll - slower and smoother
+        let lastScrollPosition = 0;
+        window.addEventListener('scroll', () => {
+            const currentScroll = window.pageYOffset;
+            const banner = document.getElementById('topBar');
             
-            document.getElementById('temp').textContent = Math.round(data.current.temperature_2m) + '°C';
+            // Desktop: gradual fade out
+            if (window.innerWidth > 768) {
+                if (currentScroll > 200) {
+                    banner.classList.add('faded');
+                } else {
+                    banner.classList.remove('faded');
+                }
+            } 
+            // Mobile: hide when scrolling down
+            else {
+                if (currentScroll > 150 && currentScroll > lastScrollPosition) {
+                    banner.classList.add('mobile-hidden');
+                } else if (currentScroll < 100) {
+                    banner.classList.remove('mobile-hidden');
+                }
+            }
             
-            const weatherCodes = {
-                0: '☀️ Clear', 1: '🌤️ Mostly Clear', 2: '⛅ Partly Cloudy', 3: '☁️ Cloudy',
-                45: '🌫️ Foggy', 48: '🌫️ Foggy', 51: '🌦️ Drizzle', 53: '🌦️ Drizzle',
-                61: '🌧️ Rain', 63: '🌧️ Rain', 65: '🌧️ Heavy Rain', 
-                71: '🌨️ Snow', 73: '🌨️ Snow', 75: '🌨️ Heavy Snow',
-                80: '🌦️ Showers', 81: '🌧️ Showers', 95: '⛈️ Thunderstorm'
-            };
-            
-            document.getElementById('conditions').textContent = weatherCodes[data.current.weather_code] || '🌤️';
-            document.getElementById('rain').textContent = (data.current.precipitation_probability || 0) + '%';
-        } catch (error) {
-            console.error('Weather fetch failed:', error);
-            document.getElementById('temp').textContent = 'N/A';
-            document.getElementById('conditions').textContent = '⚠️';
-            document.getElementById('rain').textContent = 'N/A';
+            lastScrollPosition = currentScroll;
+        });
+
+        // Weather fetch
+        async function getWeather() {
+            try {
+                const response = await fetch('https://api.open-meteo.com/v1/forecast?latitude=53.41&longitude=-2.23&current=temperature_2m,weather_code,precipitation_probability&timezone=Europe/London');
+                const data = await response.json();
+                
+                document.getElementById('temp').textContent = Math.round(data.current.temperature_2m) + '°C';
+                
+                const weatherCodes = {
+                    0: '☀️ Clear', 1: '🌤️ Mostly Clear', 2: '⛅ Partly Cloudy', 3: '☁️ Cloudy',
+                    45: '🌫️ Foggy', 48: '🌫️ Foggy', 51: '🌦️ Drizzle', 53: '🌦️ Drizzle',
+                    61: '🌧️ Rain', 63: '🌧️ Rain', 65: '🌧️ Heavy Rain', 
+                    71: '🌨️ Snow', 73: '🌨️ Snow', 75: '🌨️ Heavy Snow',
+                    80: '🌦️ Showers', 81: '🌧️ Showers', 95: '⛈️ Thunderstorm'
+                };
+                
+                document.getElementById('conditions').textContent = weatherCodes[data.current.weather_code] || '🌤️';
+                document.getElementById('rain').textContent = (data.current.precipitation_probability || 0) + '%';
+            } catch (error) {
+                console.error('Weather fetch failed:', error);
+                document.getElementById('temp').textContent = 'N/A';
+                document.getElementById('conditions').textContent = '⚠️';
+                document.getElementById('rain').textContent = 'N/A';
+            }
         }
-    }
 
-    // Initialize
-    loadNotice();
-    getWeather();
-    setInterval(getWeather, 600000); // Update every 10 minutes
-</script>
-```
-
+        // Initialize
+        loadNotice();
+        getWeather();
+        setInterval(getWeather, 600000); // Update every 10 minutes
+    </script>
 </body>
 </html>
