@@ -401,6 +401,62 @@
             font-size: 1.1em;
         }
 
+        /* Scroll Animation Styles */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.6s ease, transform 0.6s ease;
+        }
+
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .slide-in-left {
+            opacity: 0;
+            transform: translateX(-40px);
+            transition: opacity 0.7s ease, transform 0.7s ease;
+        }
+
+        .slide-in-left.visible {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .slide-in-right {
+            opacity: 0;
+            transform: translateX(40px);
+            transition: opacity 0.7s ease, transform 0.7s ease;
+        }
+
+        .slide-in-right.visible {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .stagger-1 { transition-delay: 0.1s; }
+        .stagger-2 { transition-delay: 0.2s; }
+        .stagger-3 { transition-delay: 0.3s; }
+        .stagger-4 { transition-delay: 0.4s; }
+
+        /* Parallax effect */
+        .parallax-container {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .parallax-image {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 120%;
+            background-size: cover;
+            background-position: center;
+            will-change: transform;
+        }
+
         /* Mobile adjustments */
         @media (max-width: 768px) {
             body {
@@ -567,25 +623,25 @@
                 </div>
 
                 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 20px;">
-                    <div style="background: white; padding: 25px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
+                    <div class="fade-in stagger-1" style="background: white; padding: 25px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
                         <div style="font-size: 2em; margin-bottom: 10px;">🤝</div>
                         <h4 style="color: #2d5016; margin-bottom: 10px; font-size: 1.2em; font-weight: 600;">Sociable & Inclusive</h4>
                         <p style="color: #666; font-size: 1.05em;">Warm, friendly atmosphere where everyone's welcome. Random partnering keeps things fresh and helps you meet new people.</p>
                     </div>
                     
-                    <div style="background: white; padding: 25px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
+                    <div class="fade-in stagger-2" style="background: white; padding: 25px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
                         <div style="font-size: 2em; margin-bottom: 10px;">🎉</div>
                         <h4 style="color: #2d5016; margin-bottom: 10px; font-size: 1.2em; font-weight: 600;">Fun-Focused</h4>
-                        <p style="color: #666; font-size: 1.05em;">Play without pressure in a supportive, non-judgmental setting. Perfect for practicing and improving while enjoying the game.</p>
+                        <p style="color: #666; font-size: 1.05em;">Play without pressure in a supportive, non-judgmental setting. Perfect for practising and improving while enjoying the game.</p>
                     </div>
                     
-                    <div style="background: white; padding: 25px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
+                    <div class="fade-in stagger-3" style="background: white; padding: 25px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
                         <div style="font-size: 2em; margin-bottom: 10px;">🌳</div>
                         <h4 style="color: #2d5016; margin-bottom: 10px; font-size: 1.2em; font-weight: 600;">Beautiful Location</h4>
                         <p style="color: #666; font-size: 1.05em;">Set in the lovely surroundings of Fletcher Moss Park - a great way to exercise, unwind, and enjoy nature.</p>
                     </div>
                     
-                    <div style="background: white; padding: 25px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
+                    <div class="fade-in stagger-4" style="background: white; padding: 25px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
                         <div style="font-size: 2em; margin-bottom: 10px;">💰</div>
                         <h4 style="color: #2d5016; margin-bottom: 10px; font-size: 1.2em; font-weight: 600;">No Fees or Contracts</h4>
                         <p style="color: #666; font-size: 1.05em;">No membership fees or contracts. Just community contributions to equipment and balls to keep the group running.</p>
@@ -595,11 +651,11 @@
         </div>
         
         <div class="section" id="sessions">
-            <h2>Session Times</h2>
+            <h2 class="fade-in">Session Times</h2>
             <div class="schedule-grid">
-                <div class="card"><h3>Monday</h3><p>6:00 PM - 8:00 PM</p></div>
-                <div class="card"><h3>Thursday</h3><p>6:00 PM - 8:00 PM</p></div>
-                <div class="card"><h3>Saturday</h3><p>11:00 AM - 1:00 PM</p></div>
+                <div class="card slide-in-left stagger-1"><h3>Monday</h3><p>6:00 PM - 8:00 PM</p></div>
+                <div class="card fade-in stagger-2"><h3>Thursday</h3><p>6:00 PM - 8:00 PM</p></div>
+                <div class="card slide-in-right stagger-3"><h3>Saturday</h3><p>11:00 AM - 1:00 PM</p></div>
             </div>
         </div>
         
@@ -688,9 +744,15 @@
                 referrerpolicy="no-referrer-when-downgrade">
             </iframe>
             
-            <!-- Court Shot Image -->
-            <div style="margin-top: 30px; border-radius: 12px; overflow: hidden; box-shadow: 0 8px 20px rgba(0,0,0,0.2);">
-                <img src="court-shot.jpg" alt="Fletcher Moss Tennis Courts" style="width: 100%; height: auto; display: block;">
+            <!-- Court Shot Image with Parallax -->
+            <div class="parallax-container fade-in" style="margin-top: 40px; border-radius: 16px; overflow: hidden; box-shadow: 0 8px 20px rgba(0,0,0,0.2); height: 400px; position: relative;">
+                <div class="parallax-image" id="courtParallax" style="background-image: url('court-shot.jpg');"></div>
+                <div style="position: relative; z-index: 10; height: 100%; display: flex; align-items: centre; justify-content: centre; background: linear-gradient(to bottom, rgba(45,80,22,0.3), rgba(45,80,22,0.5));">
+                    <div style="text-align: centre; color: white; padding: 20px;">
+                        <h3 style="font-size: 2.5em; margin-bottom: 15px; text-shadow: 2px 2px 8px rgba(0,0,0,0.8);">Play at Fletcher Moss</h3>
+                        <p style="font-size: 1.3em; text-shadow: 2px 2px 6px rgba(0,0,0,0.8);">Beautiful outdoor courts in the heart of Didsbury</p>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -904,6 +966,37 @@
         loadNotice();
         getWeather();
         setInterval(getWeather, 600000); // Update every 10 minutes
+
+        // Scroll Animation Observer
+        const observerOptions = {
+            threshold: 0.15,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, observerOptions);
+
+        // Observe all animated elements
+        document.addEventListener('DOMContentLoaded', () => {
+            const animatedElements = document.querySelectorAll('.fade-in, .slide-in-left, .slide-in-right');
+            animatedElements.forEach(el => observer.observe(el));
+        });
+
+        // Parallax effect for court image
+        window.addEventListener('scroll', () => {
+            const parallaxElement = document.getElementById('courtParallax');
+            if (parallaxElement) {
+                const scrolled = window.pageYOffset;
+                const elementTop = parallaxElement.parentElement.offsetTop;
+                const rate = (scrolled - elementTop) * 0.3;
+                parallaxElement.style.transform = `translateY(${rate}px)`;
+            }
+        });
     </script>
 </body>
 </html>
