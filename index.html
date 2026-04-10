@@ -90,6 +90,7 @@
             height: 80px;
             width: auto;
             filter: drop-shadow(4px 3px 6px rgba(0,0,0,0.5));
+            flex-shrink: 0;
         }
 
         .top-title h1 {
@@ -529,20 +530,23 @@
             }
 
             .top-bar {
-                padding: 15px 20px;
+                padding: 10px 15px;
             }
 
             .top-bar-inner {
                 flex-direction: row;
                 justify-content: space-between;
                 align-items: center;
-                gap: 10px;
+                gap: 8px;
                 text-align: left;
             }
 
             .top-bar-left {
                 flex-direction: row;
-                gap: 12px;
+                align-items: center;
+                gap: 10px;
+                min-width: 0;
+                flex: 1;
             }
 
             /* Hide desktop nav, show hamburger */
@@ -552,22 +556,31 @@
 
             .hamburger {
                 display: flex;
+                flex-shrink: 0;
             }
 
             .top-logo {
-                height: 55px;
+                height: 40px;
+                flex-shrink: 0;
             }
 
-            .footer-logo {
-                height: 100px;
+            .top-title {
+                min-width: 0;
+                overflow: hidden;
             }
 
             .top-title h1 {
-                font-size: 1.8em;
+                font-size: 1.1em;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
             }
 
             .top-title p {
-                font-size: 1.1em;
+                font-size: 0.85em;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
             }
 
             /* More breathing room on mobile */
