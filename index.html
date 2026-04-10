@@ -36,7 +36,7 @@
         /* Sticky Top Bar with Complete Fade Out */
         .top-bar {
             background: rgba(45, 80, 22, 0.95);
-            padding: 20px 30px;
+            padding: 12px 30px;
             box-shadow: 0 6px 20px rgba(0,0,0,0.35);
             position: sticky;
             top: 0;
@@ -80,7 +80,7 @@
         }
 
         .top-logo {
-            height: 160px;
+            height: 80px;
             width: auto;
             filter: drop-shadow(4px 3px 6px rgba(0,0,0,0.5));
         }
@@ -119,6 +119,64 @@
         .nav-links a:hover {
             opacity: 0.8;
             transform: translateY(-2px);
+        }
+
+        /* Hamburger button - hidden on desktop */
+        .hamburger {
+            display: none;
+            flex-direction: column;
+            gap: 5px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 8px;
+            flex-shrink: 0;
+        }
+
+        .hamburger span {
+            display: block;
+            width: 26px;
+            height: 3px;
+            background: white;
+            border-radius: 3px;
+            transition: transform 0.3s ease, opacity 0.3s ease;
+        }
+
+        .hamburger.open span:nth-child(1) { transform: translateY(8px) rotate(45deg); }
+        .hamburger.open span:nth-child(2) { opacity: 0; }
+        .hamburger.open span:nth-child(3) { transform: translateY(-8px) rotate(-45deg); }
+
+        /* Mobile dropdown nav */
+        .mobile-nav {
+            display: none;
+            flex-direction: column;
+            gap: 0;
+            background: rgba(30, 60, 10, 0.98);
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            z-index: 999;
+            border-top: 1px solid rgba(255,255,255,0.15);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+        }
+
+        .mobile-nav.open {
+            display: flex;
+        }
+
+        .mobile-nav a {
+            color: white;
+            text-decoration: none;
+            font-size: 1.1em;
+            font-weight: 600;
+            padding: 16px 25px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            transition: background 0.2s;
+        }
+
+        .mobile-nav a:hover {
+            background: rgba(255,255,255,0.1);
         }
 
         /* Main Content Container */
@@ -460,7 +518,6 @@
         /* Mobile adjustments */
         @media (max-width: 768px) {
             body {
-                /* Remove fixed attachment on mobile for better performance */
                 background-attachment: scroll;
             }
 
@@ -469,27 +526,29 @@
             }
 
             .top-bar-inner {
-                flex-direction: column;
-                text-align: center;
-                gap: 15px;
+                flex-direction: row;
+                justify-content: space-between;
+                align-items: center;
+                gap: 10px;
+                text-align: left;
             }
 
             .top-bar-left {
-                flex-direction: column;
+                flex-direction: row;
+                gap: 12px;
             }
 
+            /* Hide desktop nav, show hamburger */
             .nav-links {
-                flex-wrap: wrap;
-                justify-content: center;
-                gap: 15px;
+                display: none;
             }
 
-            .nav-links a {
-                font-size: 0.95em;
+            .hamburger {
+                display: flex;
             }
 
             .top-logo {
-                height: 110px;
+                height: 55px;
             }
 
             .footer-logo {
@@ -582,7 +641,22 @@
                 <a href="#join">Join</a>
                 <a href="#location">Location</a>
             </nav>
+            <!-- Hamburger button (mobile only) -->
+            <button class="hamburger" id="hamburger" aria-label="Open menu" onclick="toggleMobileNav()">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
         </div>
+        <!-- Mobile dropdown nav -->
+        <nav class="mobile-nav" id="mobileNav">
+            <a href="#about" onclick="closeMobileNav()">About</a>
+            <a href="#sessions" onclick="closeMobileNav()">Sessions</a>
+            <a href="#noticeboard" onclick="closeMobileNav()">Noticeboard</a>
+            <a href="#weather" onclick="closeMobileNav()">Weather</a>
+            <a href="#join" onclick="closeMobileNav()">Join</a>
+            <a href="#location" onclick="closeMobileNav()">Location</a>
+        </nav>
     </header>
 
     <!-- Full Screen Hero with Image -->
@@ -665,7 +739,9 @@
                 <div id="noticeDisplay" class="notice-display notice-empty">
                     No current updates - check back soon!
                 </div>
-                <button class="btn btn-secondary" onclick="toggleAdmin()">🔐 Admin Edit</button>
+                <div style="text-align: right; margin-top: 12px;">
+                    <button onclick="toggleAdmin()" style="background: none; border: none; color: #8b6f47; font-size: 0.8em; font-family: 'Lora', serif; cursor: pointer; opacity: 0.6; text-decoration: underline; padding: 4px;">admin</button>
+                </div>
                 
                 <div id="adminPanel" class="admin-panel">
                     <h3 style="color: #2d5016; margin-bottom: 15px; font-size: 1.4em;">Edit Noticeboard</h3>
@@ -710,7 +786,7 @@
                     <p>All coordination happens via WhatsApp. Scan the QR code below to request access.</p>
                 </div>
                 <div class="info-box">
-                    <h3>2. £5 Contribution</h3>
+                    <h3>2. £10 Contribution</h3>
                     <p>Payment is to cover new tennis balls (may be collected every 3-6 months as needed).</p>
                 </div>
             </div>
@@ -724,8 +800,12 @@
         <div class="section" id="join">
             <div class="qr-area">
                 <h2>📱 Join Our WhatsApp Group</h2>
-                <p style="color: #666; margin-bottom: 10px; font-size: 1.1em;">Scan to request access and get session updates</p>
-                <img src="Signup QR code.jpg" alt="WhatsApp Group QR Code" style="width: 250px; height: 250px; margin: 20px auto; display: block; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
+                <p style="color: #555; margin-bottom: 8px; font-size: 1.15em; max-width: 500px; margin-left: auto; margin-right: auto; line-height: 1.7;">
+                    All session updates, cancellations, and banter happen on WhatsApp. Scan the code below to request access — we'll get you on court as soon as possible! 🎾
+                </p>
+                <p style="color: #888; margin-bottom: 10px; font-size: 0.95em;">Scan with your phone camera or WhatsApp's QR scanner</p>
+                <img src="Signup QR code.jpg" alt="WhatsApp Group QR Code" style="width: 250px; height: 250px; margin: 15px auto 20px auto; display: block; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
+                <p style="color: #666; font-size: 0.95em; font-style: italic;">Once you're in, introduce yourself — everyone was new once!</p>
             </div>
         </div>
 
@@ -816,6 +896,21 @@
 
     <script>
         const PW = 'Fletchertennis909';
+        
+        // Hamburger menu
+        function toggleMobileNav() {
+            const nav = document.getElementById('mobileNav');
+            const btn = document.getElementById('hamburger');
+            nav.classList.toggle('open');
+            btn.classList.toggle('open');
+        }
+
+        function closeMobileNav() {
+            const nav = document.getElementById('mobileNav');
+            const btn = document.getElementById('hamburger');
+            nav.classList.remove('open');
+            btn.classList.remove('open');
+        }
         
         // Vercel serverless function endpoint
         const API_URL = '/api/noticeboard';
@@ -981,11 +1076,9 @@
             });
         }, observerOptions);
 
-        // Observe all animated elements
-        document.addEventListener('DOMContentLoaded', () => {
-            const animatedElements = document.querySelectorAll('.fade-in, .slide-in-left, .slide-in-right');
-            animatedElements.forEach(el => observer.observe(el));
-        });
+        // Observe all animated elements (script is at bottom of body so DOM is already ready)
+        const animatedElements = document.querySelectorAll('.fade-in, .slide-in-left, .slide-in-right');
+        animatedElements.forEach(el => observer.observe(el));
 
         // Parallax effect for court image
         window.addEventListener('scroll', () => {
