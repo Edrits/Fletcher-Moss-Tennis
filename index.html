@@ -21,6 +21,11 @@
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
+        html, body {
+            overflow-x: hidden;
+            width: 100%;
+        }
+
         html {
             scroll-behavior: smooth;
         }
@@ -40,6 +45,8 @@
             box-shadow: 0 6px 20px rgba(0,0,0,0.35);
             position: sticky;
             top: 0;
+            left: 0;
+            width: 100%;
             z-index: 1000;
             transition: opacity 0.6s ease, visibility 0.6s ease, transform 0.6s ease;
         }
@@ -729,7 +736,7 @@
             <div class="schedule-grid">
                 <div class="card slide-in-left stagger-1"><h3>Monday</h3><p>6:00 PM - 8:00 PM</p></div>
                 <div class="card fade-in stagger-2"><h3>Thursday</h3><p>6:00 PM - 8:00 PM</p></div>
-                <div class="card slide-in-right stagger-3"><h3>Saturday</h3><p>11:00 AM - 1:00 PM</p></div>
+                <div class="card slide-in-right stagger-3"><h3>Saturday</h3><p>11:00 AM - 2:00 PM</p></div>
             </div>
         </div>
         
