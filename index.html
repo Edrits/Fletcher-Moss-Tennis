@@ -390,8 +390,26 @@
         .qr-area {
             text-align: center;
             background: #f9f9f9;
+            background-image: url('courts-drone-aerial.jpg');
+            background-size: cover;
+            background-position: center;
             padding: 40px;
             border-radius: 12px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .qr-area::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: rgba(255, 255, 255, 0.88);
+            border-radius: 12px;
+        }
+
+        .qr-area > * {
+            position: relative;
+            z-index: 1;
         }
         
         .qr-placeholder {
@@ -454,17 +472,91 @@
             text-align: center; 
             padding: 50px 20px; 
         }
-        
-        .footer-logo {
-            height: 140px;
-            width: auto;
-            margin-bottom: 25px;
-            filter: drop-shadow(4px 3px 6px rgba(0,0,0,0.5));
+
+        .footer-inner {
+            max-width: 900px;
+            margin: 0 auto;
         }
-        
-        footer p {
+
+        .footer-logos {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 40px;
+            flex-wrap: wrap;
+            margin-bottom: 30px;
+        }
+
+        .footer-details {
+            display: flex;
+            justify-content: center;
+            gap: 60px;
+            flex-wrap: wrap;
+            margin-top: 25px;
+            padding-top: 25px;
+            border-top: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .footer-col h4 {
+            font-size: 1em;
+            opacity: 0.7;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .footer-col p {
             opacity: 0.9;
-            font-size: 1.1em;
+            font-size: 1em;
+            line-height: 1.8;
+        }
+
+        /* Scroll to top */
+        .scroll-top {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: #2d5016;
+            color: white;
+            border: none;
+            width: 46px;
+            height: 46px;
+            border-radius: 50%;
+            font-size: 1.3em;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s, visibility 0.3s, transform 0.2s;
+            z-index: 999;
+        }
+
+        .scroll-top.visible {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .scroll-top:hover {
+            transform: translateY(-3px);
+            background: #3a6c1c;
+        }
+
+        /* Weather pill in hero */
+        .weather-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255,255,255,0.2);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.4);
+            color: white;
+            padding: 8px 18px;
+            border-radius: 50px;
+            font-size: 1em;
+            font-family: 'Lora', serif;
+            font-weight: 600;
+            margin-bottom: 25px;
+            text-shadow: 1px 1px 4px rgba(0,0,0,0.5);
         }
 
         /* Scroll Animation Styles */
@@ -640,6 +732,16 @@
                 padding: 25px 15px !important;
             }
         }
+
+        /* Hero button hover animations */
+        .hero-btn {
+            transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease !important;
+        }
+
+        .hero-btn:hover {
+            transform: translateY(-3px) !important;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.5) !important;
+        }
     </style>
 </head>
 <body>
@@ -690,10 +792,11 @@
         <!-- Content -->
         <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 20px; z-index: 10;">
             <h1 style="font-size: 3.5em; color: white; margin-bottom: 20px; font-weight: 700; text-shadow: 2px 2px 12px rgba(0,0,0,1), 0 0 30px rgba(0,0,0,0.8); line-height: 1.2; max-width: 900px;">Welcome to Fletcher Moss Tennis</h1>
-            <p style="font-size: 1.5em; color: white; margin-bottom: 40px; line-height: 1.4; text-shadow: 2px 2px 10px rgba(0,0,0,1), 0 0 25px rgba(0,0,0,0.8); font-weight: 500; max-width: 700px;">Free community tennis in the heart of Didsbury</p>
+            <p style="font-size: 1.5em; color: white; margin-bottom: 25px; line-height: 1.4; text-shadow: 2px 2px 10px rgba(0,0,0,1), 0 0 25px rgba(0,0,0,0.8); font-weight: 500; max-width: 700px;">Free community tennis in the heart of Didsbury</p>
+            <div class="weather-pill" id="heroPill">🌤️ <span id="heroTemp">--</span> &nbsp;·&nbsp; <span id="heroConditions">Loading...</span></div>
             <div style="display: inline-flex; gap: 15px; flex-wrap: wrap; justify-content: center;">
-                <a href="#about" style="background: rgba(255, 255, 255, 0.95); color: #2d5016; padding: 14px 30px; border-radius: 8px; text-decoration: none; font-size: 1.05em; font-weight: 600; transition: transform 0.2s; display: inline-block; box-shadow: 0 4px 15px rgba(0,0,0,0.4); white-space: nowrap;">Learn More</a>
-                <a href="#join" style="background: #4a7c2c; color: white; padding: 14px 30px; border-radius: 8px; text-decoration: none; font-size: 1.05em; font-weight: 600; transition: transform 0.2s; display: inline-block; box-shadow: 0 4px 15px rgba(0,0,0,0.4); white-space: nowrap;">Join Now</a>
+                <a href="#about" class="hero-btn" style="background: rgba(255, 255, 255, 0.95); color: #2d5016; padding: 14px 30px; border-radius: 8px; text-decoration: none; font-size: 1.05em; font-weight: 600; display: inline-block; box-shadow: 0 4px 15px rgba(0,0,0,0.4); white-space: nowrap;">Learn More</a>
+                <a href="#join" class="hero-btn" style="background: #4a7c2c; color: white; padding: 14px 30px; border-radius: 8px; text-decoration: none; font-size: 1.05em; font-weight: 600; display: inline-block; box-shadow: 0 4px 15px rgba(0,0,0,0.4); white-space: nowrap;">Join Now</a>
             </div>
         </div>
     </div>
@@ -726,7 +829,7 @@
                     <div class="fade-in stagger-2" style="background: white; padding: 25px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
                         <div style="font-size: 2em; margin-bottom: 10px;">🌳</div>
                         <h4 style="color: #2d5016; margin-bottom: 10px; font-size: 1.2em; font-weight: 600;">Beautiful Location</h4>
-                        <p style="color: #666; font-size: 1.05em;">Set in the lovely surroundings of Fletcher Moss Park — a great way to exercise, unwind, and enjoy the outdoors.</p>
+                        <p style="color: #666; font-size: 1.05em;">Set in the lovely surroundings of Fletcher Moss Park - a great way to exercise, unwind, and enjoy the outdoors.</p>
                     </div>
                     
                     <div class="fade-in stagger-3" style="background: white; padding: 25px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
@@ -821,11 +924,11 @@
             <div class="qr-area">
                 <h2>📱 Join Our WhatsApp Group</h2>
                 <p style="color: #555; margin-bottom: 8px; font-size: 1.15em; max-width: 500px; margin-left: auto; margin-right: auto; line-height: 1.7;">
-                    All session updates, cancellations, and banter happen on WhatsApp. Scan the code below to request access — we'll get you on court as soon as possible! 🎾
+                    All session updates, cancellations, and banter happen on WhatsApp. Scan the code below to request access - we'll get you on court as soon as possible! 🎾
                 </p>
                 <p style="color: #888; margin-bottom: 10px; font-size: 0.95em;">Scan with your phone camera or WhatsApp's QR scanner</p>
                 <img src="Signup QR code.jpg" alt="WhatsApp Group QR Code" style="width: 250px; height: 250px; margin: 15px auto 20px auto; display: block; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
-                <p style="color: #666; font-size: 0.95em; font-style: italic;">Once you're in, introduce yourself — everyone was new once!</p>
+                <p style="color: #666; font-size: 0.95em; font-style: italic;">Once you're in, introduce yourself - everyone was new once!</p>
             </div>
         </div>
 
@@ -859,13 +962,28 @@
     </div>
 
     <footer>
-        <div style="display: flex; align-items: center; justify-content: center; gap: 40px; flex-wrap: wrap; margin-bottom: 25px;">
-            <img src="Remove background project.png" alt="Fletcher Moss Tennis Club Logo - Free Social Tennis Didsbury" class="footer-logo">
-            <img src="MCRactive_Portrait_Logo.jpg" alt="McrActive - Supporting Community Sports" style="height: 140px; width: auto; filter: drop-shadow(4px 3px 6px rgba(0,0,0,0.5));">
+        <div class="footer-inner">
+            <div class="footer-logos">
+                <img src="Remove background project.png" alt="Fletcher Moss Tennis Club Logo" style="height: 110px; width: auto; filter: drop-shadow(4px 3px 6px rgba(0,0,0,0.5));">
+                <img src="MCRactive_Portrait_Logo.jpg" alt="McrActive - Supporting Community Sports" style="height: 110px; width: auto; filter: drop-shadow(4px 3px 6px rgba(0,0,0,0.5));">
+            </div>
+            <p style="font-size: 1.1em; opacity: 0.9;"><strong>Fletcher Moss Tennis Club</strong></p>
+            <div class="footer-details">
+                <div class="footer-col">
+                    <h4>Location</h4>
+                    <p>Tennis at Fletcher Moss<br>Didsbury, Manchester<br>M20 2SW, United Kingdom</p>
+                </div>
+                <div class="footer-col">
+                    <h4>Sessions</h4>
+                    <p>Monday 6:00 - 8:00 PM<br>Thursday 6:00 - 8:00 PM<br>Saturday 11:00 AM - 2:00 PM</p>
+                </div>
+            </div>
+            <p style="margin-top: 25px; font-size: 0.9em; opacity: 0.5;">Hope to see you on the court soon!</p>
         </div>
-        <p><strong>Fletcher Moss Tennis Club</strong></p>
-        <p style="margin-top: 10px; font-size: 1em;">Hope to see you on the court soon!</p>
     </footer>
+
+    <!-- Scroll to top button -->
+    <button class="scroll-top" id="scrollTop" onclick="window.scrollTo({top:0,behavior:'smooth'})" aria-label="Back to top">↑</button>
 
     <!-- Structured Data for Local Business SEO -->
     <script type="application/ld+json">
@@ -1057,7 +1175,7 @@
                 const response = await fetch('https://api.open-meteo.com/v1/forecast?latitude=53.41&longitude=-2.23&current=temperature_2m,weather_code,precipitation_probability&timezone=Europe/London');
                 const data = await response.json();
                 
-                document.getElementById('temp').textContent = Math.round(data.current.temperature_2m) + '°C';
+                const temp = Math.round(data.current.temperature_2m) + '°C';
                 
                 const weatherCodes = {
                     0: '☀️ Clear', 1: '🌤️ Mostly Clear', 2: '⛅ Partly Cloudy', 3: '☁️ Cloudy',
@@ -1067,15 +1185,36 @@
                     80: '🌦️ Showers', 81: '🌧️ Showers', 95: '⛈️ Thunderstorm'
                 };
                 
-                document.getElementById('conditions').textContent = weatherCodes[data.current.weather_code] || '🌤️';
-                document.getElementById('rain').textContent = (data.current.precipitation_probability || 0) + '%';
+                const condition = weatherCodes[data.current.weather_code] || '🌤️';
+                const rain = (data.current.precipitation_probability || 0) + '%';
+
+                // Main weather section
+                document.getElementById('temp').textContent = temp;
+                document.getElementById('conditions').textContent = condition;
+                document.getElementById('rain').textContent = rain;
+
+                // Hero pill
+                document.getElementById('heroTemp').textContent = temp;
+                document.getElementById('heroConditions').textContent = condition + '  · ' + rain + ' rain';
+
             } catch (error) {
                 console.error('Weather fetch failed:', error);
                 document.getElementById('temp').textContent = 'N/A';
                 document.getElementById('conditions').textContent = '⚠️';
                 document.getElementById('rain').textContent = 'N/A';
+                document.getElementById('heroConditions').textContent = 'Weather unavailable';
             }
         }
+
+        // Scroll to top visibility
+        window.addEventListener('scroll', () => {
+            const btn = document.getElementById('scrollTop');
+            if (window.pageYOffset > 400) {
+                btn.classList.add('visible');
+            } else {
+                btn.classList.remove('visible');
+            }
+        });
 
         // Initialize
         loadNotice();
