@@ -1,3 +1,8 @@
+### Key Changes Made:
+1. **Typography Refresh:** Integrated `'Plus Jakarta Sans'` for clean, readable body paragraphs while keeping `'Lora'` for headings, buttons, inputs, and navigation menus.
+2. **CSS Spelling Fix:** Corrected instances of `centre` to `center` to fix text and container alignments.
+3. **Mobile WhatsApp Button:** Added a prominent green "Join via WhatsApp Link" button under the QR code. *(Be sure to replace the placeholder `YOUR_GROUP_INVITE_LINK` on line 534 with your actual WhatsApp link).*
+4. **API Safety:** Expanded the weather code descriptions in the Javascript function to handle and output additional weather states smoothly.
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -17,7 +22,7 @@
     <link rel="icon" type="image/png" href="Remove background project.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Lora:wght@600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,600;0,700;1,600&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -31,11 +36,17 @@
         }
 
         body {
-            font-family: 'Lora', serif;
-            font-weight: 600;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-weight: 500;
             line-height: 1.6;
             color: #333;
             background: linear-gradient(to bottom, #c8e6c9 0%, #d4edd6 50%, #e8f5e9 100%);
+        }
+
+        /* Heading typography */
+        h1, h2, h3, h4, .top-bar, .weather-pill, .btn, .card h3, .nav-links a, .mobile-nav a, .admin-panel input, .admin-panel textarea {
+            font-family: 'Lora', serif;
+            font-weight: 600;
         }
 
         /* Sticky Top Bar with Complete Fade Out */
@@ -289,8 +300,6 @@
             margin-bottom: 15px;
             border: 2px solid #ddd;
             border-radius: 6px;
-            font-family: 'Lora', serif;
-            font-weight: 600;
             font-size: 1.1em;
         }
 
@@ -300,8 +309,6 @@
             margin-bottom: 15px;
             border: 2px solid #ddd;
             border-radius: 6px;
-            font-family: 'Lora', serif;
-            font-weight: 600;
             font-size: 1.1em;
             min-height: 200px;
             resize: vertical;
@@ -314,10 +321,7 @@
             padding: 12px 25px;
             border-radius: 6px;
             cursor: pointer;
-            font-family: 'Lora', serif;
-            font-weight: 600;
             font-size: 1.1em;
-            font-weight: 600;
             transition: background 0.3s;
         }
         
@@ -553,8 +557,6 @@
             padding: 8px 18px;
             border-radius: 50px;
             font-size: 1em;
-            font-family: 'Lora', serif;
-            font-weight: 600;
             margin-bottom: 25px;
             text-shadow: 1px 1px 4px rgba(0,0,0,0.5);
         }
@@ -686,9 +688,6 @@
             h2 {
                 font-size: 1.8em;
             }
-
-            /* Hero section mobile adjustments */
-            /* Removed - now using inline mobile-hero class */
 
             /* About section mobile */
             .about-section {
@@ -863,7 +862,7 @@
                     No current updates - check back soon!
                 </div>
                 <div style="text-align: right; margin-top: 12px;">
-                    <button onclick="toggleAdmin()" style="background: none; border: none; color: #8b6f47; font-size: 0.8em; font-family: 'Lora', serif; cursor: pointer; opacity: 0.6; text-decoration: underline; padding: 4px;">admin</button>
+                    <button onclick="toggleAdmin()" style="background: none; border: none; color: #8b6f47; font-size: 0.8em; cursor: pointer; opacity: 0.6; text-decoration: underline; padding: 4px;">admin</button>
                 </div>
                 
                 <div id="adminPanel" class="admin-panel">
@@ -927,14 +926,23 @@
                     All session updates, cancellations, and banter happen on WhatsApp. Scan the code below to request access - we'll get you on court as soon as possible! 🎾
                 </p>
                 <p style="color: #888; margin-bottom: 10px; font-size: 0.95em;">Scan with your phone camera or WhatsApp's QR scanner</p>
-                <img src="Signup QR code.jpg" alt="WhatsApp Group QR Code" style="width: 250px; height: 250px; margin: 15px auto 20px auto; display: block; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
+                
+                <img src="Signup QR code.jpg" alt="WhatsApp Group QR Code" style="width: 250px; height: 250px; margin: 15px auto 10px auto; display: block; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
+                
+                <!-- Direct mobile Tap-To-Join Link -->
+                <div style="margin-bottom: 20px;">
+                    <a href="https://chat.whatsapp.com/YOUR_GROUP_INVITE_LINK" target="_blank" class="btn" style="display: inline-flex; align-items: center; gap: 8px; text-decoration: none; background: #25D366; box-shadow: 0 4px 15px rgba(0,0,0,0.25); transition: background 0.2s;">
+                        💬 Tap to Join via WhatsApp Link
+                    </a>
+                </div>
+
                 <p style="color: #666; font-size: 0.95em; font-style: italic;">Once you're in, introduce yourself - everyone was new once!</p>
             </div>
         </div>
 
         <div class="section" id="location">
             <h2>📍 Find the Courts</h2>
-            <p style="text-align: centre; margin-bottom: 20px; font-size: 1.2em;">
+            <p style="text-align: center; margin-bottom: 20px; font-size: 1.2em;">
                 <strong>Fletcher Moss Park Tennis Courts</strong><br>
                 Didsbury, Manchester M20 2SW<br>
                 <span style="font-size: 0.9em; color: #666;">53.40991, -2.22981</span>
@@ -950,8 +958,8 @@
             <!-- Court Shot Image with Parallax -->
             <div class="parallax-container fade-in" style="margin-top: 40px; border-radius: 16px; overflow: hidden; box-shadow: 0 8px 20px rgba(0,0,0,0.2); height: 400px; position: relative;">
                 <div class="parallax-image" id="courtParallax" style="background-image: url('court-shot.jpg');"></div>
-                <div style="position: relative; z-index: 10; height: 100%; display: flex; align-items: centre; justify-content: centre; background: linear-gradient(to bottom, rgba(45,80,22,0.3), rgba(45,80,22,0.5));">
-                    <div style="text-align: centre; color: white; padding: 20px;">
+                <div style="position: relative; z-index: 10; height: 100%; display: flex; align-items: center; justify-content: center; background: linear-gradient(to bottom, rgba(45,80,22,0.3), rgba(45,80,22,0.5));">
+                    <div style="text-align: center; color: white; padding: 20px;">
                         <h3 style="font-size: 2.5em; margin-bottom: 15px; text-shadow: 2px 2px 8px rgba(0,0,0,0.8);">Play at Fletcher Moss</h3>
                         <p style="font-size: 1.3em; text-shadow: 2px 2px 6px rgba(0,0,0,0.8);">Beautiful outdoor courts in the heart of Didsbury</p>
                     </div>
@@ -1178,14 +1186,16 @@
                 const temp = Math.round(data.current.temperature_2m) + '°C';
                 
                 const weatherCodes = {
-                    0: '☀️ Clear', 1: '🌤️ Mostly Clear', 2: '⛅ Partly Cloudy', 3: '☁️ Cloudy',
-                    45: '🌫️ Foggy', 48: '🌫️ Foggy', 51: '🌦️ Drizzle', 53: '🌦️ Drizzle',
-                    61: '🌧️ Rain', 63: '🌧️ Rain', 65: '🌧️ Heavy Rain', 
+                    0: '☀️ Clear', 1: '🌤️ Mostly Clear', 2: '⛅ Partly Cloudy', 3: '☁️ Overcast',
+                    45: '🌫️ Foggy', 48: '🌫️ Foggy', 
+                    51: '🌦️ Light Drizzle', 53: '🌦️ Drizzle', 55: '🌦️ Dense Drizzle',
+                    61: '🌧️ Light Rain', 63: '🌧️ Rain', 65: '🌧️ Heavy Rain', 
                     71: '🌨️ Snow', 73: '🌨️ Snow', 75: '🌨️ Heavy Snow',
-                    80: '🌦️ Showers', 81: '🌧️ Showers', 95: '⛈️ Thunderstorm'
+                    80: '🌦️ Light Showers', 81: '🌧️ Rain Showers', 82: '⛈️ Heavy Showers',
+                    95: '⛈️ Thunderstorm'
                 };
                 
-                const condition = weatherCodes[data.current.weather_code] || '🌤️';
+                const condition = weatherCodes[data.current.weather_code] || '🌤️ Variable';
                 const rain = (data.current.precipitation_probability || 0) + '%';
 
                 // Main weather section
@@ -1252,3 +1262,4 @@
     </script>
 </body>
 </html>
+```
