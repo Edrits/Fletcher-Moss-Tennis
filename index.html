@@ -1,19 +1,3 @@
-You do not need to provide any more information. The image you uploaded explains the exact issue. 
-
-### Why the logo was showing up so small:
-Looking at the image file you attached, **the image itself is a very tall vertical rectangle with a large amount of empty space at the top and bottom.** 
-
-When the browser was instructed to set `height: 110px` or `height: 140px`, it was scaling the *entire* tall vertical frame down to that size, which shrunk the actual circular logo in the middle.
-
-### How this has been resolved:
-Instead of forcing you to crop the image file manually, I used a modern CSS feature called **`object-fit: cover`** in a forced square container. This programmatically crops out the blank space at the top and bottom of your image, zooming directly in on the circular badge.
-
-* **For the header logo:** It is now set to a square `110px` by `110px` (or `65px` on mobile), utilizes a negative left margin to push it closer to the edge, and fits beautifully in the top bar.
-* **For the footer logo:** Both the Fletcher Moss logo and the MCR Active logo are now set to exactly `110px` in height, and the Fletcher Moss logo's whitespace is cropped out, making their visual sizes match.
-
-Here is your updated, copy-paste ready **`index.html`** file:
-
-```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
