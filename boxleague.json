@@ -5,13 +5,19 @@
       "name": "Group A (Box 1)",
       "players": [
         {
+          "name": "Evie",
+          "played": 2,
+          "won": 1,
+          "points": 4
+        },
+        {
           "name": "Art",
           "played": 1,
           "won": 1,
           "points": 3
         },
         {
-          "name": "Evie",
+          "name": "Rebecca",
           "played": 1,
           "won": 0,
           "points": 1
@@ -27,12 +33,6 @@
           "played": 0,
           "won": 0,
           "points": 0
-        },
-        {
-          "name": "Rebecca",
-          "played": 0,
-          "won": 0,
-          "points": 0
         }
       ],
       "matches": [
@@ -42,6 +42,13 @@
           "score": "0",
           "winner": "Art",
           "date": "2026-06-29T21:28:29.766Z"
+        },
+        {
+          "player1": "Evie",
+          "player2": "Rebecca",
+          "score": "6-4, 6-3, 6-2",
+          "winner": "Evie",
+          "date": "2026-06-29T21:31:00.656Z"
         }
       ]
     },
