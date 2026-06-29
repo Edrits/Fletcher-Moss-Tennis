@@ -6,18 +6,18 @@
       "players": [
         {
           "name": "Sarah Jenkins",
-          "played": 2,
-          "won": 2,
-          "points": 6
-        },
-        {
-          "name": "Chris Keaney",
-          "played": 1,
-          "won": 0,
-          "points": 1
+          "played": 3,
+          "won": 3,
+          "points": 9
         },
         {
           "name": "Susan Keaney",
+          "played": 2,
+          "won": 0,
+          "points": 2
+        },
+        {
+          "name": "Chris Keaney",
           "played": 1,
           "won": 0,
           "points": 1
@@ -43,6 +43,13 @@
           "score": "6-2 2-6 6-3",
           "winner": "Sarah Jenkins",
           "date": "2026-06-29T20:59:28.611Z"
+        },
+        {
+          "player1": "Sarah Jenkins",
+          "player2": "Susan Keaney",
+          "score": "6-2 2-6 6-3",
+          "winner": "Sarah Jenkins",
+          "date": "2026-06-29T20:59:29.458Z"
         }
       ]
     },
