@@ -4,11 +4,36 @@
       "id": "box-1",
       "name": "Group A (Box 1)",
       "players": [
-        {"name": "Player 1", "played": 0, "won": 0, "points": 0},
-        {"name": "Player 2", "played": 0, "won": 0, "points": 0},
-        {"name": "Player 3", "played": 0, "won": 0, "points": 0},
-        {"name": "Player 4", "played": 0, "won": 0, "points": 0},
-        {"name": "Player 5", "played": 0, "won": 0, "points": 0}
+        {
+          "name": "Art",
+          "played": 0,
+          "won": 0,
+          "points": 0
+        },
+        {
+          "name": "Evie",
+          "played": 0,
+          "won": 0,
+          "points": 0
+        },
+        {
+          "name": "Bridget",
+          "played": 0,
+          "won": 0,
+          "points": 0
+        },
+        {
+          "name": "Ben",
+          "played": 0,
+          "won": 0,
+          "points": 0
+        },
+        {
+          "name": "Rebecca",
+          "played": 0,
+          "won": 0,
+          "points": 0
+        }
       ],
       "matches": []
     },
@@ -16,11 +41,36 @@
       "id": "box-2",
       "name": "Group B (Box 2)",
       "players": [
-        {"name": "Player 1", "played": 0, "won": 0, "points": 0},
-        {"name": "Player 2", "played": 0, "won": 0, "points": 0},
-        {"name": "Player 3", "played": 0, "won": 0, "points": 0},
-        {"name": "Player 4", "played": 0, "won": 0, "points": 0},
-        {"name": "Player 5", "played": 0, "won": 0, "points": 0}
+        {
+          "name": "Player 1",
+          "played": 0,
+          "won": 0,
+          "points": 0
+        },
+        {
+          "name": "Player 2",
+          "played": 0,
+          "won": 0,
+          "points": 0
+        },
+        {
+          "name": "Player 3",
+          "played": 0,
+          "won": 0,
+          "points": 0
+        },
+        {
+          "name": "Player 4",
+          "played": 0,
+          "won": 0,
+          "points": 0
+        },
+        {
+          "name": "Player 5",
+          "played": 0,
+          "won": 0,
+          "points": 0
+        }
       ],
       "matches": []
     },
@@ -28,11 +78,36 @@
       "id": "box-3",
       "name": "Group C (Box 3)",
       "players": [
-        {"name": "Player 1", "played": 0, "won": 0, "points": 0},
-        {"name": "Player 2", "played": 0, "won": 0, "points": 0},
-        {"name": "Player 3", "played": 0, "won": 0, "points": 0},
-        {"name": "Player 4", "played": 0, "won": 0, "points": 0},
-        {"name": "Player 5", "played": 0, "won": 0, "points": 0}
+        {
+          "name": "Player 1",
+          "played": 0,
+          "won": 0,
+          "points": 0
+        },
+        {
+          "name": "Player 2",
+          "played": 0,
+          "won": 0,
+          "points": 0
+        },
+        {
+          "name": "Player 3",
+          "played": 0,
+          "won": 0,
+          "points": 0
+        },
+        {
+          "name": "Player 4",
+          "played": 0,
+          "won": 0,
+          "points": 0
+        },
+        {
+          "name": "Player 5",
+          "played": 0,
+          "won": 0,
+          "points": 0
+        }
       ],
       "matches": []
     },
@@ -40,11 +115,36 @@
       "id": "box-4",
       "name": "Group D (Box 4)",
       "players": [
-        {"name": "Player 1", "played": 0, "won": 0, "points": 0},
-        {"name": "Player 2", "played": 0, "won": 0, "points": 0},
-        {"name": "Player 3", "played": 0, "won": 0, "points": 0},
-        {"name": "Player 4", "played": 0, "won": 0, "points": 0},
-        {"name": "Player 5", "played": 0, "won": 0, "points": 0}
+        {
+          "name": "Player 1",
+          "played": 0,
+          "won": 0,
+          "points": 0
+        },
+        {
+          "name": "Player 2",
+          "played": 0,
+          "won": 0,
+          "points": 0
+        },
+        {
+          "name": "Player 3",
+          "played": 0,
+          "won": 0,
+          "points": 0
+        },
+        {
+          "name": "Player 4",
+          "played": 0,
+          "won": 0,
+          "points": 0
+        },
+        {
+          "name": "Player 5",
+          "played": 0,
+          "won": 0,
+          "points": 0
+        }
       ],
       "matches": []
     },
@@ -52,11 +152,36 @@
       "id": "box-5",
       "name": "Group E (Box 5)",
       "players": [
-        {"name": "Player 1", "played": 0, "won": 0, "points": 0},
-        {"name": "Player 2", "played": 0, "won": 0, "points": 0},
-        {"name": "Player 3", "played": 0, "won": 0, "points": 0},
-        {"name": "Player 4", "played": 0, "won": 0, "points": 0},
-        {"name": "Player 5", "played": 0, "won": 0, "points": 0}
+        {
+          "name": "Player 1",
+          "played": 0,
+          "won": 0,
+          "points": 0
+        },
+        {
+          "name": "Player 2",
+          "played": 0,
+          "won": 0,
+          "points": 0
+        },
+        {
+          "name": "Player 3",
+          "played": 0,
+          "won": 0,
+          "points": 0
+        },
+        {
+          "name": "Player 4",
+          "played": 0,
+          "won": 0,
+          "points": 0
+        },
+        {
+          "name": "Player 5",
+          "played": 0,
+          "won": 0,
+          "points": 0
+        }
       ],
       "matches": []
     }
