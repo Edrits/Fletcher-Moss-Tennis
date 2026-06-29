@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Box League | Fletcher Moss Social Tennis Club</title>
+    <link rel="icon" type="image/png" href="Fletcher moss Social Tennis Logo (1).png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,600;0,700;1,600&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html, body { overflow-x: hidden; width: 100%; scroll-behavior: smooth; }
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-weight: 500;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(to bottom, #c8e6c9 0%, #d4edd6 50%, #e8f5e9 100%);
+        }
+        h1, h2, h3, h4, .top-bar, .btn, .nav-links a, .mobile-nav a, .admin-panel input, .admin-panel textarea {
+            font-family: 'Lora', serif;
+            font-weight: 600;
+        }
+        .top-bar {
+            background: rgba(45, 80, 22, 0.95);
+            padding: 12px 30px;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.35);
+            position: sticky;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1000;
+        }
+        .top-bar-inner {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+        }
+        .top-bar-left { display: flex; align-items: center; gap: 20px; flex: 1; }
+        .top-logo {
+            width: 110px;
+            height: 110px;
+            object-fit: cover;
+            object-position: center;
+            margin-left: -15px;
+            filter: drop-shadow(4px 3px 6px rgba(0,0,0,0.5));
+            flex-shrink: 0;
+        }
+        .top-title h1 { font-size: 2.2em; font-weight: 700; color: white; margin-bottom: 5px; white-space: nowrap; }
+        .top-title p { font-size: 1.2em; color: rgba(255,255,255,0.9); white-space: nowrap; }
+        .nav-links { display: flex; gap: 20px; align-items: center; flex-shrink: 0; }
+        .nav-links a { color: white; text-decoration: none; font-size: 1em; font-weight: 600; transition: opacity 0.3s; }
+        .nav-links a:hover { opacity: 0.8; }
+        
+        .main-container {
+            max-width: 1000px;
+            margin: 40px auto 100px auto;
+            background: rgba(255, 255, 255, 0.98);
+            padding: 50px 40px;
+            border-radius: 20px;
+            box-shadow: 0 15px 50px rgba(0,0,0,0.3);
+        }
+
+        .box-container { margin-bottom: 40px; background: #f8f9fa; border-radius: 12px; padding: 25px; border-left: 6px solid #4a7c2c; }
+        .box-title { color: #2d5016; font-size: 1.8em; margin-bottom: 15px; border-bottom: 2px solid #ddd; padding-bottom: 5px; }
+        
+        table { width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 1.05em; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #ddd; }
+        th { background-color: #e8f5e9; color: #2d5016; font-weight: 600; }
+        
+        .form-section { background: linear-gradient(135deg, #f0f4ee 0%, #e8ede4 100%); padding: 30px; border-radius: 12px; border: 2px solid #dce6d8; margin-bottom: 40px; }
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; font-weight: 600; margin-bottom: 5px; color: #2d5016; }
+        .form-group select, .form-group input { width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 6px; font-size: 1.05em; font-family: inherit; }
+        
+        .btn { background: #4a7c2c; color: white; border: none; padding: 12px 25px; border-radius: 6px; cursor: pointer; font-size: 1.1em; transition: background 0.3s; }
+        .btn:hover { background: #3a6c1c; }
+
+        .admin-panel { display: none; background: #fffcf5; padding: 25px; border-radius: 8px; margin-top: 30px; border: 2px solid #8b6f47; }
+        .admin-panel.active { display: block; }
+        .admin-panel textarea { width: 100%; min-height: 250px; font-family: monospace; font-size: 1em; padding: 12px; margin-bottom: 15px; resize: vertical; }
+        
+        footer { background: #2d5016; color: white; text-align: center; padding: 40px 20px; }
+
+        @media (max-width: 768px) {
+            .top-bar-inner { flex-direction: column; text-align: center; }
+            .top-logo { margin-left: 0; width: 80px; height: 80px; }
+            .top-title h1 { font-size: 1.5em; }
+            .main-container { padding: 25px 15px; margin: 20px 15px; }
+            table { font-size: 0.9em; }
+            th, td { padding: 8px 4px; }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="top-bar">
+        <div class="top-bar-inner">
+            <div class="top-bar-left">
+                <img src="Fletcher moss Social Tennis Logo (1).png" alt="Logo" class="top-logo">
+                <div class="top-title">
+                    <h1>🎾 Fletcher Moss Social Tennis</h1>
+                    <p>Didsbury Box League</p>
+                </div>
+            </div>
+            <nav class="nav-links">
+                <a href="index.html">Home</a>
+            </nav>
+        </div>
+    </header>
+
+    <div class="main-container">
+        <h2 style="color: #2d5016; margin-bottom: 30px;">🏆 Active Standings</h2>
+        
+        <!-- League Boxes Render Target -->
+        <div id="leagueBoxes">Loading league standings...</div>
+
+        <!-- Submit Score Form -->
+        <div class="form-section">
+            <h3 style="color: #2d5016; margin-bottom: 15px;">📝 Submit Match Result</h3>
+            <form id="scoreForm" onsubmit="submitScore(event)">
+                <div class="form-group">
+                    <label for="matchBoxId">Select Box Group</label>
+                    <select id="matchBoxId" required>
+                        <option value="">Select Group...</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="matchPlayer1">Player 1</label>
+                    <select id="matchPlayer1" required>
+                        <option value="">Select Box Group First</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="matchPlayer2">Player 2</label>
+                    <select id="matchPlayer2" required>
+                        <option value="">Select Box Group First</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="matchScore">Score (e.g. 6-4, 6-3)</label>
+                    <input type="text" id="matchScore" placeholder="Enter set scores" required>
+                </div>
+                <div class="form-group">
+                    <label for="matchWinner">Match Winner</label>
+                    <select id="matchWinner" required>
+                        <option value="">Select Players First</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn">Submit Score</button>
+            </form>
+        </div>
+
+        <!-- Admin Toggle -->
+        <div style="text-align: right;">
+            <button onclick="toggleAdmin()" style="background: none; border: none; color: #8b6f47; font-size: 0.9em; cursor: pointer; text-decoration: underline;">admin portal</button>
+        </div>
+        
+        <div id="adminPanel" class="admin-panel">
+            <h3 style="color: #8b6f47; margin-bottom: 15px;">Admin League Override</h3>
+            <div class="form-group">
+                <input type="password" id="adminPass" placeholder="Enter admin password">
+            </div>
+            <div class="form-group">
+                <label>League JSON Configuration (Edit directly to reset leagues or add players)</label>
+                <textarea id="leagueJson"></textarea>
+            </div>
+            <button class="btn" onclick="saveAdminLeague()">Save Structure</button>
+            <button class="btn" style="background: #999; margin-left: 10px;" onclick="toggleAdmin()">Cancel</button>
+        </div>
+    </div>
+
+    <footer>
+        <p><strong>Fletcher Moss Social Tennis Club</strong></p>
+        <p style="opacity: 0.7; font-size: 0.9em; margin-top: 10px;">Didsbury, Manchester</p>
+    </footer>
+
+    <script>
+        const API_URL = '/api/boxleague';
+        let leagueData = { boxes: [] };
+
+        async function loadLeague() {
+            try {
+                const response = await fetch(API_URL);
+                if (response.ok) {
+                    leagueData = await response.json();
+                    renderLeague();
+                } else {
+                    document.getElementById('leagueBoxes').textContent = "Failed to load standings.";
+                }
+            } catch (err) {
+                console.error(err);
+                document.getElementById('leagueBoxes').textContent = "Failed to load standings.";
+            }
+        }
+
+        function renderLeague() {
+            const container = document.getElementById('leagueBoxes');
+            container.innerHTML = '';
+
+            const boxSelect = document.getElementById('matchBoxId');
+            boxSelect.innerHTML = '<option value="">Select Group...</option>';
+
+            if (!leagueData.boxes || leagueData.boxes.length === 0) {
+                container.innerHTML = '<p style="text-align: center; color: #666;">No boxes configured. Admin can add them below.</p>';
+                return;
+            }
+
+            leagueData.boxes.forEach(box => {
+                // Populate Dropdown
+                const opt = document.createElement('option');
+                opt.value = box.id;
+                opt.textContent = box.name;
+                boxSelect.appendChild(opt);
+
+                // Render Tables
+                const boxSection = document.createElement('div');
+                boxSection.className = 'box-container';
+
+                let playerRows = box.players.map((p, index) => `
+                    <tr>
+                        <td><strong>${index + 1}</strong></td>
+                        <td>${p.name}</td>
+                        <td>${p.played || 0}</td>
+                        <td>${p.won || 0}</td>
+                        <td><strong>${p.points || 0}</strong></td>
+                    </tr>
+                `).join('');
+
+                let matchRows = (box.matches && box.matches.length > 0) 
+                    ? box.matches.slice(-5).reverse().map(m => `
+                        <li style="margin-bottom: 8px; list-style-type: none; font-size: 0.95em;">
+                            🎾 ${m.player1} vs ${m.player2} — <strong>${m.score}</strong> (Winner: ${m.winner})
+                        </li>
+                      `).join('')
+                    : '<li style="color: #888; list-style-type: none; font-size: 0.95em;">No matches played yet in this round.</li>';
+
+                boxSection.innerHTML = `
+                    <h3 class="box-title">${box.name}</h3>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th style="width: 50px;">Pos</th>
+                                <th>Player</th>
+                                <th style="width: 80px;">Played</th>
+                                <th style="width: 80px;">Won</th>
+                                <th style="width: 80px;">Points</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${playerRows}
+                        </tbody>
+                    </table>
+                    <h4 style="color: #2d5016; font-size: 1.1em; margin-bottom: 8px;">Recent Results</h4>
+                    <ul>
+                        ${matchRows}
+                    </ul>
+                `;
+                container.appendChild(boxSection);
+            });
+        }
+
+        // Smart dynamic dropdown logic for players in chosen box
+        const boxSelect = document.getElementById('matchBoxId');
+        const p1Select = document.getElementById('matchPlayer1');
+        const p2Select = document.getElementById('matchPlayer2');
+        const winnerSelect = document.getElementById('matchWinner');
+
+        boxSelect.addEventListener('change', () => {
+            const selectedBoxId = boxSelect.value;
+            const box = leagueData.boxes.find(b => b.id == selectedBoxId);
+            
+            p1Select.innerHTML = '<option value="">Select Player 1</option>';
+            p2Select.innerHTML = '<option value="">Select Player 2</option>';
+            winnerSelect.innerHTML = '<option value="">Select Players First</option>';
+            
+            if (box) {
+                box.players.forEach(p => {
+                    const opt1 = document.createElement('option');
+                    opt1.value = p.name;
+                    opt1.textContent = p.name;
+                    p1Select.appendChild(opt1);
+                    
+                    const opt2 = document.createElement('option');
+                    opt2.value = p.name;
+                    opt2.textContent = p.name;
+                    p2Select.appendChild(opt2);
+                });
+            }
+        });
+
+        function updateWinnerOptions() {
+            const p1 = p1Select.value;
+            const p2 = p2Select.value;
+            winnerSelect.innerHTML = '<option value="">Select Winner</option>';
+            
+            if (p1 && p2 && p1 === p2) {
+                alert("Player 1 and Player 2 cannot be the same person.");
+                p2Select.value = '';
+                return;
+            }
+
+            if (p1) {
+                const opt = document.createElement('option');
+                opt.value = p1;
+                opt.textContent = p1;
+                winnerSelect.appendChild(opt);
+            }
+            if (p2) {
+                const opt = document.createElement('option');
+                opt.value = p2;
+                opt.textContent = p2;
+                winnerSelect.appendChild(opt);
+            }
+        }
+        p1Select.addEventListener('change', updateWinnerOptions);
+        p2Select.addEventListener('change', updateWinnerOptions);
+
+        // Submit Score Function
+        async function submitScore(e) {
+            e.preventDefault();
+            const boxId = boxSelect.value;
+            const p1 = p1Select.value;
+            const p2 = p2Select.value;
+            const score = document.getElementById('matchScore').value;
+            const winner = winnerSelect.value;
+
+            if (p1 === p2) {
+                alert("Player 1 and Player 2 must be different.");
+                return;
+            }
+
+            try {
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        type: 'submit_score',
+                        match: { boxId, player1: p1, player2: p2, score, winner }
+                    })
+                });
+
+                if (response.ok) {
+                    alert("✅ Score submitted successfully!");
+                    document.getElementById('scoreForm').reset();
+                    p1Select.innerHTML = '<option value="">Select Box Group First</option>';
+                    p2Select.innerHTML = '<option value="">Select Box Group First</option>';
+                    winnerSelect.innerHTML = '<option value="">Select Players First</option>';
+                    await loadLeague();
+                } else {
+                    const result = await response.json();
+                    alert("❌ Error: " + (result.error || "Failed to submit score"));
+                }
+            } catch (err) {
+                console.error(err);
+                alert("❌ Connection error. Try again.");
+            }
+        }
+
+        // Admin Panel Functions
+        function toggleAdmin() {
+            const panel = document.getElementById('adminPanel');
+            panel.classList.toggle('active');
+            if (panel.classList.contains('active')) {
+                document.getElementById('leagueJson').value = JSON.stringify(leagueData, null, 2);
+                document.getElementById('adminPass').value = '';
+            }
+        }
+
+        async function saveAdminLeague() {
+            const password = document.getElementById('adminPass').value;
+            const rawJson = document.getElementById('leagueJson').value;
+
+            let parsedData;
+            try {
+                parsedData = JSON.parse(rawJson);
+            } catch (e) {
+                alert("❌ Invalid JSON formatting. Check your brackets.");
+                return;
+            }
+
+            try {
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        type: 'admin_update',
+                        password: password,
+                        data: parsedData
+                    })
+                });
+
+                if (response.ok) {
+                    alert("✅ Box League structural updates saved!");
+                    toggleAdmin();
+                    await loadLeague();
+                } else {
+                    const result = await response.json();
+                    alert("❌ Access Denied: " + (result.error || "Failed to save"));
+                }
+            } catch (err) {
+                console.error(err);
+                alert("❌ Server error. Try again.");
+            }
+        }
+
+        // Initialize on load
+        loadLeague();
+    </script>
+</body>
+</html>
