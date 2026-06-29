@@ -42,16 +42,16 @@
           "points": 3
         },
         {
-          "name": "Voluntary Player",
+          "name": "John Doe",
           "played": 1,
-          "won": 0,
-          "points": 1
+          "won": 1,
+          "points": 3
         },
         {
-          "name": "John Doe",
-          "played": 0,
+          "name": "Voluntary Player",
+          "played": 2,
           "won": 0,
-          "points": 0
+          "points": 2
         }
       ],
       "matches": [
@@ -61,6 +61,13 @@
           "score": "1",
           "winner": "Jane Smith",
           "date": "2026-06-29T20:44:34.909Z"
+        },
+        {
+          "player1": "Voluntary Player",
+          "player2": "John Doe",
+          "score": "1",
+          "winner": "John Doe",
+          "date": "2026-06-29T20:45:06.046Z"
         }
       ]
     }
