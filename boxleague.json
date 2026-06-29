@@ -5,13 +5,19 @@
       "name": "Group A (Box 1)",
       "players": [
         {
-          "name": "Susan Keaney",
-          "played": 0,
-          "won": 0,
-          "points": 0
+          "name": "Sarah Jenkins",
+          "played": 1,
+          "won": 1,
+          "points": 3
         },
         {
           "name": "Chris Keaney",
+          "played": 1,
+          "won": 0,
+          "points": 1
+        },
+        {
+          "name": "Susan Keaney",
           "played": 0,
           "won": 0,
           "points": 0
@@ -21,15 +27,17 @@
           "played": 0,
           "won": 0,
           "points": 0
-        },
-        {
-          "name": "Sarah Jenkins",
-          "played": 0,
-          "won": 0,
-          "points": 0
         }
       ],
-      "matches": []
+      "matches": [
+        {
+          "player1": "Sarah Jenkins",
+          "player2": "Chris Keaney",
+          "score": "6-4 6-2",
+          "winner": "Sarah Jenkins",
+          "date": "2026-06-29T20:57:54.246Z"
+        }
+      ]
     },
     {
       "id": "box-2",
