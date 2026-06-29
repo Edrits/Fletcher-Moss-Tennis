@@ -18,7 +18,7 @@
             color: #333;
             background: linear-gradient(to bottom, #c8e6c9 0%, #d4edd6 50%, #e8f5e9 100%);
         }
-        h1, h2, h3, h4, .top-bar, .btn, .nav-links a, .mobile-nav a, .admin-panel input, .admin-panel textarea {
+        h1, h2, h3, h4, .top-bar, .btn, .nav-links a, .mobile-nav a, .admin-panel input {
             font-family: 'Lora', serif;
             font-weight: 600;
         }
@@ -82,8 +82,20 @@
 
         .admin-panel { display: none; background: #fffcf5; padding: 25px; border-radius: 8px; margin-top: 30px; border: 2px solid #8b6f47; }
         .admin-panel.active { display: block; }
-        .admin-panel textarea { width: 100%; min-height: 250px; font-family: monospace; font-size: 1em; padding: 12px; margin-bottom: 15px; resize: vertical; }
         
+        .admin-box-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        .admin-box-card {
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 15px;
+        }
+
         footer { background: #2d5016; color: white; text-align: center; padding: 40px 20px; }
 
         @media (max-width: 768px) {
@@ -161,16 +173,22 @@
         </div>
         
         <div id="adminPanel" class="admin-panel">
-            <h3 style="color: #8b6f47; margin-bottom: 15px;">Admin League Override</h3>
+            <h3 style="color: #8b6f47; margin-bottom: 15px;">Admin Player Management</h3>
+            
             <div class="form-group">
                 <input type="password" id="adminPass" placeholder="Enter admin password">
             </div>
-            <div class="form-group">
-                <label>League JSON Configuration (Edit directly to reset leagues or add players)</label>
-                <textarea id="leagueJson"></textarea>
+
+            <!-- Dynamic Player Input Containers -->
+            <div class="admin-box-grid" id="adminBoxesContainer"></div>
+
+            <div class="form-group" style="display: flex; align-items: center; gap: 10px; margin-top: 20px;">
+                <input type="checkbox" id="clearMatchesCheck" style="width: auto; cursor: pointer;">
+                <label for="clearMatchesCheck" style="color: #c0392b; cursor: pointer; font-weight: 600;">⚠️ Reset Match History (Tick to start a brand new box round)</label>
             </div>
-            <button class="btn" onclick="saveAdminLeague()">Save Structure</button>
-            <button class="btn" style="background: #999; margin-left: 10px;" onclick="toggleAdmin()">Cancel</button>
+
+            <button class="btn" onclick="saveAdminLeague()" style="margin-top: 15px;">Save Player Names</button>
+            <button class="btn" style="background: #999; margin-left: 10px; margin-top: 15px;" onclick="toggleAdmin()">Cancel</button>
         </div>
     </div>
 
@@ -206,18 +224,16 @@
             boxSelect.innerHTML = '<option value="">Select Group...</option>';
 
             if (!leagueData.boxes || leagueData.boxes.length === 0) {
-                container.innerHTML = '<p style="text-align: center; color: #666;">No boxes configured. Admin can add them below.</p>';
+                container.innerHTML = '<p style="text-align: center; color: #666;">No boxes configured.</p>';
                 return;
             }
 
             leagueData.boxes.forEach(box => {
-                // Populate Dropdown
                 const opt = document.createElement('option');
                 opt.value = box.id;
                 opt.textContent = box.name;
                 boxSelect.appendChild(opt);
 
-                // Render Tables
                 const boxSection = document.createElement('div');
                 boxSection.className = 'box-container';
 
@@ -264,7 +280,6 @@
             });
         }
 
-        // Smart dynamic dropdown logic for players in chosen box
         const boxSelect = document.getElementById('matchBoxId');
         const p1Select = document.getElementById('matchPlayer1');
         const p2Select = document.getElementById('matchPlayer2');
@@ -320,7 +335,6 @@
         p1Select.addEventListener('change', updateWinnerOptions);
         p2Select.addEventListener('change', updateWinnerOptions);
 
-        // Submit Score Function
         async function submitScore(e) {
             e.preventDefault();
             const boxId = boxSelect.value;
@@ -328,11 +342,6 @@
             const p2 = p2Select.value;
             const score = document.getElementById('matchScore').value;
             const winner = winnerSelect.value;
-
-            if (p1 === p2) {
-                alert("Player 1 and Player 2 must be different.");
-                return;
-            }
 
             try {
                 const response = await fetch(API_URL, {
@@ -361,41 +370,86 @@
             }
         }
 
-        // Admin Panel Functions
+        // Render dynamic forms inside Admin Portal
         function toggleAdmin() {
             const panel = document.getElementById('adminPanel');
+            const container = document.getElementById('adminBoxesContainer');
+            
             panel.classList.toggle('active');
+            
             if (panel.classList.contains('active')) {
-                document.getElementById('leagueJson').value = JSON.stringify(leagueData, null, 2);
                 document.getElementById('adminPass').value = '';
+                document.getElementById('clearMatchesCheck').checked = false;
+                container.innerHTML = '';
+
+                leagueData.boxes.forEach(box => {
+                    const card = document.createElement('div');
+                    card.className = 'admin-box-card';
+                    
+                    let playerInputs = '';
+                    for (let i = 0; i < 5; i++) {
+                        const currentPlayer = box.players[i] || { name: `Player ${i + 1}` };
+                        playerInputs += `
+                            <div class="form-group" style="margin-bottom: 8px;">
+                                <label style="font-size: 0.85em; color: #666; font-weight: 500;">Slot ${i + 1}</label>
+                                <input type="text" class="admin-player-input" data-box-id="${box.id}" data-index="${i}" value="${currentPlayer.name}" required style="padding: 6px;">
+                            </div>
+                        `;
+                    }
+
+                    card.innerHTML = `
+                        <h4 style="color: #2d5016; margin-bottom: 12px; border-bottom: 1px solid #eee; padding-bottom: 4px;">${box.name}</h4>
+                        ${playerInputs}
+                    `;
+                    container.appendChild(card);
+                });
             }
         }
 
         async function saveAdminLeague() {
             const password = document.getElementById('adminPass').value;
-            const rawJson = document.getElementById('leagueJson').value;
+            const clearMatches = document.getElementById('clearMatchesCheck').checked;
 
-            let parsedData;
-            try {
-                parsedData = JSON.parse(rawJson);
-            } catch (e) {
-                alert("❌ Invalid JSON formatting. Check your brackets.");
+            if (!password) {
+                alert("Please enter your admin password.");
                 return;
             }
+
+            // Group input values by Box ID
+            const updatedBoxes = [];
+            leagueData.boxes.forEach(box => {
+                const inputs = document.querySelectorAll(`.admin-player-input[data-box-id="${box.id}"]`);
+                const players = [];
+                
+                // Sort inputs by index to ensure slot consistency
+                const sortedInputs = Array.from(inputs).sort((a, b) => {
+                    return parseInt(a.getAttribute('data-index')) - parseInt(b.getAttribute('data-index'));
+                });
+
+                sortedInputs.forEach(input => {
+                    players.push(input.value.trim());
+                });
+
+                updatedBoxes.push({
+                    id: box.id,
+                    players: players
+                });
+            });
 
             try {
                 const response = await fetch(API_URL, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
-                        type: 'admin_update',
-                        password: password,
-                        data: parsedData
+                        type: 'admin_update_players',
+                        password,
+                        updatedBoxes,
+                        clearMatches
                     })
                 });
 
                 if (response.ok) {
-                    alert("✅ Box League structural updates saved!");
+                    alert("✅ Box League updated successfully!");
                     toggleAdmin();
                     await loadLeague();
                 } else {
@@ -404,11 +458,10 @@
                 }
             } catch (err) {
                 console.error(err);
-                alert("❌ Server error. Try again.");
+                alert("❌ Server connection error. Try again.");
             }
         }
 
-        // Initialize on load
         loadLeague();
     </script>
 </body>
