@@ -5,7 +5,6 @@ export default async function handler(req, res) {
   const GITHUB_REPO = 'Fletcher-Moss-Tennis';
   const DATA_FILE = 'boxleague.json';
 
-  // Enable CORS
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
@@ -38,9 +37,9 @@ export default async function handler(req, res) {
       }
     }
 
-    // POST - Update data
+    // POST - Update box league data
     if (req.method === 'POST') {
-      const { type, password, data, match } = req.body;
+      const { type, password, updatedBoxes, clearMatches, match } = req.body;
 
       let sha = null;
       let currentData = { boxes: [] };
@@ -61,11 +60,73 @@ export default async function handler(req, res) {
 
       let dataToSave = currentData;
 
-      if (type === 'admin_update') {
+      if (type === 'admin_update_players') {
         if (password !== ADMIN_PASSWORD) {
           return res.status(401).json({ error: 'Incorrect password' });
         }
-        dataToSave = data; 
+
+        updatedBoxes.forEach(ub => {
+          const box = dataToSave.boxes.find(b => b.id === ub.id);
+          if (box) {
+            if (clearMatches) {
+              box.matches = [];
+            }
+
+            // Map and update names cleanly
+            box.players = ub.players.map((newName, idx) => {
+              const cleanName = newName.trim() || `Player ${idx + 1}`;
+              const oldPlayer = box.players[idx];
+
+              // If name didn't change and we aren't clearing, preserve stats
+              if (!clearMatches && oldPlayer && oldPlayer.name === cleanName) {
+                return oldPlayer;
+              } else {
+                return { name: cleanName, played: 0, won: 0, points: 0 };
+              }
+            });
+          }
+        });
+
+        // Recalculate remaining matches safely (discards matches of deleted/renamed players)
+        if (!clearMatches) {
+          dataToSave.boxes.forEach(box => {
+            box.players.forEach(p => {
+              p.played = 0;
+              p.won = 0;
+              p.points = 0;
+            });
+
+            if (box.matches) {
+              box.matches = box.matches.filter(m => {
+                const p1Exists = box.players.some(p => p.name === m.player1);
+                const p2Exists = box.players.some(p => p.name === m.player2);
+                return p1Exists && p2Exists;
+              });
+
+              box.matches.forEach(m => {
+                const p1 = box.players.find(p => p.name === m.player1);
+                const p2 = box.players.find(p => p.name === m.player2);
+
+                if (p1 && p2) {
+                  p1.played += 1;
+                  p2.played += 1;
+
+                  if (m.winner === m.player1) {
+                    p1.won += 1;
+                    p1.points += 3;
+                    p2.points += 1;
+                  } else if (m.winner === m.player2) {
+                    p2.won += 1;
+                    p2.points += 3;
+                    p1.points += 1;
+                  }
+                }
+              });
+            }
+            box.players.sort((a, b) => b.points - a.points || b.won - a.won);
+          });
+        }
+
       } else if (type === 'submit_score') {
         const { boxId, player1, player2, score, winner } = match;
         
@@ -83,7 +144,7 @@ export default async function handler(req, res) {
           date: new Date().toISOString()
         });
 
-        // Safe recalculation of standings based on match history
+        // Safe recalculation
         box.players.forEach(p => {
           p.played = 0;
           p.won = 0;
@@ -100,8 +161,8 @@ export default async function handler(req, res) {
 
             if (m.winner === m.player1) {
               p1.won += 1;
-              p1.points += 3; // Win = 3 points
-              p2.points += 1; // Played/Loss = 1 point
+              p1.points += 3;
+              p2.points += 1;
             } else if (m.winner === m.player2) {
               p2.won += 1;
               p2.points += 3;
@@ -110,7 +171,6 @@ export default async function handler(req, res) {
           }
         });
 
-        // Sort by points (descending), then won (descending)
         box.players.sort((a, b) => b.points - a.points || b.won - a.won);
       } else {
         return res.status(400).json({ error: 'Invalid update type' });
@@ -126,7 +186,7 @@ export default async function handler(req, res) {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          message: type === 'admin_update' ? 'Admin updated box league' : 'Submitted match score',
+          message: type === 'admin_update_players' ? 'Admin updated players' : 'Submitted match score',
           content: encodedContent,
           sha: sha
         })
