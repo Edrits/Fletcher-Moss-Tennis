@@ -1,0 +1,25 @@
+{
+  "boxes": [
+    {
+      "id": "box-1",
+      "name": "Group A (Box 1)",
+      "players": [
+        {"name": "Susan Keaney", "played": 0, "won": 0, "points": 0},
+        {"name": "Chris Keaney", "played": 0, "won": 0, "points": 0},
+        {"name": "Bruno Truong", "played": 0, "won": 0, "points": 0},
+        {"name": "Sarah Jenkins", "played": 0, "won": 0, "points": 0}
+      ],
+      "matches": []
+    },
+    {
+      "id": "box-2",
+      "name": "Group B (Box 2)",
+      "players": [
+        {"name": "John Doe", "played": 0, "won": 0, "points": 0},
+        {"name": "Jane Smith", "played": 0, "won": 0, "points": 0},
+        {"name": "Voluntary Player", "played": 0, "won": 0, "points": 0}
+      ],
+      "matches": []
+    }
+  ]
+}
