@@ -195,7 +195,7 @@
         }
 
         .mobile-nav a:hover {
-            background: rgba(255,255,255,0.1);
+            background: rgba(255, 255, 255, 0.1);
         }
 
         /* Main Content Container */
@@ -744,9 +744,59 @@
             transform: translateY(-3px) !important;
             box-shadow: 0 8px 25px rgba(0,0,0,0.5) !important;
         }
+
+        /* Tasteful Floating WhatsApp Widget */
+        .whatsapp-float {
+            position: fixed;
+            bottom: 90px; /* Sits exactly 14px above the scroll-top button (which is at 30px) */
+            right: 30px;
+            background: #2d5016; /* Matches your club's deep green instead of neon */
+            color: white;
+            width: 46px; /* Symmetrical size to your scroll-top button */
+            height: 46px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            z-index: 998; /* Placed cleanly underneath scroll-top's z-index */
+            transition: transform 0.2s ease, background-color 0.2s ease;
+            text-decoration: none;
+        }
+
+        .whatsapp-float:hover {
+            transform: translateY(-3px);
+            background: #4a7c2c; /* Transitions to your sage green on hover */
+        }
+
+        .whatsapp-icon {
+            width: 22px;
+            height: 22px;
+            fill: currentColor;
+        }
+
+        /* Dynamic Spinner for fetch states */
+        .spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border-left-color: #4a7c2c;
+            animation: spin 0.8s linear infinite;
+            margin: 30px auto;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
     </style>
 </head>
 <body>
+
+    <!-- Dynamic Rain Alert Banner -->
+    <div id="rainAlertBanner" style="display: none; background: #c0392b; color: white; text-align: center; padding: 12px 20px; font-weight: 600; font-size: 1em; position: relative; z-index: 1100; border-bottom: 2px solid rgba(0,0,0,0.1);">
+        ☔ High rain risk today in Didsbury. Check the WhatsApp group for session updates!
+    </div>
 
     <header class="top-bar" id="topBar">
         <div class="top-bar-inner">
@@ -999,6 +1049,13 @@
     <!-- Scroll to top button -->
     <button class="scroll-top" id="scrollTop" onclick="window.scrollTo({top:0,behavior:'smooth'})" aria-label="Back to top">↑</button>
 
+    <!-- Tasteful Floating WhatsApp Widget -->
+    <a href="https://chat.whatsapp.com/HTYASTUXn6oL8Eix7E8B4P?s=cl&p=i&mlu=4" target="_blank" class="whatsapp-float" aria-label="Join WhatsApp Group" title="Join WhatsApp Group">
+        <svg viewBox="0 0 24 24" class="whatsapp-icon" xmlns="http://www.w3.org/2000/svg">
+            <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946C.06 5.348 5.397.06 11.948.06c3.179.002 6.161 1.24 8.402 3.486 2.24 2.246 3.475 5.23 3.475 8.417-.004 6.597-5.34 11.884-11.892 11.884-.13 0-.26-.003-.39-.01a11.83 11.83 0 0 1-5.69-1.488L0 24zm6.59-4.846c1.1.65 2.185.99 3.307 1.002h.01c5.44 0 9.866-4.372 9.87-9.746.002-2.593-1.002-5.032-2.83-6.862C15.117 1.72 12.673.712 10.08.712c-5.45 0-9.877 4.375-9.88 9.75 0 2.05.535 4.05 1.55 5.8l-.2 1.13-.1 1.07 1.11-.29 1.18-.31c1.7 1.02 3.515 1.57 5.3 1.57zm11.215-4.7c-.1-.17-.3-.27-.6-.42-.3-.15-1.8-.89-2.07-.99-.27-.1-.47-.15-.67.15-.2.3-.77.99-.95 1.19-.18.2-.35.22-.65.07-.3-.15-1.27-.47-2.42-1.51-.9-.8-1.5-1.79-1.68-2.1-.18-.3-.02-.46.13-.61.13-.13.3-.35.45-.52.15-.17.2-.3.3-.5.1-.2.05-.37-.02-.52-.07-.15-.67-1.63-.92-2.23-.24-.6-.49-.52-.67-.52-.17 0-.37-.02-.57-.02-.2 0-.52.07-.8.37-.27.3-1.07 1.05-1.07 2.56 0 1.51 1.1 2.97 1.25 3.17.15.2 2.17 1.66 5.27 2.99.74.31 1.31.5 1.76.65.74.24 1.41.2 1.94.13.59-.08 1.8-.74 2.05-1.46.25-.72.25-1.34.18-1.46z"/>
+        </svg>
+    </a>
+
     <!-- Structured Data for Local Business SEO -->
     <script type="application/ld+json">
     {
@@ -1067,9 +1124,11 @@
         // Vercel serverless function endpoint
         const API_URL = '/api/noticeboard';
 
-        // Load and display notice
+        // Load and display notice with spinner fallback
         async function loadNotice() {
             const display = document.getElementById('noticeDisplay');
+            display.innerHTML = '<div class="spinner"></div>';
+            display.classList.remove('notice-empty');
             
             try {
                 const response = await fetch(API_URL);
@@ -1183,7 +1242,7 @@
             lastScrollPosition = currentScroll;
         });
 
-        // Weather fetch
+        // Weather fetch & Rain Alert logic
         async function getWeather() {
             try {
                 const response = await fetch('https://api.open-meteo.com/v1/forecast?latitude=53.41&longitude=-2.23&current=temperature_2m,weather_code,precipitation_probability&timezone=Europe/London');
@@ -1202,7 +1261,8 @@
                 };
                 
                 const condition = weatherCodes[data.current.weather_code] || '🌤️ Variable';
-                const rain = (data.current.precipitation_probability || 0) + '%';
+                const rainProb = data.current.precipitation_probability || 0;
+                const rain = rainProb + '%';
 
                 // Main weather section
                 document.getElementById('temp').textContent = temp;
@@ -1212,6 +1272,14 @@
                 // Hero pill
                 document.getElementById('heroTemp').textContent = temp;
                 document.getElementById('heroConditions').textContent = condition + '  · ' + rain + ' rain';
+
+                // Rain Alert Banner Trigger
+                const banner = document.getElementById('rainAlertBanner');
+                if (rainProb >= 60) {
+                    banner.style.display = 'block';
+                } else {
+                    banner.style.display = 'none';
+                }
 
             } catch (error) {
                 console.error('Weather fetch failed:', error);
