@@ -6,13 +6,13 @@
       "players": [
         {
           "name": "Evie",
-          "played": 0,
-          "won": 0,
-          "points": 0
+          "played": 1,
+          "won": 1,
+          "points": 1
         },
         {
           "name": "Art",
-          "played": 0,
+          "played": 1,
           "won": 0,
           "points": 0
         },
@@ -35,7 +35,15 @@
           "points": 0
         }
       ],
-      "matches": []
+      "matches": [
+        {
+          "player1": "Evie",
+          "player2": "Art",
+          "score": "0",
+          "winner": "Evie",
+          "date": "2026-06-30T18:24:59.728Z"
+        }
+      ]
     },
     {
       "id": "box-2",
