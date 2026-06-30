@@ -11,6 +11,12 @@
           "points": 1
         },
         {
+          "name": "Bridget",
+          "played": 1,
+          "won": 1,
+          "points": 1
+        },
+        {
           "name": "Art",
           "played": 1,
           "won": 0,
@@ -23,14 +29,8 @@
           "points": 0
         },
         {
-          "name": "Bridget",
-          "played": 0,
-          "won": 0,
-          "points": 0
-        },
-        {
           "name": "Ben",
-          "played": 0,
+          "played": 1,
           "won": 0,
           "points": 0
         }
@@ -42,6 +42,13 @@
           "score": "0",
           "winner": "Evie",
           "date": "2026-06-30T18:24:59.728Z"
+        },
+        {
+          "player1": "Ben",
+          "player2": "Bridget",
+          "score": "0",
+          "winner": "Bridget",
+          "date": "2026-06-30T18:32:42.698Z"
         }
       ]
     },
