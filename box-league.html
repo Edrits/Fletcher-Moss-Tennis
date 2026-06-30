@@ -61,8 +61,27 @@
         
         /* Navigation Links */
         .nav-links { display: flex; gap: 20px; align-items: center; flex-shrink: 0; }
-        .nav-links a { color: white; text-decoration: none; font-size: 1em; font-weight: 600; transition: opacity 0.3s, transform 0.2s; white-space: nowrap; }
-        .nav-links a:hover { opacity: 0.8; transform: translateY(-2px); }
+        
+        /* Styled outlined Home button */
+        .btn-home {
+            color: white !important;
+            text-decoration: none;
+            font-size: 0.95em;
+            font-weight: 600;
+            border: 1.5px solid white;
+            padding: 8px 18px;
+            border-radius: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            transition: background 0.3s, color 0.3s, transform 0.2s;
+            white-space: nowrap;
+        }
+        .btn-home:hover {
+            background: white;
+            color: #2d5016 !important;
+            opacity: 1 !important;
+            transform: translateY(-2px);
+        }
         
         /* Hamburger button */
         .hamburger {
@@ -291,15 +310,20 @@
 
     <header class="top-bar">
         <div class="top-bar-inner">
+            <!-- Wrapped logo and header text in links pointing back to index.html -->
             <div class="top-bar-left">
-                <img src="Fletcher moss Social Tennis Logo (1).png" alt="Logo" class="top-logo">
+                <a href="index.html" style="display: flex; align-items: center; text-decoration: none;">
+                    <img src="Fletcher moss Social Tennis Logo (1).png" alt="Logo" class="top-logo">
+                </a>
                 <div class="top-title">
-                    <h1>Fletcher Moss Social Tennis Club</h1>
+                    <a href="index.html" style="text-decoration: none; color: inherit;">
+                        <h1>Fletcher Moss Social Tennis Club</h1>
+                    </a>
                     <p>Didsbury Box League</p>
                 </div>
             </div>
             <nav class="nav-links">
-                <a href="index.html">Home</a>
+                <a href="index.html" class="btn-home">Home</a>
             </nav>
             <!-- Hamburger button (mobile only) -->
             <button class="hamburger" id="hamburger" aria-label="Open menu" onclick="toggleMobileNav()">
@@ -308,15 +332,15 @@
                 <span></span>
             </button>
         </div>
-        <!-- Mobile dropdown nav -->
+        <!-- Mobile dropdown nav with direct home page redirect option -->
         <nav class="mobile-nav" id="mobileNav">
+            <a href="index.html" onclick="closeMobileNav()">🏠 Home Page</a>
             <a href="index.html#about" onclick="closeMobileNav()">About</a>
             <a href="index.html#sessions" onclick="closeMobileNav()">Sessions</a>
             <a href="index.html#noticeboard" onclick="closeMobileNav()">Noticeboard</a>
             <a href="index.html#weather" onclick="closeMobileNav()">Weather</a>
             <a href="index.html#join" onclick="closeMobileNav()">Join</a>
             <a href="index.html#location" onclick="closeMobileNav()">Location</a>
-            <a href="box-league.html" onclick="closeMobileNav()">Box League</a>
         </nav>
     </header>
 
