@@ -39,7 +39,7 @@ export default async function handler(req, res) {
 
     // POST - Update box league data
     if (req.method === 'POST') {
-      const { type, password, updatedBoxes, clearMatches, match } = req.body;
+      const { type, password, updatedBoxes, clearMatches, match, boxId, matchIndex } = req.body;
 
       let sha = null;
       let currentData = { boxes: [] };
@@ -72,12 +72,10 @@ export default async function handler(req, res) {
               box.matches = [];
             }
 
-            // Map and update names cleanly
             box.players = ub.players.map((newName, idx) => {
               const cleanName = newName.trim() || `Player ${idx + 1}`;
               const oldPlayer = box.players[idx];
 
-              // If name didn't change and we aren't clearing, preserve stats
               if (!clearMatches && oldPlayer && oldPlayer.name === cleanName) {
                 return oldPlayer;
               } else {
@@ -87,7 +85,7 @@ export default async function handler(req, res) {
           }
         });
 
-        // Recalculate remaining matches safely (discards matches of deleted/renamed players)
+        // Recalculate remaining matches safely
         if (!clearMatches) {
           dataToSave.boxes.forEach(box => {
             box.players.forEach(p => {
@@ -113,12 +111,10 @@ export default async function handler(req, res) {
 
                   if (m.winner === m.player1) {
                     p1.won += 1;
-                    p1.points += 3;
-                    p2.points += 1;
+                    p1.points += 1; // 1 point for win
                   } else if (m.winner === m.player2) {
                     p2.won += 1;
-                    p2.points += 3;
-                    p1.points += 1;
+                    p2.points += 1; // 1 point for win
                   }
                 }
               });
@@ -126,6 +122,46 @@ export default async function handler(req, res) {
             box.players.sort((a, b) => b.points - a.points || b.won - a.won);
           });
         }
+
+      } else if (type === 'delete_match') {
+        if (password !== ADMIN_PASSWORD) {
+          return res.status(401).json({ error: 'Incorrect password' });
+        }
+
+        const box = dataToSave.boxes.find(b => b.id === boxId);
+        if (!box || !box.matches) {
+          return res.status(400).json({ error: 'Box group or match list not found' });
+        }
+
+        // Remove the selected match by its index
+        box.matches.splice(matchIndex, 1);
+
+        // Reset and recalculate standings cleanly
+        box.players.forEach(p => {
+          p.played = 0;
+          p.won = 0;
+          p.points = 0;
+        });
+
+        box.matches.forEach(m => {
+          const p1 = box.players.find(p => p.name === m.player1);
+          const p2 = box.players.find(p => p.name === m.player2);
+
+          if (p1 && p2) {
+            p1.played += 1;
+            p2.played += 1;
+
+            if (m.winner === m.player1) {
+              p1.won += 1;
+              p1.points += 1; // 1 point for win, 0 for loss
+            } else if (m.winner === m.player2) {
+              p2.won += 1;
+              p2.points += 1; // 1 point for win, 0 for loss
+            }
+          }
+        });
+
+        box.players.sort((a, b) => b.points - a.points || b.won - a.won);
 
       } else if (type === 'submit_score') {
         const { boxId, player1, player2, score, winner } = match;
@@ -144,7 +180,7 @@ export default async function handler(req, res) {
           date: new Date().toISOString()
         });
 
-        // Safe recalculation
+        // Recalculate
         box.players.forEach(p => {
           p.played = 0;
           p.won = 0;
@@ -161,12 +197,10 @@ export default async function handler(req, res) {
 
             if (m.winner === m.player1) {
               p1.won += 1;
-              p1.points += 3;
-              p2.points += 1;
+              p1.points += 1; // 1 point for win, 0 for loss
             } else if (m.winner === m.player2) {
               p2.won += 1;
-              p2.points += 3;
-              p1.points += 1;
+              p2.points += 1; // 1 point for win, 0 for loss
             }
           }
         });
@@ -186,7 +220,7 @@ export default async function handler(req, res) {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          message: type === 'admin_update_players' ? 'Admin updated players' : 'Submitted match score',
+          message: type === 'delete_match' ? 'Admin deleted match' : (type === 'admin_update_players' ? 'Admin updated players' : 'Submitted match score'),
           content: encodedContent,
           sha: sha
         })
