@@ -444,7 +444,7 @@
             <div id="sitting-banner"></div>
             <div id="courts-area"></div>
             <div class="tally">
-                <div class="tally-title">Games each this session</div>
+                <div class="tally-title">Games each this session (Click name to swap)</div>
                 <div class="tally-grid" id="tally"></div>
             </div>
         </div>
@@ -596,7 +596,7 @@
             }
             msg.style.display = 'none';
 
-            // Establish seed and always use mulberry32 to keep output identical between admin and share link
+            // Establish seed and ALWAYS use mulberry32 to guarantee identical output between admin and shared links
             if (presetSeed) {
                 currentSeed = presetSeed;
             } else {
@@ -689,6 +689,45 @@
             return arr;
         }
 
+        // Swap players instantly on-the-fly without regenerating the underlying schedule layout
+        function renamePlayerOnFly(oldName) {
+            if (!sessionStorage.getItem('isAdmin')) {
+                const password = prompt("🔒 Enter admin password to swap players on the fly:");
+                if (password !== PW) {
+                    alert("❌ Incorrect password.");
+                    return;
+                }
+                sessionStorage.setItem('isAdmin', 'true');
+                renderGameScreen(); // Re-render once to update cursor styles for editable items
+            }
+
+            const newName = prompt(`🔄 Swap "${oldName}" across all rounds with:`, oldName);
+            if (!newName || newName.trim() === "" || newName.trim() === oldName) return;
+            const cleanNewName = newName.trim();
+
+            // 1. Update in parent player list
+            players.forEach(p => {
+                if (p.name === oldName) p.name = cleanNewName;
+            });
+
+            // 2. Update all occurrences in currently generated matches and sitting blocks
+            generatedGames.forEach(g => {
+                g.sitters = g.sitters.map(s => s === oldName ? cleanNewName : s);
+                g.courts.forEach(court => {
+                    const [t1, t2] = court;
+                    for (let i = 0; i < t1.length; i++) {
+                        if (t1[i] === oldName) t1[i] = cleanNewName;
+                    }
+                    for (let i = 0; i < t2.length; i++) {
+                        if (t2[i] === oldName) t2[i] = cleanNewName;
+                    }
+                });
+            });
+
+            // 3. Re-render display
+            renderGameScreen();
+        }
+
         // 🔗 Compile and copy immutable share link
         function copyShareLink() {
             const playersStr = players
@@ -726,7 +765,7 @@
                 document.getElementById('sitting-banner').innerHTML =
                     `<div class="sitting-banner has-sitters">
                         <span class="s-label">Sitting Out</span>
-                        ${g.sitters.map(p=>`<span class="sitting-pill">${p}</span>`).join('')}
+                        ${g.sitters.map(p=>`<span class="sitting-pill" onclick="renamePlayerOnFly('${p}')" style="cursor:pointer;" title="Click to swap player">${p}</span>`).join('')}
                      </div>`;
             } else {
                 document.getElementById('sitting-banner').innerHTML =
@@ -745,12 +784,12 @@
                         <div class="match-grid">
                             <div class="team">
                                 <div class="t-lbl">Team A</div>
-                                ${t1.map(p=>`<div class="pp a">${p}</div>`).join('')}
+                                ${t1.map(p=>`<div class="pp a" onclick="renamePlayerOnFly('${p}')" style="cursor:pointer;" title="Click to swap player">${p}</div>`).join('')}
                             </div>
                             <div class="vs-col"><div class="vs">VS</div></div>
                             <div class="team">
                                 <div class="t-lbl">Team B</div>
-                                ${t2.map(p=>`<div class="pp" style="background:${acc}18;border:1px solid ${acc}40;color:${acc}">${p}</div>`).join('')}
+                                ${t2.map(p=>`<div class="pp" onclick="renamePlayerOnFly('${p}')" style="cursor:pointer; background:${acc}18; border:1px solid ${acc}40; color:${acc};" title="Click to swap player">${p}</div>`).join('')}
                             </div>
                         </div>
                     </div>`;
@@ -762,7 +801,7 @@
                 const isOut = g.sitters.includes(p);
                 const c = counts[p];
                 const col = c>=max?'var(--c1)':c>=max-1?'var(--c2)':'var(--amber)';
-                return `<span class="tp${isOut?' out':''}"><span class="tn">${p}</span><span class="tc" style="color:${col}">${c}</span></span>`;
+                return `<span class="tp${isOut?' out':''}"><span class="tn" onclick="renamePlayerOnFly('${p}')" style="cursor:pointer; border-bottom:1px dotted #666;" title="Click to swap player">${p}</span><span class="tc" style="color:${col}">${c}</span></span>`;
             }).join('');
         }
 
