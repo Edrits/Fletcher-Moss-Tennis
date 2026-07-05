@@ -6,9 +6,9 @@
       "players": [
         {
           "name": "Bridget",
-          "played": 2,
-          "won": 2,
-          "points": 2
+          "played": 0,
+          "won": 0,
+          "points": 0
         },
         {
           "name": "Evie",
@@ -24,33 +24,18 @@
         },
         {
           "name": "Rebecca",
-          "played": 1,
+          "played": 0,
           "won": 0,
           "points": 0
         },
         {
           "name": "Ben",
-          "played": 1,
+          "played": 0,
           "won": 0,
           "points": 0
         }
       ],
-      "matches": [
-        {
-          "player1": "Ben",
-          "player2": "Bridget",
-          "score": "0",
-          "winner": "Bridget",
-          "date": "2026-06-30T18:32:42.698Z"
-        },
-        {
-          "player1": "Bridget",
-          "player2": "Rebecca",
-          "score": "5-4",
-          "winner": "Bridget",
-          "date": "2026-06-30T20:59:22.150Z"
-        }
-      ]
+      "matches": []
     },
     {
       "id": "box-2",
