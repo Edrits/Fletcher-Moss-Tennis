@@ -153,7 +153,7 @@
             margin-bottom: 14px;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05), 0 1px 3px rgba(0, 0, 0, 0.02);
         }
-        .card h3 { font-size: 15px; font-weight: 800; color: #2d5016; margin-bottom: 4px; }
+        .card h3 { font-size: 17px; font-weight: 800; color: #2d5016; margin-bottom: 6px; }
         .card > p { font-size: 13.5px; color: #666; margin-bottom: 14px; }
 
         /* Inputs */
@@ -320,7 +320,7 @@
         /* Tasteful Floating WhatsApp Widget */
         .whatsapp-float {
             position: fixed;
-            bottom: 90px; /* Sits exactly 14px above the scroll-top button (which is at 30px) */
+            bottom: 90px;
             right: 30px;
             background: #2d5016; /* Matches your club's deep green instead of neon */
             color: white;
@@ -453,7 +453,10 @@
         <div id="game-screen">
             <div class="screen-header">
                 <h3 id="gs-title"></h3>
-                <button class="edit-btn" onclick="backToSetup()">← Edit Players</button>
+                <div style="display: flex; gap: 10px;">
+                    <button class="edit-btn" style="background:#2d5016; color:white; border:none;" onclick="copyShareLink()">🔗 Copy Share Link</button>
+                    <button class="edit-btn" onclick="backToSetup()">← Edit Players</button>
+                </div>
             </div>
             <div class="tabs" id="tabs"></div>
             <div id="sitting-banner"></div>
@@ -469,7 +472,7 @@
     <footer>
         <div class="footer-inner">
             <div class="footer-logos">
-                <img src="Fletcher moss Social Tennis Logo (1).png" alt="Fletcher Moss Social Tennis Club Logo" style="height: 110px; width: 110px; object-fit: cover; object-position: center; filter: drop-shadow(4px 3px 6px rgba(0,0,0,0.5));">
+                <img src="Fletcher moss Social Tennis Club Logo" style="display:none;" onerror="this.src='Fletcher moss Social Tennis Logo (1).png'; this.style.height='110px'; this.style.width='110px'; this.style.objectFit='cover'; this.style.objectPosition='center'; this.style.filter='drop-shadow(4px 3px 6px rgba(0,0,0,0.5))'; this.style.display='inline';">
                 <img src="MCRactive_Portrait_Logo.jpg" alt="McrActive - Supporting Community Sports" style="height: 110px; width: auto; filter: drop-shadow(4px 3px 6px rgba(0,0,0,0.5));">
             </div>
             <p style="font-size: 1.1em; opacity: 0.9;"><strong>Fletcher Moss Social Tennis Club</strong></p>
@@ -499,7 +502,8 @@
 
     <script>
         // ── State ──
-        let numCourts = 3, numGames = 6, activeGame = 0;
+        const PW = 'Fletchertennis909';
+        let numCourts = 3, numGames = 6, activeGame = 0, currentSeed = null;
         let players = [
             "Ed","Sofia","Will","Adam","Alex","Adam B",
             "Daniel","Kamal","Emma B","Will (10)","Rhys","Lucy","Joe","Michael"
@@ -507,17 +511,28 @@
 
         let generatedGames = [];
         const COLORS = ["#2d5016","#1a5276","#7b241c","#5b2d8a"];
+        let randFn = Math.random; // Default to native math random
 
-        // ── Paste handler with attached number filtering ──
+        // Seeded Mulberry32 Generator for completely identical groupings across shared links
+        function mulberry32(a) {
+            return function() {
+                let t = a += 0x6D2B79F5;
+                t = Math.imul(t ^ (t >>> 15), t | 1);
+                t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+                return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+            }
+        }
+
+        // ── Paste handler with advanced attached number filtering ──
         function applyPaste() {
             const raw = document.getElementById('paste-box').value.trim();
             if (!raw) return;
             const lines = raw.split('\n')
                 .map(l => {
                     return l
-                        .replace(/^[0-9\s\.\-\)\(]+/g, '')          // Strip leading numbers and symbols
-                        .replace(/\s*[\(\[]\d+[\)\]]\s*$/g, '')      // Strip trailing "(10)" or "[10]"
-                        .replace(/\s+\d+\s*$/g, '')                  // Strip trailing standalone numbers (e.g. "Will 10")
+                        .replace(/^[0-9\s\.\-\)\(]+/g, '')          // Strip leading list numbers
+                        .replace(/\s*[\(\[]\d+[\)\]]\s*$/g, '')      // Strip trailing parenthetical offsets (e.g. "Will (10)")
+                        .replace(/\s+\d+\s*$/g, '')                  // Strip trailing standalone counts (e.g. "Will 10")
                         .trim();
                 })
                 .filter(Boolean);
@@ -574,13 +589,22 @@
         }
 
         function backToSetup() {
+            // Password protect edit access
+            if (!sessionStorage.getItem('isAdmin')) {
+                const password = prompt("🔑 Enter admin password to edit players:");
+                if (password !== PW) {
+                    alert("❌ Incorrect password.");
+                    return;
+                }
+                sessionStorage.setItem('isAdmin', 'true');
+            }
             document.getElementById('setup-screen').style.display = 'block';
             document.getElementById('game-screen').style.display = 'none';
             renderPlayerInputs();
         }
 
         // ── Core rotation logic ──
-        function generate() {
+        function generate(presetSeed = null) {
             const named = players.filter(p => p.name.trim());
             const playPerGame = numCourts * 4;
             const msg = document.getElementById('val-msg');
@@ -590,6 +614,15 @@
                 msg.style.display = 'block'; return;
             }
             msg.style.display = 'none';
+
+            // Establish seed
+            if (presetSeed) {
+                currentSeed = presetSeed;
+                randFn = mulberry32(currentSeed);
+            } else {
+                currentSeed = Math.floor(Math.random() * 1000000);
+                randFn = Math.random; // Use default random for fresh runs
+            }
 
             // Order: non-subs in list order, then subs in list order
             const ordered = [
@@ -670,10 +703,27 @@
 
         function shuffle(arr) {
             for (let i = arr.length-1; i>0; i--) {
-                const j = Math.floor(Math.random()*(i+1));
+                const j = Math.floor(randFn()*(i+1));
                 [arr[i],arr[j]] = [arr[j],arr[i]];
             }
             return arr;
+        }
+
+        // 🔗 Compile and copy immutable share link
+        function copyShareLink() {
+            const playersStr = players
+                .filter(p => p.name.trim())
+                .map(p => encodeURIComponent(p.name.trim()) + (p.sub ? '*' : ''))
+                .join(',');
+            
+            const shareUrl = `${window.location.origin}${window.location.pathname}?players=${playersStr}&courts=${numCourts}&games=${numGames}&seed=${currentSeed}`;
+            
+            navigator.clipboard.writeText(shareUrl).then(() => {
+                alert("📋 Share link copied! Paste and share it directly in your WhatsApp group.");
+            }).catch(err => {
+                console.error("Failed to copy link:", err);
+                alert("URL: " + shareUrl);
+            });
         }
 
         // ── Render ──
@@ -771,8 +821,44 @@
             }
         }
 
+        // Load shared link state if query variables are present
+        function loadSharedState() {
+            const params = new URLSearchParams(window.location.search);
+            const playersParam = params.get('players');
+            const courtsParam = params.get('courts');
+            const gamesParam = params.get('games');
+            const seedParam = params.get('seed');
+
+            if (playersParam && courtsParam && gamesParam && seedParam) {
+                players = playersParam.split(',').map(item => {
+                    const isSub = item.endsWith('*');
+                    const name = isSub ? item.slice(0, -1) : item;
+                    return { name: decodeURIComponent(name), sub: isSub };
+                });
+
+                numCourts = parseInt(courtsParam) || 3;
+                numGames = parseInt(gamesParam) || 6;
+                const seed = parseInt(seedParam);
+
+                // Update visual active classes on configuration selectors
+                document.querySelectorAll('.options-row .btn-opt').forEach(btn => {
+                    const groupLabel = btn.closest('.option-group').querySelector('label').textContent.toLowerCase();
+                    if (groupLabel.includes('courts')) {
+                        btn.classList.toggle('active', btn.textContent.includes(numCourts + ' Court'));
+                    } else if (groupLabel.includes('games')) {
+                        btn.classList.toggle('active', parseInt(btn.textContent) === numGames);
+                    }
+                });
+
+                // Generate directly to Game Screen
+                generate(seed);
+            } else {
+                renderPlayerInputs();
+            }
+        }
+
         // Initialize on load
-        renderPlayerInputs();
+        loadSharedState();
         getWeather();
         setInterval(getWeather, 600000);
     </script>
