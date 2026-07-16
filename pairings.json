@@ -1,34 +1,5 @@
 {
-  "players": [
-    {
-      "name": "Steve",
-      "sub": false
-    },
-    {
-      "name": "Steve",
-      "sub": false
-    },
-    {
-      "name": "Steve",
-      "sub": false
-    },
-    {
-      "name": "Steve",
-      "sub": false
-    },
-    {
-      "name": "Steve",
-      "sub": false
-    },
-    {
-      "name": "Steve",
-      "sub": false
-    },
-    {
-      "name": "Steve",
-      "sub": false
-    }
-  ],
+  "players": [],
   "numCourts": 4,
   "numGames": 4,
   "seed": 677966,
@@ -39,31 +10,31 @@
       "courts": [
         [
           [
-            "Steve",
-            "Steve"
+            "",
+            ""
           ],
           [
-            "Steve",
+            "",
             ""
           ]
         ],
         [
           [
-            "Steve",
+            "",
             ""
           ],
           [
-            "Steve",
+            "",
             ""
           ]
         ],
         [
           [
-            "Steve",
+            "",
             ""
           ],
           [
-            "Steve",
+            "",
             ""
           ]
         ],
@@ -85,22 +56,22 @@
       "courts": [
         [
           [
-            "Steve",
+            "",
             ""
           ],
           [
-            "Steve",
-            "Steve"
+            "",
+            ""
           ]
         ],
         [
           [
-            "Steve",
-            "Steve"
+            "",
+            ""
           ],
           [
-            "Steve",
-            "Steve"
+            "",
+            ""
           ]
         ],
         [
@@ -141,22 +112,22 @@
         ],
         [
           [
-            "Steve",
-            "Steve"
+            "",
+            ""
           ],
           [
-            "Steve",
-            "Steve"
+            "",
+            ""
           ]
         ],
         [
           [
-            "Steve",
-            "Steve"
+            "",
+            ""
           ],
           [
             "",
-            "Steve"
+            ""
           ]
         ],
         [
@@ -182,13 +153,13 @@
           ],
           [
             "",
-            "Steve"
+            ""
           ]
         ],
         [
           [
-            "Steve",
-            "Steve"
+            "",
+            ""
           ],
           [
             "",
@@ -201,8 +172,8 @@
             ""
           ],
           [
-            "Steve",
-            "Steve"
+            "",
+            ""
           ]
         ],
         [
@@ -211,13 +182,13 @@
             ""
           ],
           [
-            "Steve",
-            "Steve"
+            "",
+            ""
           ]
         ]
       ]
     }
   ],
   "activeGame": 0,
-  "updated": "2026-07-16T22:09:44.581Z"
+  "updated": "2026-07-16T22:10:10.412Z"
 }
