@@ -5,7 +5,7 @@
       "sub": false
     },
     {
-      "name": "Ed",
+      "name": "Edward",
       "sub": false
     },
     {
@@ -111,7 +111,7 @@
           ],
           [
             "Ryan",
-            "Ed"
+            "Edward"
           ]
         ],
         [
@@ -146,7 +146,7 @@
         [
           [
             "Ting",
-            "Ed"
+            "Edward"
           ],
           [
             "Evie",
@@ -184,7 +184,7 @@
       "courts": [
         [
           [
-            "Ed",
+            "Edward",
             "Nic"
           ],
           [
@@ -234,7 +234,7 @@
         [
           [
             "Alex",
-            "Ed"
+            "Edward"
           ],
           [
             "Emma",
@@ -275,5 +275,5 @@
     }
   ],
   "activeGame": 0,
-  "updated": "2026-07-16T11:14:53.423Z"
+  "updated": "2026-07-16T11:15:53.848Z"
 }
