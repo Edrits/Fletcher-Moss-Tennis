@@ -436,7 +436,7 @@
             <div class="screen-header">
                 <h3 id="gs-title"></h3>
                 <div style="display: flex; gap: 10px;">
-                    <button class="edit-btn" style="background:#2d5016; color:white; border:none;" onclick="copyShareLink()">🔗 Copy Share Link</button>
+                    <button class="edit-btn" style="background:#2d5016; color:white; border:none;" onclick="copyPageLink()">🔗 Copy Link</button>
                     <button class="edit-btn" onclick="backToSetup()">← Edit Players</button>
                 </div>
             </div>
@@ -483,7 +483,6 @@
 
     <script>
         // ── State ──
-        const PW = 'Fletchertennis909';
         let numCourts = 3, numGames = 6, activeGame = 0, currentSeed = null;
         let players = [
             "Ed","Sofia","Will","Adam","Alex","Adam B",
@@ -570,22 +569,45 @@
         }
 
         function backToSetup() {
-            // Password protect edit access
-            if (!sessionStorage.getItem('isAdmin')) {
-                const password = prompt("🔑 Enter admin password to edit players:");
-                if (password !== PW) {
-                    alert("❌ Incorrect password.");
-                    return;
-                }
-                sessionStorage.setItem('isAdmin', 'true');
-            }
             document.getElementById('setup-screen').style.display = 'block';
             document.getElementById('game-screen').style.display = 'none';
             renderPlayerInputs();
         }
 
+        // Persist the current session to the backend so every visitor (and future edits) share one source of truth
+        async function saveSession(payload) {
+            let pw = sessionStorage.getItem('pw');
+            if (!pw) {
+                pw = prompt("🔑 Enter admin password to save this for everyone:");
+                if (!pw) return false;
+            }
+            try {
+                const res = await fetch('/api/pairings', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ password: pw, ...payload })
+                });
+                if (res.status === 401) {
+                    sessionStorage.removeItem('pw');
+                    alert('❌ Incorrect password.');
+                    return false;
+                }
+                if (!res.ok) {
+                    const data = await res.json().catch(() => ({}));
+                    alert('⚠️ Failed to save: ' + (data.error || 'Unknown error'));
+                    return false;
+                }
+                sessionStorage.setItem('pw', pw);
+                return true;
+            } catch (err) {
+                console.error('Save failed:', err);
+                alert('⚠️ Network error — changes were not saved.');
+                return false;
+            }
+        }
+
         // ── Core rotation logic ──
-        function generate(presetSeed = null) {
+        async function generate() {
             const named = players.filter(p => p.name.trim());
             const playPerGame = numCourts * 4;
             const msg = document.getElementById('val-msg');
@@ -596,12 +618,7 @@
             }
             msg.style.display = 'none';
 
-            // Establish seed and ALWAYS use mulberry32 to guarantee identical output between admin and shared links
-            if (presetSeed) {
-                currentSeed = presetSeed;
-            } else {
-                currentSeed = Math.floor(Math.random() * 1000000);
-            }
+            currentSeed = Math.floor(Math.random() * 1000000);
             randFn = mulberry32(currentSeed);
 
             // Order: non-subs in list order, then subs in list order
@@ -616,7 +633,7 @@
             const sitQueue = buildSitQueue(ordered, sitPerGame, numGames);
 
             // Build games
-            generatedGames = [];
+            const newGames = [];
             const usedPartners = new Set();
             const usedOpponents = {};
 
@@ -635,9 +652,21 @@
                     }));
                 });
 
-                generatedGames.push({ game: g+1, sitters, courts });
+                newGames.push({ game: g+1, sitters, courts });
             }
 
+            const btn = document.querySelector('.generate-btn');
+            btn.disabled = true;
+            btn.textContent = 'Saving…';
+
+            const ok = await saveSession({ players, numCourts, numGames, seed: currentSeed, generatedGames: newGames, activeGame: 0 });
+
+            btn.disabled = false;
+            btn.textContent = 'Generate Pairings →';
+
+            if (!ok) return;
+
+            generatedGames = newGames;
             activeGame = 0;
             document.getElementById('setup-screen').style.display = 'none';
             document.getElementById('game-screen').style.display = 'block';
@@ -689,21 +718,14 @@
             return arr;
         }
 
-        // Swap players instantly on-the-fly without regenerating the underlying schedule layout
-        function renamePlayerOnFly(oldName) {
-            if (!sessionStorage.getItem('isAdmin')) {
-                const password = prompt("🔒 Enter admin password to swap players on the fly:");
-                if (password !== PW) {
-                    alert("❌ Incorrect password.");
-                    return;
-                }
-                sessionStorage.setItem('isAdmin', 'true');
-                renderGameScreen(); // Re-render once to update cursor styles for editable items
-            }
-
+        // Swap players instantly on-the-fly without regenerating the underlying schedule layout, then persist so everyone sees the swap
+        async function renamePlayerOnFly(oldName) {
             const newName = prompt(`🔄 Swap "${oldName}" across all rounds with:`, oldName);
             if (!newName || newName.trim() === "" || newName.trim() === oldName) return;
             const cleanNewName = newName.trim();
+
+            const prevPlayers = JSON.parse(JSON.stringify(players));
+            const prevGames = JSON.parse(JSON.stringify(generatedGames));
 
             // 1. Update in parent player list
             players.forEach(p => {
@@ -724,21 +746,23 @@
                 });
             });
 
-            // 3. Re-render display
+            // 3. Re-render display immediately, then persist — roll back locally if the save fails
             renderGameScreen();
+
+            const ok = await saveSession({ players, numCourts, numGames, seed: currentSeed, generatedGames, activeGame });
+            if (!ok) {
+                players = prevPlayers;
+                generatedGames = prevGames;
+                renderGameScreen();
+            }
         }
 
-        // 🔗 Compile and copy immutable share link
-        function copyShareLink() {
-            const playersStr = players
-                .filter(p => p.name.trim())
-                .map(p => encodeURIComponent(p.name.trim()) + (p.sub ? '*' : ''))
-                .join(',');
-            
-            const shareUrl = `${window.location.origin}${window.location.pathname}?players=${playersStr}&courts=${numCourts}&games=${numGames}&seed=${currentSeed}`;
-            
+        // 🔗 Copy the plain page link — it always reflects whatever is currently saved
+        function copyPageLink() {
+            const shareUrl = `${window.location.origin}${window.location.pathname}`;
+
             navigator.clipboard.writeText(shareUrl).then(() => {
-                alert("📋 Share link copied! Paste and share it directly in your WhatsApp group.");
+                alert("📋 Link copied! Paste and share it directly in your WhatsApp group — it always shows the latest pairings.");
             }).catch(err => {
                 console.error("Failed to copy link:", err);
                 alert("URL: " + shareUrl);
@@ -840,44 +864,48 @@
             }
         }
 
-        // Load shared link state if query variables are present
-        function loadSharedState() {
-            const params = new URLSearchParams(window.location.search);
-            const playersParam = params.get('players');
-            const courtsParam = params.get('courts');
-            const gamesParam = params.get('games');
-            const seedParam = params.get('seed');
+        // Load the current shared session from the backend — the single source of truth for every visitor
+        async function loadCurrentSession() {
+            try {
+                const res = await fetch('/api/pairings');
+                if (!res.ok) throw new Error('Failed to load');
+                const data = await res.json();
 
-            if (playersParam && courtsParam && gamesParam && seedParam) {
-                players = playersParam.split(',').map(item => {
-                    const isSub = item.endsWith('*');
-                    const name = isSub ? item.slice(0, -1) : item;
-                    return { name: decodeURIComponent(name), sub: isSub };
-                });
+                if (Array.isArray(data.players) && data.players.length) {
+                    players = data.players;
+                }
+                numCourts = data.numCourts || numCourts;
+                numGames = data.numGames || numGames;
+                currentSeed = data.seed ?? null;
+                generatedGames = Array.isArray(data.generatedGames) ? data.generatedGames : [];
+                activeGame = data.activeGame || 0;
+            } catch (err) {
+                console.error('Failed to load current session, falling back to local defaults:', err);
+            }
 
-                numCourts = parseInt(courtsParam) || 3;
-                numGames = parseInt(gamesParam) || 6;
-                const seed = parseInt(seedParam);
+            // Update visual active classes on configuration selectors
+            document.querySelectorAll('.options-row .btn-opt').forEach(btn => {
+                const groupLabel = btn.closest('.option-group').querySelector('label').textContent.toLowerCase();
+                if (groupLabel.includes('courts')) {
+                    btn.classList.toggle('active', btn.textContent.includes(numCourts + ' Court'));
+                } else if (groupLabel.includes('games')) {
+                    btn.classList.toggle('active', parseInt(btn.textContent) === numGames);
+                }
+            });
 
-                // Update visual active classes on configuration selectors
-                document.querySelectorAll('.options-row .btn-opt').forEach(btn => {
-                    const groupLabel = btn.closest('.option-group').querySelector('label').textContent.toLowerCase();
-                    if (groupLabel.includes('courts')) {
-                        btn.classList.toggle('active', btn.textContent.includes(numCourts + ' Court'));
-                    } else if (groupLabel.includes('games')) {
-                        btn.classList.toggle('active', parseInt(btn.textContent) === numGames);
-                    }
-                });
-
-                // Generate directly to Game Screen
-                generate(seed);
+            if (generatedGames.length) {
+                const named = players.filter(p => p.name.trim());
+                document.getElementById('setup-screen').style.display = 'none';
+                document.getElementById('game-screen').style.display = 'block';
+                document.getElementById('gs-title').textContent = `${named.length} Players · ${numCourts} Courts`;
+                renderGameScreen();
             } else {
                 renderPlayerInputs();
             }
         }
 
         // Initialize on load
-        loadSharedState();
+        loadCurrentSession();
         getWeather();
         setInterval(getWeather, 600000);
     </script>

@@ -1,0 +1,24 @@
+{
+  "players": [
+    { "name": "Ed", "sub": false },
+    { "name": "Sofia", "sub": false },
+    { "name": "Will", "sub": false },
+    { "name": "Adam", "sub": false },
+    { "name": "Alex", "sub": false },
+    { "name": "Adam B", "sub": false },
+    { "name": "Daniel", "sub": false },
+    { "name": "Kamal", "sub": false },
+    { "name": "Emma B", "sub": false },
+    { "name": "Will (10)", "sub": false },
+    { "name": "Rhys", "sub": false },
+    { "name": "Lucy", "sub": false },
+    { "name": "Joe", "sub": true },
+    { "name": "Michael", "sub": true }
+  ],
+  "numCourts": 3,
+  "numGames": 6,
+  "seed": null,
+  "generatedGames": [],
+  "activeGame": 0,
+  "updated": null
+}
