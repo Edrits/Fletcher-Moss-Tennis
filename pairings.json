@@ -1,15 +1,7 @@
 {
   "players": [
     {
-      "name": "John",
-      "sub": false
-    },
-    {
-      "name": "sam",
-      "sub": false
-    },
-    {
-      "name": "Mark",
+      "name": "Steve",
       "sub": false
     },
     {
@@ -17,17 +9,29 @@
       "sub": false
     },
     {
-      "name": "Sally",
+      "name": "Steve",
       "sub": false
     },
     {
-      "name": "Sally B",
+      "name": "Steve",
+      "sub": false
+    },
+    {
+      "name": "Steve",
+      "sub": false
+    },
+    {
+      "name": "Steve",
+      "sub": false
+    },
+    {
+      "name": "Steve",
       "sub": false
     }
   ],
   "numCourts": 4,
   "numGames": 4,
-  "seed": 945551,
+  "seed": 677966,
   "generatedGames": [
     {
       "game": 1,
@@ -35,18 +39,8 @@
       "courts": [
         [
           [
-            "",
-            ""
-          ],
-          [
-            "Sally B",
-            "Sally"
-          ]
-        ],
-        [
-          [
-            "",
-            "John"
+            "Steve",
+            "Steve"
           ],
           [
             "Steve",
@@ -56,6 +50,16 @@
         [
           [
             "",
+            "Steve"
+          ],
+          [
+            "",
+            ""
+          ]
+        ],
+        [
+          [
+            "Steve",
             ""
           ],
           [
@@ -65,12 +69,12 @@
         ],
         [
           [
-            "",
-            ""
+            "Steve",
+            "Steve"
           ],
           [
-            "Mark",
-            "sam"
+            "",
+            ""
           ]
         ]
       ]
@@ -81,38 +85,38 @@
       "courts": [
         [
           [
-            "",
-            "sam"
-          ],
-          [
-            "Mark",
-            ""
-          ]
-        ],
-        [
-          [
-            "",
+            "Steve",
             ""
           ],
           [
-            "",
-            "Sally"
-          ]
-        ],
-        [
-          [
-            "",
-            ""
-          ],
-          [
-            "Sally B",
-            ""
+            "Steve",
+            "Steve"
           ]
         ],
         [
           [
             "Steve",
-            "John"
+            "Steve"
+          ],
+          [
+            "Steve",
+            "Steve"
+          ]
+        ],
+        [
+          [
+            "",
+            ""
+          ],
+          [
+            "",
+            ""
+          ]
+        ],
+        [
+          [
+            "",
+            ""
           ],
           [
             "",
@@ -137,28 +141,28 @@
         ],
         [
           [
-            "",
-            ""
-          ],
-          [
-            "Mark",
-            "Sally"
-          ]
-        ],
-        [
-          [
-            "",
-            ""
-          ],
-          [
-            "Sally B",
-            "John"
-          ]
-        ],
-        [
-          [
-            "sam",
+            "Steve",
             "Steve"
+          ],
+          [
+            "Steve",
+            "Steve"
+          ]
+        ],
+        [
+          [
+            "Steve",
+            "Steve"
+          ],
+          [
+            "",
+            "Steve"
+          ]
+        ],
+        [
+          [
+            "",
+            ""
           ],
           [
             "",
@@ -178,27 +182,17 @@
           ],
           [
             "",
-            ""
+            "Steve"
           ]
         ],
         [
           [
-            "",
-            ""
+            "Steve",
+            "Steve"
           ],
-          [
-            "Mark",
-            "Sally B"
-          ]
-        ],
-        [
           [
             "",
             ""
-          ],
-          [
-            "sam",
-            "John"
           ]
         ],
         [
@@ -208,12 +202,22 @@
           ],
           [
             "Steve",
-            "Sally"
+            "Steve"
+          ]
+        ],
+        [
+          [
+            "",
+            ""
+          ],
+          [
+            "Steve",
+            "Steve"
           ]
         ]
       ]
     }
   ],
   "activeGame": 0,
-  "updated": "2026-07-16T22:08:39.012Z"
+  "updated": "2026-07-16T22:09:23.382Z"
 }
