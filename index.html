@@ -621,6 +621,19 @@
         }
 
         /* Mobile adjustments */
+        /* The desktop nav (8 links + full title) doesn't fit on common laptop widths like 1366/1440,
+           so it switches to the hamburger menu earlier than the general phone breakpoint below. */
+        @media (max-width: 1500px) {
+            .nav-links {
+                display: none;
+            }
+
+            .hamburger {
+                display: flex;
+                flex-shrink: 0;
+            }
+        }
+
         @media (max-width: 768px) {
             body {
                 background-attachment: scroll;
@@ -644,16 +657,6 @@
                 gap: 10px;
                 min-width: 0;
                 flex: 1;
-            }
-
-            /* Hide desktop nav, show hamburger */
-            .nav-links {
-                display: none;
-            }
-
-            .hamburger {
-                display: flex;
-                flex-shrink: 0;
             }
 
             /* Mobile logo height & width updated to crop portrait white space */
@@ -1109,8 +1112,7 @@
     </script>
 
     <script>
-        const PW = 'Fletchertennis909';
-        
+
         // Hamburger menu
         function toggleMobileNav() {
             const nav = document.getElementById('mobileNav');
@@ -1189,8 +1191,8 @@
             const password = document.getElementById('adminPass').value;
             const text = document.getElementById('noticeText').value;
 
-            if (password !== PW) {
-                alert('❌ Incorrect password');
+            if (!password) {
+                alert('❌ Please enter the admin password');
                 return;
             }
 
