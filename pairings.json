@@ -81,7 +81,7 @@
       "game": 1,
       "sitters": [
         "Nic",
-        "Dan"
+        "Evie"
       ],
       "courts": [
         [
@@ -90,7 +90,7 @@
             "Alex"
           ],
           [
-            "Evie",
+            "Dan",
             "Rod"
           ]
         ],
@@ -275,5 +275,5 @@
     }
   ],
   "activeGame": 0,
-  "updated": "2026-07-16T21:47:11.452Z"
+  "updated": "2026-07-16T21:47:15.088Z"
 }
