@@ -1,279 +1,203 @@
 {
   "players": [
     {
-      "name": "Evie",
+      "name": "player",
       "sub": false
     },
     {
-      "name": "Edward",
+      "name": "player",
       "sub": false
     },
     {
-      "name": "Ryan",
+      "name": "player",
       "sub": false
     },
     {
-      "name": "Keshap",
+      "name": "player",
       "sub": false
     },
     {
-      "name": "Patrick",
+      "name": "player",
       "sub": false
     },
     {
-      "name": "Adam",
+      "name": "player",
       "sub": false
     },
     {
-      "name": "Emma",
+      "name": "player",
       "sub": false
     },
     {
-      "name": "Ting",
+      "name": "player",
       "sub": false
     },
     {
-      "name": "Alex",
+      "name": "player",
       "sub": false
     },
     {
-      "name": "Josh",
+      "name": "player",
       "sub": false
     },
     {
-      "name": "Ali",
+      "name": "player",
       "sub": false
     },
     {
-      "name": "Kamal",
+      "name": "player",
       "sub": false
-    },
-    {
-      "name": "Jack",
-      "sub": false
-    },
-    {
-      "name": "Dan",
-      "sub": false
-    },
-    {
-      "name": "Alan",
-      "sub": false
-    },
-    {
-      "name": "Nic",
-      "sub": true
-    },
-    {
-      "name": "San",
-      "sub": false
-    },
-    {
-      "name": "Rod",
-      "sub": true
     }
   ],
-  "numCourts": 4,
+  "numCourts": 3,
   "numGames": 4,
-  "seed": 611867,
+  "seed": 392211,
   "generatedGames": [
     {
       "game": 1,
-      "sitters": [
-        "Nic",
-        "Evie"
-      ],
+      "sitters": [],
       "courts": [
         [
           [
-            "Ali",
-            "Alex"
+            "player",
+            "player"
           ],
           [
-            "Dan",
-            "Rod"
+            "player",
+            "player"
           ]
         ],
         [
           [
-            "Keshap",
-            "Ting"
+            "player",
+            "player"
           ],
           [
-            "Patrick",
-            "Emma"
+            "player",
+            "player"
           ]
         ],
         [
           [
-            "Kamal",
-            "Adam"
+            "player",
+            "player"
           ],
           [
-            "Alan",
-            "Josh"
-          ]
-        ],
-        [
-          [
-            "Jack",
-            "Edward"
-          ],
-          [
-            "San",
-            "Ryan"
+            "player",
+            "player"
           ]
         ]
       ]
     },
     {
       "game": 2,
-      "sitters": [
-        "Alan",
-        "San"
-      ],
+      "sitters": [],
       "courts": [
         [
           [
-            "Ali",
-            "Keshap"
+            "player",
+            "player"
           ],
           [
-            "Josh",
-            "Ryan"
+            "player",
+            "player"
           ]
         ],
         [
           [
-            "Nic",
-            "Jack"
+            "player",
+            "player"
           ],
           [
-            "Emma",
-            "Alex"
+            "player",
+            "player"
           ]
         ],
         [
           [
-            "Evie",
-            "Patrick"
+            "player",
+            "player"
           ],
           [
-            "Edward",
-            "Kamal"
-          ]
-        ],
-        [
-          [
-            "Dan",
-            "Ting"
-          ],
-          [
-            "Rod",
-            "Adam"
+            "player",
+            "player"
           ]
         ]
       ]
     },
     {
       "game": 3,
-      "sitters": [
-        "Jack",
-        "Dan"
-      ],
+      "sitters": [],
       "courts": [
         [
           [
-            "Adam",
-            "Ting"
+            "player",
+            "player"
           ],
           [
-            "Keshap",
-            "Ali"
+            "player",
+            "player"
           ]
         ],
         [
           [
-            "Patrick",
-            "Ryan"
+            "player",
+            "player"
           ],
           [
-            "Alan",
-            "Emma"
+            "player",
+            "player"
           ]
         ],
         [
           [
-            "Nic",
-            "Alex"
+            "player",
+            "player"
           ],
           [
-            "Kamal",
-            "Rod"
-          ]
-        ],
-        [
-          [
-            "San",
-            "Josh"
-          ],
-          [
-            "Edward",
-            "Evie"
+            "player",
+            "player"
           ]
         ]
       ]
     },
     {
       "game": 4,
-      "sitters": [
-        "Ali",
-        "Kamal"
-      ],
+      "sitters": [],
       "courts": [
         [
           [
-            "Rod",
-            "Nic"
+            "player",
+            "player"
           ],
           [
-            "Jack",
-            "Edward"
+            "player",
+            "player"
           ]
         ],
         [
           [
-            "Evie",
-            "San"
+            "player",
+            "player"
           ],
           [
-            "Keshap",
-            "Emma"
+            "player",
+            "player"
           ]
         ],
         [
           [
-            "Adam",
-            "Ryan"
+            "player",
+            "player"
           ],
           [
-            "Patrick",
-            "Alex"
-          ]
-        ],
-        [
-          [
-            "Ting",
-            "Alan"
-          ],
-          [
-            "Josh",
-            "Dan"
+            "player",
+            "player"
           ]
         ]
       ]
     }
   ],
-  "activeGame": 1,
-  "updated": "2026-07-16T21:47:24.876Z"
+  "activeGame": 0,
+  "updated": "2026-07-16T21:53:06.508Z"
 }
