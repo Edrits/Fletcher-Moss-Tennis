@@ -270,6 +270,9 @@
         /* In view mode, player cards are read-only — no drag/rename affordances */
         body.view-mode .pp[data-loc], body.view-mode .sitting-pill[data-loc] { cursor:default; touch-action:auto; }
         body.view-mode .tally .tn { cursor:default !important; border-bottom:none !important; }
+        .pp.ball { background:#f4f6f8; border:1px dashed #cdd5dc; color:#9aa5ad; font-size:15px; }
+        .edit-btn.danger { color:#c05050; border-color:#e0b0b0; }
+        .edit-btn.danger:hover { background:#c05050; color:#fff; border-color:#c05050; }
 
         .tally-title { font-size:10px; font-weight:700; letter-spacing:2px; text-transform:uppercase; color:#666; margin-bottom:10px; }
         .tally-grid { display:flex; flex-wrap:wrap; gap:6px; }
@@ -453,6 +456,7 @@
                     <button class="edit-btn" style="background:#2d5016; color:white; border:none;" onclick="copyPageLink()">🔗 Copy Link</button>
                     <button class="edit-btn" id="btn-unlock" onclick="unlockEditing()">🔓 Unlock to edit</button>
                     <button class="edit-btn" id="btn-edit-players" onclick="backToSetup()">← Edit Players</button>
+                    <button class="edit-btn danger" id="btn-reset" onclick="resetBoard()">🎾 Reset board</button>
                     <button class="edit-btn" id="btn-lock" onclick="lockEditing()">🔒 Done editing</button>
                 </div>
             </div>
@@ -460,7 +464,7 @@
             <div id="sitting-banner"></div>
             <div class="drag-hint">↔ Drag any name onto another to swap their places — works with sitting-out players too.</div>
             <div id="courts-area"></div>
-            <div class="tally">
+            <div class="tally" id="tally-card">
                 <div class="tally-title" id="tally-title">Games each this session</div>
                 <div class="tally-grid" id="tally"></div>
             </div>
@@ -510,6 +514,10 @@
         // ── State ──
         let numCourts = 3, numGames = 6, activeGame = 0, currentSeed = null;
         let editMode = false;   // false = view-only; true = unlocked with admin password
+
+        // An empty seat (too few players, or a wiped board) is stored as "" and shown as a tennis ball
+        const BALL = '🎾';
+        function isBall(name) { return !name || !String(name).trim(); }
         let players = [
             "Ed","Sofia","Will","Adam","Alex","Adam B",
             "Daniel","Kamal","Emma B","Will (10)","Rhys","Lucy","Joe","Michael"
@@ -638,8 +646,8 @@
             const playPerGame = numCourts * 4;
             const msg = document.getElementById('val-msg');
 
-            if (named.length < playPerGame) {
-                msg.textContent = `Need at least ${playPerGame} players for ${numCourts} courts. You have ${named.length}.`;
+            if (named.length < 2) {
+                msg.textContent = `Add at least 2 players to generate pairings.`;
                 msg.style.display = 'block'; return;
             }
             msg.style.display = 'none';
@@ -652,6 +660,10 @@
                 ...named.filter(p => !p.sub).map(p => p.name.trim()),
                 ...named.filter(p => p.sub).map(p => p.name.trim()),
             ];
+
+            // Too few to fill every court? Pad the spare seats with tennis-ball
+            // placeholders (empty string renders as a 🎾 block) so the courts still fill out.
+            while (ordered.length < playPerGame) ordered.push('');
 
             const sitPerGame = ordered.length - playPerGame;
 
@@ -696,7 +708,7 @@
             activeGame = 0;
             document.getElementById('setup-screen').style.display = 'none';
             document.getElementById('game-screen').style.display = 'block';
-            document.getElementById('gs-title').textContent = `${ordered.length} Players · ${numCourts} Courts`;
+            document.getElementById('gs-title').textContent = `${named.length} Players · ${numCourts} Courts`;
             renderGameScreen();
         }
 
@@ -805,6 +817,7 @@
             show('btn-unlock', !editMode);
             show('btn-lock', editMode);
             show('btn-edit-players', editMode);
+            show('btn-reset', editMode);
 
             const hint = document.querySelector('.drag-hint');
             if (hint) {
@@ -857,12 +870,37 @@
             updateModeUI();
         }
 
+        // Wipe the slate clean after a session: every seat becomes a tennis ball and
+        // the player list is emptied, ready for a fresh set of names next time.
+        async function resetBoard() {
+            if (!editMode || !generatedGames.length) return;
+            if (!confirm("Wipe the slate clean? Every court seat becomes a tennis ball 🎾 and the player list is cleared.")) return;
+
+            const prevPlayers = JSON.parse(JSON.stringify(players));
+            const prevGames = JSON.parse(JSON.stringify(generatedGames));
+
+            players = [];
+            generatedGames.forEach(g => {
+                g.sitters = [];
+                g.courts = g.courts.map(([t1, t2]) => [t1.map(() => ''), t2.map(() => '')]);
+            });
+            document.getElementById('gs-title').textContent = `Fresh board 🎾 · ${numCourts} Courts`;
+            renderGameScreen();
+
+            const ok = await saveSession({ players, numCourts, numGames, seed: currentSeed, generatedGames, activeGame });
+            if (!ok) {
+                players = prevPlayers;
+                generatedGames = prevGames;
+                renderGameScreen();
+            }
+        }
+
         // ── Render ──
         function renderGameScreen() {
             const allNames = players.filter(p=>p.name.trim()).map(p=>p.name.trim());
             const counts = {};
             allNames.forEach(p => counts[p]=0);
-            generatedGames.forEach(g => g.courts.forEach(([t1,t2])=>[...t1,...t2].forEach(p=>counts[p]++)));
+            generatedGames.forEach(g => g.courts.forEach(([t1,t2])=>[...t1,...t2].forEach(p=>{ if(!isBall(p) && p in counts) counts[p]++; })));
 
             // Tabs
             document.getElementById('tabs').innerHTML = generatedGames.map((g,i)=>
@@ -872,12 +910,13 @@
             const g = generatedGames[activeGame];
             const playing = new Set(g.courts.flatMap(([t1,t2])=>[...t1,...t2]));
 
-            // Sitting banner
-            if (g.sitters.length) {
+            // Sitting banner (ignore any tennis-ball placeholders)
+            const realSitters = g.sitters.filter(s=>!isBall(s));
+            if (realSitters.length) {
                 document.getElementById('sitting-banner').innerHTML =
                     `<div class="sitting-banner has-sitters">
                         <span class="s-label">Sitting Out</span>
-                        ${g.sitters.map((p,si)=>`<span class="sitting-pill" data-loc="sit-${si}" onclick="renamePlayerOnFly('${p}')" title="Drag to swap, or click to rename">${p}</span>`).join('')}
+                        ${g.sitters.map((p,si)=>isBall(p)?'':`<span class="sitting-pill" data-loc="sit-${si}" onclick="renamePlayerOnFly('${p}')" title="Drag to swap, or click to rename">${p}</span>`).join('')}
                      </div>`;
             } else {
                 document.getElementById('sitting-banner').innerHTML =
@@ -896,18 +935,23 @@
                         <div class="match-grid">
                             <div class="team">
                                 <div class="t-lbl">Team A</div>
-                                ${t1.map((p,pi)=>`<div class="pp a" data-loc="c${ci}-t0-p${pi}" onclick="renamePlayerOnFly('${p}')" title="Drag to swap, or click to rename">${p}</div>`).join('')}
+                                ${t1.map((p,pi)=>isBall(p)
+                                    ? `<div class="pp ball" data-loc="c${ci}-t0-p${pi}" title="Empty seat — drag a player here">${BALL}</div>`
+                                    : `<div class="pp a" data-loc="c${ci}-t0-p${pi}" onclick="renamePlayerOnFly('${p}')" title="Drag to swap, or click to rename">${p}</div>`).join('')}
                             </div>
                             <div class="vs-col"><div class="vs">VS</div></div>
                             <div class="team">
                                 <div class="t-lbl">Team B</div>
-                                ${t2.map((p,pi)=>`<div class="pp" data-loc="c${ci}-t1-p${pi}" onclick="renamePlayerOnFly('${p}')" style="background:${acc}18; border:1px solid ${acc}40; color:${acc};" title="Drag to swap, or click to rename">${p}</div>`).join('')}
+                                ${t2.map((p,pi)=>isBall(p)
+                                    ? `<div class="pp ball" data-loc="c${ci}-t1-p${pi}" title="Empty seat — drag a player here">${BALL}</div>`
+                                    : `<div class="pp" data-loc="c${ci}-t1-p${pi}" onclick="renamePlayerOnFly('${p}')" style="background:${acc}18; border:1px solid ${acc}40; color:${acc};" title="Drag to swap, or click to rename">${p}</div>`).join('')}
                             </div>
                         </div>
                     </div>`;
             }).join('');
 
-            // Tally
+            // Tally (hidden entirely once the board has been wiped to tennis balls)
+            document.getElementById('tally-card').style.display = allNames.length ? '' : 'none';
             const max = Math.max(...Object.values(counts));
             document.getElementById('tally').innerHTML = allNames.map(p=>{
                 const isOut = g.sitters.includes(p);
@@ -1045,7 +1089,8 @@
                 if (!res.ok) throw new Error('Failed to load');
                 const data = await res.json();
 
-                if (Array.isArray(data.players) && data.players.length) {
+                // Honour a saved roster even when it's empty (a wiped board), so a reset persists
+                if (Array.isArray(data.players)) {
                     players = data.players;
                 }
                 numCourts = data.numCourts || numCourts;
