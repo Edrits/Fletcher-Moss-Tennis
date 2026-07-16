@@ -1,54 +1,5 @@
 {
-  "players": [
-    {
-      "name": "player",
-      "sub": false
-    },
-    {
-      "name": "player",
-      "sub": false
-    },
-    {
-      "name": "player",
-      "sub": false
-    },
-    {
-      "name": "player",
-      "sub": false
-    },
-    {
-      "name": "player",
-      "sub": false
-    },
-    {
-      "name": "player",
-      "sub": false
-    },
-    {
-      "name": "player",
-      "sub": false
-    },
-    {
-      "name": "player",
-      "sub": false
-    },
-    {
-      "name": "player",
-      "sub": false
-    },
-    {
-      "name": "player",
-      "sub": false
-    },
-    {
-      "name": "player",
-      "sub": false
-    },
-    {
-      "name": "player",
-      "sub": false
-    }
-  ],
+  "players": [],
   "numCourts": 3,
   "numGames": 4,
   "seed": 392211,
@@ -59,32 +10,32 @@
       "courts": [
         [
           [
-            "player",
-            "player"
+            "",
+            ""
           ],
           [
-            "player",
-            "player"
+            "",
+            ""
           ]
         ],
         [
           [
-            "player",
-            "player"
+            "",
+            ""
           ],
           [
-            "player",
-            "player"
+            "",
+            ""
           ]
         ],
         [
           [
-            "player",
-            "player"
+            "",
+            ""
           ],
           [
-            "player",
-            "player"
+            "",
+            ""
           ]
         ]
       ]
@@ -95,32 +46,32 @@
       "courts": [
         [
           [
-            "player",
-            "player"
+            "",
+            ""
           ],
           [
-            "player",
-            "player"
+            "",
+            ""
           ]
         ],
         [
           [
-            "player",
-            "player"
+            "",
+            ""
           ],
           [
-            "player",
-            "player"
+            "",
+            ""
           ]
         ],
         [
           [
-            "player",
-            "player"
+            "",
+            ""
           ],
           [
-            "player",
-            "player"
+            "",
+            ""
           ]
         ]
       ]
@@ -131,32 +82,32 @@
       "courts": [
         [
           [
-            "player",
-            "player"
+            "",
+            ""
           ],
           [
-            "player",
-            "player"
+            "",
+            ""
           ]
         ],
         [
           [
-            "player",
-            "player"
+            "",
+            ""
           ],
           [
-            "player",
-            "player"
+            "",
+            ""
           ]
         ],
         [
           [
-            "player",
-            "player"
+            "",
+            ""
           ],
           [
-            "player",
-            "player"
+            "",
+            ""
           ]
         ]
       ]
@@ -167,37 +118,37 @@
       "courts": [
         [
           [
-            "player",
-            "player"
+            "",
+            ""
           ],
           [
-            "player",
-            "player"
+            "",
+            ""
           ]
         ],
         [
           [
-            "player",
-            "player"
+            "",
+            ""
           ],
           [
-            "player",
-            "player"
+            "",
+            ""
           ]
         ],
         [
           [
-            "player",
-            "player"
+            "",
+            ""
           ],
           [
-            "player",
-            "player"
+            "",
+            ""
           ]
         ]
       ]
     }
   ],
   "activeGame": 0,
-  "updated": "2026-07-16T21:53:06.508Z"
+  "updated": "2026-07-16T22:07:43.577Z"
 }
