@@ -1,8 +1,33 @@
 {
-  "players": [],
-  "numCourts": 3,
+  "players": [
+    {
+      "name": "John",
+      "sub": false
+    },
+    {
+      "name": "sam",
+      "sub": false
+    },
+    {
+      "name": "Mark",
+      "sub": false
+    },
+    {
+      "name": "Steve",
+      "sub": false
+    },
+    {
+      "name": "Sally",
+      "sub": false
+    },
+    {
+      "name": "Sally B",
+      "sub": false
+    }
+  ],
+  "numCourts": 4,
   "numGames": 4,
-  "seed": 392211,
+  "seed": 945551,
   "generatedGames": [
     {
       "game": 1,
@@ -14,7 +39,17 @@
             ""
           ],
           [
+            "Sally B",
+            "Sally"
+          ]
+        ],
+        [
+          [
             "",
+            "John"
+          ],
+          [
+            "Steve",
             ""
           ]
         ],
@@ -34,8 +69,8 @@
             ""
           ],
           [
-            "",
-            ""
+            "Mark",
+            "sam"
           ]
         ]
       ]
@@ -47,10 +82,10 @@
         [
           [
             "",
-            ""
+            "sam"
           ],
           [
-            "",
+            "Mark",
             ""
           ]
         ],
@@ -61,13 +96,23 @@
           ],
           [
             "",
-            ""
+            "Sally"
           ]
         ],
         [
           [
             "",
             ""
+          ],
+          [
+            "Sally B",
+            ""
+          ]
+        ],
+        [
+          [
+            "Steve",
+            "John"
           ],
           [
             "",
@@ -96,14 +141,24 @@
             ""
           ],
           [
-            "",
-            ""
+            "Mark",
+            "Sally"
           ]
         ],
         [
           [
             "",
             ""
+          ],
+          [
+            "Sally B",
+            "John"
+          ]
+        ],
+        [
+          [
+            "sam",
+            "Steve"
           ],
           [
             "",
@@ -132,8 +187,8 @@
             ""
           ],
           [
-            "",
-            ""
+            "Mark",
+            "Sally B"
           ]
         ],
         [
@@ -142,13 +197,23 @@
             ""
           ],
           [
+            "sam",
+            "John"
+          ]
+        ],
+        [
+          [
             "",
             ""
+          ],
+          [
+            "Steve",
+            "Sally"
           ]
         ]
       ]
     }
   ],
   "activeGame": 0,
-  "updated": "2026-07-16T22:07:43.577Z"
+  "updated": "2026-07-16T22:08:39.012Z"
 }
