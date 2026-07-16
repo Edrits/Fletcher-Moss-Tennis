@@ -33,10 +33,6 @@
       "sub": false
     },
     {
-      "name": "Lucy",
-      "sub": false
-    },
-    {
       "name": "Alex",
       "sub": false
     },
@@ -70,58 +66,62 @@
     },
     {
       "name": "San",
+      "sub": false
+    },
+    {
+      "name": "Rod",
       "sub": true
     }
   ],
   "numCourts": 4,
   "numGames": 4,
-  "seed": 402107,
+  "seed": 611867,
   "generatedGames": [
     {
       "game": 1,
       "sitters": [
         "Nic",
-        "San"
+        "Rod"
       ],
       "courts": [
         [
           [
-            "Alex",
-            "Jack"
+            "Dan",
+            "Alex"
           ],
           [
+            "Evie",
+            "Ali"
+          ]
+        ],
+        [
+          [
             "Keshap",
+            "Ting"
+          ],
+          [
+            "Patrick",
+            "Emma"
+          ]
+        ],
+        [
+          [
+            "Kamal",
+            "Adam"
+          ],
+          [
+            "Alan",
             "Josh"
           ]
         ],
         [
           [
-            "Adam",
-            "Emma"
+            "Jack",
+            "Ryan"
           ],
           [
-            "Alan",
-            "Evie"
-          ]
-        ],
-        [
-          [
-            "Lucy",
-            "Ting"
-          ],
-          [
-            "Dan",
+            "San",
             "Edward"
-          ]
-        ],
-        [
-          [
-            "Ryan",
-            "Kamal"
-          ],
-          [
-            "Patrick",
-            "Ali"
           ]
         ]
       ]
@@ -129,48 +129,48 @@
     {
       "game": 2,
       "sitters": [
-        "Dan",
-        "Alan"
+        "Alan",
+        "San"
       ],
       "courts": [
         [
           [
-            "Patrick",
-            "Edward"
+            "Josh",
+            "Keshap"
           ],
           [
-            "Alex",
-            "San"
+            "Ali",
+            "Ryan"
+          ]
+        ],
+        [
+          [
+            "Nic",
+            "Jack"
+          ],
+          [
+            "Emma",
+            "Alex"
           ]
         ],
         [
           [
             "Evie",
-            "Lucy"
+            "Patrick"
           ],
           [
-            "Ali",
-            "Nic"
+            "Edward",
+            "Kamal"
           ]
         ],
         [
           [
-            "Ryan",
-            "Emma"
+            "Dan",
+            "Ting"
           ],
           [
-            "Josh",
-            "Jack"
-          ]
-        ],
-        [
-          [
-            "Ting",
+            "Rod",
             "Adam"
-          ],
-          [
-            "Kamal",
-            "Keshap"
           ]
         ]
       ]
@@ -178,48 +178,48 @@
     {
       "game": 3,
       "sitters": [
-        "Kamal",
-        "Jack"
+        "Jack",
+        "Dan"
       ],
       "courts": [
         [
           [
-            "Josh",
-            "Edward"
-          ],
-          [
-            "Keshap",
-            "Alan"
-          ]
-        ],
-        [
-          [
-            "Evie",
+            "Adam",
             "Ting"
           ],
           [
+            "Keshap",
+            "Ali"
+          ]
+        ],
+        [
+          [
             "Patrick",
             "Ryan"
-          ]
-        ],
-        [
-          [
-            "Lucy",
-            "Nic"
           ],
           [
-            "Alex",
-            "Adam"
-          ]
-        ],
-        [
-          [
-            "Dan",
+            "Alan",
             "Emma"
+          ]
+        ],
+        [
+          [
+            "Nic",
+            "Alex"
           ],
+          [
+            "Kamal",
+            "Rod"
+          ]
+        ],
+        [
           [
             "San",
-            "Ali"
+            "Josh"
+          ],
+          [
+            "Edward",
+            "Evie"
           ]
         ]
       ]
@@ -227,53 +227,53 @@
     {
       "game": 4,
       "sitters": [
-        "Josh",
-        "Ali"
+        "Ali",
+        "Kamal"
       ],
       "courts": [
         [
           [
-            "Dan",
-            "Evie"
+            "Rod",
+            "Nic"
           ],
           [
-            "Edward",
-            "Keshap"
+            "Jack",
+            "Edward"
           ]
         ],
         [
           [
-            "Patrick",
-            "Jack"
+            "Evie",
+            "San"
           ],
           [
-            "Nic",
-            "Alan"
+            "Keshap",
+            "Emma"
           ]
         ],
         [
           [
             "Adam",
-            "Lucy"
+            "Ryan"
           ],
           [
-            "Ryan",
-            "Ting"
+            "Patrick",
+            "Alex"
           ]
         ],
         [
           [
-            "Kamal",
-            "Alex"
+            "Ting",
+            "Alan"
           ],
           [
-            "San",
-            "Emma"
+            "Josh",
+            "Dan"
           ]
         ]
       ]
     }
   ],
   "activeGame": 0,
-  "updated": "2026-07-16T11:26:33.534Z"
+  "updated": "2026-07-16T15:50:14.177Z"
 }
