@@ -49,10 +49,16 @@ export default async function handler(req, res) {
 
     // POST - Save the current pairings session (requires admin password)
     if (req.method === 'POST') {
-      const { password, players, numCourts, numGames, seed, generatedGames, activeGame } = req.body;
+      const { action, password, players, numCourts, numGames, seed, generatedGames, activeGame } = req.body;
 
       if (password !== ADMIN_PASSWORD) {
         return res.status(401).json({ error: 'Incorrect password' });
+      }
+
+      // Lightweight check used by the "unlock to edit" prompt — confirms the
+      // password without writing anything back to the repo.
+      if (action === 'verify') {
+        return res.status(200).json({ valid: true });
       }
 
       let sha = null;
