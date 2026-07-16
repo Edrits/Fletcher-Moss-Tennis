@@ -135,11 +135,11 @@
       "courts": [
         [
           [
-            "Josh",
+            "Ali",
             "Keshap"
           ],
           [
-            "Ali",
+            "Josh",
             "Ryan"
           ]
         ],
@@ -274,6 +274,6 @@
       ]
     }
   ],
-  "activeGame": 0,
-  "updated": "2026-07-16T21:47:18.600Z"
+  "activeGame": 1,
+  "updated": "2026-07-16T21:47:24.876Z"
 }
