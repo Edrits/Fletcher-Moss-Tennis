@@ -46,51 +46,56 @@
     },
     {
       "name": "Adam B",
-      "sub": true
+      "sub": false
     },
     {
       "name": "Shyam",
+      "sub": true
+    },
+    {
+      "name": "Lucy",
       "sub": true
     }
   ],
   "numCourts": 3,
   "numGames": 4,
-  "seed": 73414,
+  "seed": 572404,
   "generatedGames": [
     {
       "game": 1,
       "sitters": [
-        "Shyam"
+        "Shyam",
+        "Lucy"
       ],
       "courts": [
         [
           [
-            "Adam B",
-            "Ewelina"
+            "Ewelina",
+            "Ali"
           ],
           [
-            "Ali",
+            "Rod",
+            "Adam B"
+          ]
+        ],
+        [
+          [
+            "Emma",
+            "Evie"
+          ],
+          [
+            "Kevin",
             "Dan T"
           ]
         ],
         [
           [
-            "Rhys",
-            "Will R"
+            "Adam",
+            "Rhys"
           ],
           [
-            "Evie",
-            "Adam"
-          ]
-        ],
-        [
-          [
-            "Rod",
+            "Will R",
             "Ryan"
-          ],
-          [
-            "Emma",
-            "Kevin"
           ]
         ]
       ]
@@ -98,17 +103,57 @@
     {
       "game": 2,
       "sitters": [
+        "Dan T",
         "Adam B"
       ],
       "courts": [
         [
           [
+            "Will R",
+            "Evie"
+          ],
+          [
             "Rod",
+            "Shyam"
+          ]
+        ],
+        [
+          [
+            "Adam",
+            "Ryan"
+          ],
+          [
+            "Ewelina",
             "Emma"
+          ]
+        ],
+        [
+          [
+            "Lucy",
+            "Rhys"
+          ],
+          [
+            "Ali",
+            "Kevin"
+          ]
+        ]
+      ]
+    },
+    {
+      "game": 3,
+      "sitters": [
+        "Rod",
+        "Emma"
+      ],
+      "courts": [
+        [
+          [
+            "Ryan",
+            "Evie"
           ],
           [
             "Will R",
-            "Ewelina"
+            "Adam B"
           ]
         ],
         [
@@ -117,55 +162,17 @@
             "Shyam"
           ],
           [
-            "Adam",
-            "Rhys"
-          ]
-        ],
-        [
-          [
-            "Ryan",
-            "Kevin"
-          ],
-          [
-            "Ali",
-            "Evie"
-          ]
-        ]
-      ]
-    },
-    {
-      "game": 3,
-      "sitters": [
-        "Dan T"
-      ],
-      "courts": [
-        [
-          [
-            "Ali",
-            "Adam"
-          ],
-          [
-            "Emma",
-            "Evie"
-          ]
-        ],
-        [
-          [
-            "Shyam",
-            "Adam B"
-          ],
-          [
-            "Kevin",
-            "Will R"
-          ]
-        ],
-        [
-          [
             "Rhys",
-            "Ryan"
+            "Kevin"
+          ]
+        ],
+        [
+          [
+            "Lucy",
+            "Ali"
           ],
           [
-            "Rod",
+            "Adam",
             "Ewelina"
           ]
         ]
@@ -174,42 +181,43 @@
     {
       "game": 4,
       "sitters": [
-        "Emma"
+        "Kevin",
+        "Ali"
       ],
       "courts": [
         [
           [
             "Ewelina",
-            "Kevin"
+            "Adam B"
           ],
           [
-            "Will R",
-            "Adam"
+            "Dan T",
+            "Will R"
           ]
         ],
         [
           [
-            "Adam B",
-            "Dan T"
+            "Adam",
+            "Emma"
           ],
+          [
+            "Evie",
+            "Rhys"
+          ]
+        ],
+        [
           [
             "Rod",
-            "Evie"
-          ]
-        ],
-        [
-          [
-            "Rhys",
-            "Shyam"
+            "Ryan"
           ],
           [
-            "Ali",
-            "Ryan"
+            "Shyam",
+            "Lucy"
           ]
         ]
       ]
     }
   ],
   "activeGame": 0,
-  "updated": "2026-07-17T17:28:00.208Z"
+  "updated": "2026-07-17T17:39:31.520Z"
 }
