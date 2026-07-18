@@ -81,7 +81,7 @@
         }
 
         .top-bar-inner {
-            max-width: 1200px;
+            max-width: 1500px;
             margin: 0 auto;
             display: flex;
             align-items: center;
@@ -622,9 +622,9 @@
         }
 
         /* Mobile adjustments */
-        /* The desktop nav (8 links + full title) doesn't fit on common laptop widths like 1366/1440,
+        /* The desktop nav (8 links + full title) needs ~1450px of header width,
            so it switches to the hamburger menu earlier than the general phone breakpoint below. */
-        @media (max-width: 1500px) {
+        @media (max-width: 1560px) {
             .nav-links {
                 display: none;
             }
@@ -819,7 +819,7 @@
                 <a href="#weather">Weather</a>
                 <a href="#join">Join</a>
                 <a href="#location">Location</a>
-                <a href="box-league.html">Singles League</a>
+                <a href="box-league.html">FMST Singles League</a>
                 <a href="pairings.html">Pairings</a>
             </nav>
             <!-- Hamburger button (mobile only) -->
@@ -837,7 +837,7 @@
             <a href="#weather" onclick="closeMobileNav()">Weather</a>
             <a href="#join" onclick="closeMobileNav()">Join</a>
             <a href="#location" onclick="closeMobileNav()">Location</a>
-            <a href="box-league.html" onclick="closeMobileNav()">Singles League</a>
+            <a href="box-league.html" onclick="closeMobileNav()">FMST Singles League</a>
             <a href="pairings.html" onclick="closeMobileNav()">Pairings</a>
         </nav>
     </header>
