@@ -116,15 +116,15 @@
       "players": [
         {
           "name": "Art",
-          "played": 1,
-          "won": 1,
-          "points": 3
+          "played": 0,
+          "won": 0,
+          "points": 0
         },
         {
           "name": "Ted",
-          "played": 1,
+          "played": 0,
           "won": 0,
-          "points": 1
+          "points": 0
         },
         {
           "name": "Michael",
@@ -163,16 +163,7 @@
           "points": 0
         }
       ],
-      "matches": [
-        {
-          "player1": "Art",
-          "player2": "Ted",
-          "score": "6-2",
-          "winner": "Art",
-          "noShow": null,
-          "date": "2026-07-18T15:02:40.520Z"
-        }
-      ]
+      "matches": []
     },
     {
       "id": "league-4",
