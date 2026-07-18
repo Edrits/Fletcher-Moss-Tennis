@@ -116,9 +116,15 @@
       "players": [
         {
           "name": "Art",
-          "played": 0,
+          "played": 1,
+          "won": 1,
+          "points": 3
+        },
+        {
+          "name": "Ted",
+          "played": 1,
           "won": 0,
-          "points": 0
+          "points": 1
         },
         {
           "name": "Michael",
@@ -134,12 +140,6 @@
         },
         {
           "name": "Alan Russell",
-          "played": 0,
-          "won": 0,
-          "points": 0
-        },
-        {
-          "name": "Ted",
           "played": 0,
           "won": 0,
           "points": 0
@@ -163,7 +163,16 @@
           "points": 0
         }
       ],
-      "matches": []
+      "matches": [
+        {
+          "player1": "Art",
+          "player2": "Ted",
+          "score": "6-2",
+          "winner": "Art",
+          "noShow": null,
+          "date": "2026-07-18T15:02:40.520Z"
+        }
+      ]
     },
     {
       "id": "league-4",
