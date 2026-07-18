@@ -15,8 +15,42 @@ export default async function handler(req, res) {
 
   const githubUrl = `https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/contents/${DATA_FILE}`;
 
+  // Points: 3 for a win (including walkovers), 1 for showing up and losing, 0 for a no-show
+  function recalculateBox(box) {
+    box.players.forEach(p => {
+      p.played = 0;
+      p.won = 0;
+      p.points = 0;
+    });
+
+    box.matches = (box.matches || []).filter(m =>
+      box.players.some(p => p.name === m.player1) &&
+      box.players.some(p => p.name === m.player2)
+    );
+
+    box.matches.forEach(m => {
+      const p1 = box.players.find(p => p.name === m.player1);
+      const p2 = box.players.find(p => p.name === m.player2);
+
+      p1.played += 1;
+      p2.played += 1;
+
+      const winner = m.winner === p1.name ? p1 : (m.winner === p2.name ? p2 : null);
+      if (!winner) return;
+      const loser = winner === p1 ? p2 : p1;
+
+      winner.won += 1;
+      winner.points += 3;
+      if (m.noShow !== loser.name) {
+        loser.points += 1;
+      }
+    });
+
+    box.players.sort((a, b) => b.points - a.points || b.won - a.won);
+  }
+
   try {
-    // GET - Fetch box league data
+    // GET - Fetch league data
     if (req.method === 'GET') {
       const response = await fetch(githubUrl, {
         headers: {
@@ -37,13 +71,13 @@ export default async function handler(req, res) {
       }
     }
 
-    // POST - Update box league data
+    // POST - Update league data
     if (req.method === 'POST') {
       const { type, password, updatedBoxes, clearMatches, match, boxId, matchIndex } = req.body;
 
       let sha = null;
       let currentData = { boxes: [] };
-      
+
       const getResponse = await fetch(githubUrl, {
         headers: {
           'Authorization': `token ${GITHUB_TOKEN}`,
@@ -72,56 +106,15 @@ export default async function handler(req, res) {
               box.matches = [];
             }
 
-            box.players = ub.players.map((newName, idx) => {
-              const cleanName = newName.trim() || `Player ${idx + 1}`;
-              const oldPlayer = box.players[idx];
-
-              if (!clearMatches && oldPlayer && oldPlayer.name === cleanName) {
-                return oldPlayer;
-              } else {
-                return { name: cleanName, played: 0, won: 0, points: 0 };
-              }
-            });
+            // Leagues can have any number of players; blank rows are dropped
+            box.players = ub.players
+              .map(n => n.trim())
+              .filter(n => n)
+              .map(name => ({ name, played: 0, won: 0, points: 0 }));
           }
         });
 
-        // Recalculate remaining matches safely
-        if (!clearMatches) {
-          dataToSave.boxes.forEach(box => {
-            box.players.forEach(p => {
-              p.played = 0;
-              p.won = 0;
-              p.points = 0;
-            });
-
-            if (box.matches) {
-              box.matches = box.matches.filter(m => {
-                const p1Exists = box.players.some(p => p.name === m.player1);
-                const p2Exists = box.players.some(p => p.name === m.player2);
-                return p1Exists && p2Exists;
-              });
-
-              box.matches.forEach(m => {
-                const p1 = box.players.find(p => p.name === m.player1);
-                const p2 = box.players.find(p => p.name === m.player2);
-
-                if (p1 && p2) {
-                  p1.played += 1;
-                  p2.played += 1;
-
-                  if (m.winner === m.player1) {
-                    p1.won += 1;
-                    p1.points += 1; // 1 point for win
-                  } else if (m.winner === m.player2) {
-                    p2.won += 1;
-                    p2.points += 1; // 1 point for win
-                  }
-                }
-              });
-            }
-            box.players.sort((a, b) => b.points - a.points || b.won - a.won);
-          });
-        }
+        dataToSave.boxes.forEach(recalculateBox);
 
       } else if (type === 'delete_match') {
         if (password !== ADMIN_PASSWORD) {
@@ -130,45 +123,30 @@ export default async function handler(req, res) {
 
         const box = dataToSave.boxes.find(b => b.id === boxId);
         if (!box || !box.matches) {
-          return res.status(400).json({ error: 'Box group or match list not found' });
+          return res.status(400).json({ error: 'League or match list not found' });
         }
 
-        // Remove the selected match by its index
         box.matches.splice(matchIndex, 1);
-
-        // Reset and recalculate standings cleanly
-        box.players.forEach(p => {
-          p.played = 0;
-          p.won = 0;
-          p.points = 0;
-        });
-
-        box.matches.forEach(m => {
-          const p1 = box.players.find(p => p.name === m.player1);
-          const p2 = box.players.find(p => p.name === m.player2);
-
-          if (p1 && p2) {
-            p1.played += 1;
-            p2.played += 1;
-
-            if (m.winner === m.player1) {
-              p1.won += 1;
-              p1.points += 1; // 1 point for win, 0 for loss
-            } else if (m.winner === m.player2) {
-              p2.won += 1;
-              p2.points += 1; // 1 point for win, 0 for loss
-            }
-          }
-        });
-
-        box.players.sort((a, b) => b.points - a.points || b.won - a.won);
+        recalculateBox(box);
 
       } else if (type === 'submit_score') {
-        const { boxId, player1, player2, score, winner } = match;
-        
+        const { boxId, player1, player2, score, winner, noShow } = match;
+
         const box = dataToSave.boxes.find(b => b.id === boxId);
         if (!box) {
-          return res.status(400).json({ error: 'Box group not found' });
+          return res.status(400).json({ error: 'League not found' });
+        }
+
+        const p1Exists = box.players.some(p => p.name === player1);
+        const p2Exists = box.players.some(p => p.name === player2);
+        if (!p1Exists || !p2Exists || player1 === player2) {
+          return res.status(400).json({ error: 'Invalid players for this league' });
+        }
+        if (winner !== player1 && winner !== player2) {
+          return res.status(400).json({ error: 'Winner must be one of the two players' });
+        }
+        if (noShow && (noShow === winner || (noShow !== player1 && noShow !== player2))) {
+          return res.status(400).json({ error: 'No-show must be the non-attending player' });
         }
 
         if (!box.matches) box.matches = [];
@@ -177,35 +155,11 @@ export default async function handler(req, res) {
           player2,
           score,
           winner,
+          noShow: noShow || null,
           date: new Date().toISOString()
         });
 
-        // Recalculate
-        box.players.forEach(p => {
-          p.played = 0;
-          p.won = 0;
-          p.points = 0;
-        });
-
-        box.matches.forEach(m => {
-          const p1 = box.players.find(p => p.name === m.player1);
-          const p2 = box.players.find(p => p.name === m.player2);
-
-          if (p1 && p2) {
-            p1.played += 1;
-            p2.played += 1;
-
-            if (m.winner === m.player1) {
-              p1.won += 1;
-              p1.points += 1; // 1 point for win, 0 for loss
-            } else if (m.winner === m.player2) {
-              p2.won += 1;
-              p2.points += 1; // 1 point for win, 0 for loss
-            }
-          }
-        });
-
-        box.players.sort((a, b) => b.points - a.points || b.won - a.won);
+        recalculateBox(box);
       } else {
         return res.status(400).json({ error: 'Invalid update type' });
       }

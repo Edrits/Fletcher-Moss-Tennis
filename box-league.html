@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Box League | Fletcher Moss Social Tennis Club</title>
+    <title>FMST Singles League | Fletcher Moss Social Tennis Club</title>
     <link rel="icon" href="favicon.ico" sizes="any">
     <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
@@ -321,7 +321,7 @@
                     <a href="index.html" style="text-decoration: none; color: inherit;">
                         <h1>Fletcher Moss Social Tennis Club</h1>
                     </a>
-                    <p>Didsbury Box League</p>
+                    <p>FMST Singles League</p>
                 </div>
             </div>
             <nav class="nav-links">
@@ -347,7 +347,8 @@
     </header>
 
     <div class="main-container">
-        <h2 style="color: #2d5016; margin-bottom: 30px;">🏆 Active Standings</h2>
+        <h2 style="color: #2d5016; margin-bottom: 10px;">🏆 FMST Singles League</h2>
+        <p style="color: #666; margin-bottom: 30px; font-size: 0.95em;">Points: <strong>3</strong> for a win · <strong>1</strong> for playing · <strong>0</strong> for a no-show. Walkovers count as wins.</p>
         
         <!-- League Boxes Render Target -->
         <div id="leagueBoxes">Loading league standings...</div>
@@ -357,34 +358,41 @@
             <h3 style="color: #2d5016; margin-bottom: 15px;">📝 Submit Match Result</h3>
             <form id="scoreForm" onsubmit="submitScore(event)">
                 <div class="form-group">
-                    <label for="matchBoxId">Select Box Group</label>
+                    <label for="matchBoxId">Select League</label>
                     <select id="matchBoxId" required>
-                        <option value="">Select Group...</option>
+                        <option value="">Select League...</option>
                     </select>
                 </div>
                 <div class="form-group">
                     <label for="matchPlayer1">Player 1</label>
                     <select id="matchPlayer1" required>
-                        <option value="">Select Box Group First</option>
+                        <option value="">Select League First</option>
                     </select>
                 </div>
                 <div class="form-group">
                     <label for="matchPlayer2">Player 2</label>
                     <select id="matchPlayer2" required>
-                        <option value="">Select Box Group First</option>
+                        <option value="">Select League First</option>
                     </select>
                 </div>
                 <div class="form-group">
+                    <label for="matchType">Result Type</label>
+                    <select id="matchType" onchange="updateResultTypeUI()">
+                        <option value="played">Match played</option>
+                        <option value="walkover">Walkover (opponent didn't show)</option>
+                    </select>
+                </div>
+                <div class="form-group" id="scoreGroup">
                     <label for="matchScore">Score <p>(Must be standard tennis format, e.g. 6-4, 6-3)</p></label>
                     <input type="text" id="matchScore" placeholder="e.g. 6-4, 6-3" required>
                 </div>
                 <div class="form-group">
-                    <label for="matchWinner">Match Winner</label>
+                    <label for="matchWinner" id="matchWinnerLabel">Match Winner</label>
                     <select id="matchWinner" required>
                         <option value="">Select Players First</option>
                     </select>
                 </div>
-                <button type="submit" class="btn">Submit Score</button>
+                <button type="submit" class="btn">Submit Result</button>
             </form>
         </div>
 
@@ -410,7 +418,7 @@
 
             <div class="form-group" style="display: flex; align-items: center; gap: 10px; margin-top: 30px;">
                 <input type="checkbox" id="clearMatchesCheck" style="width: auto; cursor: pointer;">
-                <label for="clearMatchesCheck" style="color: #c0392b; cursor: pointer; font-weight: 600;">⚠️ Reset Match History (Tick to start a brand new box round)</label>
+                <label for="clearMatchesCheck" style="color: #c0392b; cursor: pointer; font-weight: 600;">⚠️ Reset Match History (Tick to start a brand new league round)</label>
             </div>
 
             <button class="btn" onclick="saveAdminLeague()" style="margin-top: 15px;">Save Player Names</button>
@@ -502,8 +510,12 @@
                     </tr>
                 `).join('');
 
-                let matchRows = (box.matches && box.matches.length > 0) 
-                    ? box.matches.slice(-5).reverse().map(m => `
+                let matchRows = (box.matches && box.matches.length > 0)
+                    ? box.matches.slice(-5).reverse().map(m => m.noShow ? `
+                        <li style="margin-bottom: 8px; list-style-type: none; font-size: 0.95em;">
+                            🚶 ${m.winner} won by walkover — ${m.noShow} didn't show
+                        </li>
+                      ` : `
                         <li style="margin-bottom: 8px; list-style-type: none; font-size: 0.95em;">
                             🎾 ${m.player1} vs ${m.player2} — <strong>${m.score}</strong> (Winner: ${m.winner})
                         </li>
@@ -565,6 +577,15 @@
             }
         });
 
+        function updateResultTypeUI() {
+            const isWalkover = document.getElementById('matchType').value === 'walkover';
+            const scoreGroup = document.getElementById('scoreGroup');
+            const scoreInput = document.getElementById('matchScore');
+            scoreGroup.style.display = isWalkover ? 'none' : 'block';
+            scoreInput.required = !isWalkover;
+            document.getElementById('matchWinnerLabel').textContent = isWalkover ? 'Who turned up?' : 'Match Winner';
+        }
+
         function updateWinnerOptions() {
             const p1 = p1Select.value;
             const p2 = p2Select.value;
@@ -597,14 +618,23 @@
             const boxId = boxSelect.value;
             const p1 = p1Select.value;
             const p2 = p2Select.value;
-            const score = document.getElementById('matchScore').value;
             const winner = winnerSelect.value;
+            const isWalkover = document.getElementById('matchType').value === 'walkover';
 
-            // Strict Score Format Regex Validation (Format e.g. 6-4, 6-3)
-            const scorePattern = /^(\d{1,2}-\d{1,2})(,\s?\d{1,2}-\d{1,2})*$/;
-            if (!scorePattern.test(score)) {
-                alert("❌ Please enter your score in standard tennis format: e.g. 6-4, 6-3 or 6-7, 6-2, 10-5");
-                return;
+            let score;
+            let noShow = null;
+
+            if (isWalkover) {
+                score = 'W/O';
+                noShow = winner === p1 ? p2 : p1;
+            } else {
+                score = document.getElementById('matchScore').value;
+                // Strict Score Format Regex Validation (Format e.g. 6-4, 6-3)
+                const scorePattern = /^(\d{1,2}-\d{1,2})(,\s?\d{1,2}-\d{1,2})*$/;
+                if (!scorePattern.test(score)) {
+                    alert("❌ Please enter your score in standard tennis format: e.g. 6-4, 6-3 or 6-7, 6-2, 10-5");
+                    return;
+                }
             }
 
             try {
@@ -613,20 +643,21 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         type: 'submit_score',
-                        match: { boxId, player1: p1, player2: p2, score, winner }
+                        match: { boxId, player1: p1, player2: p2, score, winner, noShow }
                     })
                 });
 
                 if (response.ok) {
-                    alert("✅ Score submitted successfully!");
+                    alert("✅ Result submitted successfully!");
                     document.getElementById('scoreForm').reset();
-                    p1Select.innerHTML = '<option value="">Select Box Group First</option>';
-                    p2Select.innerHTML = '<option value="">Select Box Group First</option>';
+                    p1Select.innerHTML = '<option value="">Select League First</option>';
+                    p2Select.innerHTML = '<option value="">Select League First</option>';
                     winnerSelect.innerHTML = '<option value="">Select Players First</option>';
+                    updateResultTypeUI();
                     await loadLeague();
                 } else {
                     const result = await response.json();
-                    alert("❌ Error: " + (result.error || "Failed to submit score"));
+                    alert("❌ Error: " + (result.error || "Failed to submit result"));
                 }
             } catch (err) {
                 console.error(err);
@@ -664,24 +695,16 @@
                 matchesContainer.innerHTML = '';
 
                 leagueData.boxes.forEach(box => {
-                    // 1. Render player inputs card
+                    // 1. Render player inputs card (leagues can be any size — rows are added/removed freely)
                     const playerCard = document.createElement('div');
                     playerCard.className = 'admin-box-card';
-                    
-                    let playerInputs = '';
-                    for (let i = 0; i < 5; i++) {
-                        const currentPlayer = box.players[i] || { name: `Player ${i + 1}` };
-                        playerInputs += `
-                            <div class="form-group" style="margin-bottom: 8px;">
-                                <label style="font-size: 0.85em; color: #666; font-weight: 500;">Slot ${i + 1}</label>
-                                <input type="text" class="admin-player-input" data-box-id="${box.id}" data-index="${i}" value="${currentPlayer.name}" required style="padding: 6px; width: 100%; border: 1px solid #ddd; border-radius: 4px;">
-                            </div>
-                        `;
-                    }
+
+                    const playerRows = box.players.map(p => adminPlayerRow(box.id, p.name)).join('');
 
                     playerCard.innerHTML = `
                         <h4 style="color: #2d5016; margin-bottom: 12px; border-bottom: 1px solid #eee; padding-bottom: 4px;">${box.name} Players</h4>
-                        ${playerInputs}
+                        <div id="adminRows-${box.id}">${playerRows}</div>
+                        <button type="button" onclick="addAdminPlayerRow('${box.id}')" style="background: none; border: 1px dashed #4a7c2c; color: #4a7c2c; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 0.85em; width: 100%; margin-top: 4px;">+ Add player</button>
                     `;
                     playersContainer.appendChild(playerCard);
 
@@ -712,6 +735,20 @@
                     matchesContainer.appendChild(matchCard);
                 });
             }
+        }
+
+        function adminPlayerRow(boxId, name) {
+            const safeName = name.replace(/"/g, '&quot;');
+            return `
+                <div class="form-group" style="margin-bottom: 8px; display: flex; gap: 6px; align-items: center;">
+                    <input type="text" class="admin-player-input" data-box-id="${boxId}" value="${safeName}" placeholder="Player name" style="padding: 6px; flex: 1; border: 1px solid #ddd; border-radius: 4px;">
+                    <button type="button" onclick="this.parentElement.remove()" title="Remove player" style="background: #e74c3c; color: white; border: none; width: 24px; height: 24px; border-radius: 4px; cursor: pointer; flex-shrink: 0; line-height: 1;">×</button>
+                </div>
+            `;
+        }
+
+        function addAdminPlayerRow(boxId) {
+            document.getElementById('adminRows-' + boxId).insertAdjacentHTML('beforeend', adminPlayerRow(boxId, ''));
         }
 
         async function deleteMatch(boxId, matchIndex) {
@@ -767,15 +804,7 @@
             const updatedBoxes = [];
             leagueData.boxes.forEach(box => {
                 const inputs = document.querySelectorAll(`.admin-player-input[data-box-id="${box.id}"]`);
-                const players = [];
-                
-                const sortedInputs = Array.from(inputs).sort((a, b) => {
-                    return parseInt(a.getAttribute('data-index')) - parseInt(b.getAttribute('data-index'));
-                });
-
-                sortedInputs.forEach(input => {
-                    players.push(input.value.trim());
-                });
+                const players = Array.from(inputs).map(input => input.value.trim());
 
                 updatedBoxes.push({
                     id: box.id,
