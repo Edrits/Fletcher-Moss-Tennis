@@ -389,7 +389,8 @@
         .location-address strong { color: var(--text-body); }
         .map-frame { width: 100%; height: 420px; border-radius: var(--radius-xl); border: none; box-shadow: var(--shadow-md); display: block; }
 
-        .parallax-container { position: relative; overflow: hidden; margin-top: 40px; border-radius: var(--radius-xl); box-shadow: var(--shadow-lg); height: 380px; }
+        /* Full-bleed like the feature bands — spans the viewport, no card box */
+        .parallax-container { position: relative; overflow: hidden; margin-top: 40px; width: 100vw; margin-left: calc(50% - 50vw); height: 380px; }
         /* 20% taller than its frame, pulled up 10%, so the clamped ±30px drift never exposes an edge */
         .parallax-image { position: absolute; top: -10%; left: 0; width: 100%; height: 120%; background-size: cover; background-position: center; will-change: transform; }
         .parallax-overlay {
@@ -603,7 +604,7 @@
         <section class="feature-band fade-in" style="background-image: url('courts-aerial.jpg');" aria-label="The courts at Fletcher Moss Park">
             <div class="band-inner">
                 <span class="kicker">On the courts</span>
-                <h2>All abilities welcome — just turn up and play</h2>
+                <h2>Friendly, sociable tennis for intermediate and advanced players</h2>
             </div>
         </section>
 
