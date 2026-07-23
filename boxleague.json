@@ -60,6 +60,18 @@
       "name": "League 2",
       "players": [
         {
+          "name": "Shyam",
+          "played": 1,
+          "won": 1,
+          "points": 3
+        },
+        {
+          "name": "Edward",
+          "played": 1,
+          "won": 0,
+          "points": 1
+        },
+        {
           "name": "Evie",
           "played": 0,
           "won": 0,
@@ -67,12 +79,6 @@
         },
         {
           "name": "Ryan",
-          "played": 0,
-          "won": 0,
-          "points": 0
-        },
-        {
-          "name": "Edward",
           "played": 0,
           "won": 0,
           "points": 0
@@ -90,12 +96,6 @@
           "points": 0
         },
         {
-          "name": "Shyam",
-          "played": 0,
-          "won": 0,
-          "points": 0
-        },
-        {
           "name": "Jesse",
           "played": 0,
           "won": 0,
@@ -108,7 +108,16 @@
           "points": 0
         }
       ],
-      "matches": []
+      "matches": [
+        {
+          "player1": "Edward",
+          "player2": "Shyam",
+          "score": "5-0",
+          "winner": "Shyam",
+          "noShow": null,
+          "date": "2026-07-23T20:24:09.378Z"
+        }
+      ]
     },
     {
       "id": "league-3",
