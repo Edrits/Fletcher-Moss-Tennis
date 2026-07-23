@@ -250,6 +250,33 @@
         }
         .section { margin-bottom: 88px; }
 
+        /* ============================================================
+           Full-bleed feature bands — photographic punctuation between
+           content sections. Breaks out of .page-wrap to span the viewport.
+           ============================================================ */
+        .feature-band {
+            position: relative;
+            width: 100vw;
+            margin-left: calc(50% - 50vw);
+            margin-bottom: 88px;
+            min-height: clamp(300px, 42vh, 440px);
+            display: flex; align-items: center; justify-content: center;
+            text-align: center; padding: 48px 24px; overflow: hidden;
+            background-size: cover; background-position: center;
+        }
+        .feature-band::before {
+            content: ''; position: absolute; inset: 0; background: var(--gradient-hero-scrim);
+        }
+        .feature-band .band-inner { position: relative; z-index: 1; max-width: 720px; }
+        .feature-band .kicker {
+            display: block; text-transform: uppercase; letter-spacing: var(--tracking-wider);
+            font-size: var(--text-xs); font-weight: 700; color: rgba(255,255,255,.85); margin-bottom: 10px;
+        }
+        .feature-band h2 {
+            font-size: var(--text-3xl); line-height: var(--leading-tight); color: #fff;
+            text-shadow: 0 2px 20px rgba(0,0,0,.5);
+        }
+
         .section-heading { margin-bottom: 28px; text-align: center; }
         .section-heading .kicker {
             display: block; text-transform: uppercase; letter-spacing: var(--tracking-wider);
@@ -465,6 +492,8 @@
             .ds-card, .info-card { padding: 22px; }
             .map-frame { height: 340px; }
             .footer-details { gap: 32px; }
+            .feature-band { min-height: clamp(340px, 60vh, 480px); margin-bottom: 56px; }
+            .feature-band h2 { font-size: var(--text-2xl); }
         }
     </style>
 </head>
@@ -570,6 +599,14 @@
             </div>
         </section>
 
+        <!-- Feature band 1 -->
+        <section class="feature-band fade-in" style="background-image: url('courts-aerial.jpg');" aria-label="The courts at Fletcher Moss Park">
+            <div class="band-inner">
+                <span class="kicker">On the courts</span>
+                <h2>All abilities welcome — just turn up and play</h2>
+            </div>
+        </section>
+
         <!-- Sessions -->
         <section class="section" id="sessions">
             <div class="section-heading fade-in">
@@ -621,6 +658,14 @@
                 <p class="weather-forecast">
                     <a href="https://www.metoffice.gov.uk/weather/forecast/gcw2m68e2" target="_blank">View detailed forecast →</a>
                 </p>
+            </div>
+        </section>
+
+        <!-- Feature band 2 -->
+        <section class="feature-band fade-in" style="background-image: url('hero-autumn.jpg.jpeg');" aria-label="Autumn in Fletcher Moss Park">
+            <div class="band-inner">
+                <span class="kicker">Fletcher Moss Park</span>
+                <h2>Set in the lovely surroundings of the park</h2>
             </div>
         </section>
 
