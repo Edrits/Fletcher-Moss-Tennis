@@ -256,6 +256,12 @@
           "played": 0,
           "won": 0,
           "points": 0
+        },
+        {
+          "name": "Rebecca",
+          "played": 0,
+          "won": 0,
+          "points": 0
         }
       ],
       "matches": [
