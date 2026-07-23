@@ -5,6 +5,18 @@
       "name": "League 1",
       "players": [
         {
+          "name": "Louis",
+          "played": 1,
+          "won": 1,
+          "points": 3
+        },
+        {
+          "name": "Jack",
+          "played": 1,
+          "won": 0,
+          "points": 1
+        },
+        {
           "name": "Rod",
           "played": 0,
           "won": 0,
@@ -39,21 +51,18 @@
           "played": 0,
           "won": 0,
           "points": 0
-        },
-        {
-          "name": "Louis",
-          "played": 0,
-          "won": 0,
-          "points": 0
-        },
-        {
-          "name": "Jack",
-          "played": 0,
-          "won": 0,
-          "points": 0
         }
       ],
-      "matches": []
+      "matches": [
+        {
+          "player1": "Louis",
+          "player2": "Jack",
+          "score": "0-0",
+          "winner": "Louis",
+          "noShow": null,
+          "date": "2026-07-23T20:24:52.057Z"
+        }
+      ]
     },
     {
       "id": "league-2",
