@@ -1,223 +1,154 @@
 {
-  "players": [
-    {
-      "name": "Ewelina",
-      "sub": false
-    },
-    {
-      "name": "Evie",
-      "sub": false
-    },
-    {
-      "name": "Ryan",
-      "sub": false
-    },
-    {
-      "name": "Will R",
-      "sub": false
-    },
-    {
-      "name": "Rhys",
-      "sub": false
-    },
-    {
-      "name": "Adam",
-      "sub": false
-    },
-    {
-      "name": "Kevin",
-      "sub": false
-    },
-    {
-      "name": "Ali",
-      "sub": false
-    },
-    {
-      "name": "Rod",
-      "sub": false
-    },
-    {
-      "name": "Emma",
-      "sub": false
-    },
-    {
-      "name": "Dan T",
-      "sub": false
-    },
-    {
-      "name": "Adam B",
-      "sub": false
-    },
-    {
-      "name": "Shyam",
-      "sub": true
-    },
-    {
-      "name": "Lucy",
-      "sub": true
-    }
-  ],
+  "players": [],
   "numCourts": 3,
   "numGames": 4,
   "seed": 572404,
   "generatedGames": [
     {
       "game": 1,
-      "sitters": [
-        "Shyam",
-        "Lucy"
-      ],
+      "sitters": [],
       "courts": [
         [
           [
-            "Ewelina",
-            "Ali"
+            "",
+            ""
           ],
           [
-            "Rod",
-            "Adam B"
+            "",
+            ""
           ]
         ],
         [
           [
-            "Emma",
-            "Evie"
+            "",
+            ""
           ],
           [
-            "Kevin",
-            "Dan T"
+            "",
+            ""
           ]
         ],
         [
           [
-            "Adam",
-            "Rhys"
+            "",
+            ""
           ],
           [
-            "Will R",
-            "Ryan"
+            "",
+            ""
           ]
         ]
       ]
     },
     {
       "game": 2,
-      "sitters": [
-        "Dan T",
-        "Adam B"
-      ],
+      "sitters": [],
       "courts": [
         [
           [
-            "Will R",
-            "Evie"
+            "",
+            ""
           ],
           [
-            "Rod",
-            "Shyam"
+            "",
+            ""
           ]
         ],
         [
           [
-            "Adam",
-            "Ryan"
+            "",
+            ""
           ],
           [
-            "Ewelina",
-            "Emma"
+            "",
+            ""
           ]
         ],
         [
           [
-            "Lucy",
-            "Rhys"
+            "",
+            ""
           ],
           [
-            "Ali",
-            "Kevin"
+            "",
+            ""
           ]
         ]
       ]
     },
     {
       "game": 3,
-      "sitters": [
-        "Rod",
-        "Emma"
-      ],
+      "sitters": [],
       "courts": [
         [
           [
-            "Ryan",
-            "Evie"
+            "",
+            ""
           ],
           [
-            "Will R",
-            "Adam B"
+            "",
+            ""
           ]
         ],
         [
           [
-            "Dan T",
-            "Shyam"
+            "",
+            ""
           ],
           [
-            "Rhys",
-            "Kevin"
+            "",
+            ""
           ]
         ],
         [
           [
-            "Lucy",
-            "Ali"
+            "",
+            ""
           ],
           [
-            "Adam",
-            "Ewelina"
+            "",
+            ""
           ]
         ]
       ]
     },
     {
       "game": 4,
-      "sitters": [
-        "Kevin",
-        "Ali"
-      ],
+      "sitters": [],
       "courts": [
         [
           [
-            "Ewelina",
-            "Adam B"
+            "",
+            ""
           ],
           [
-            "Dan T",
-            "Will R"
+            "",
+            ""
           ]
         ],
         [
           [
-            "Adam",
-            "Emma"
+            "",
+            ""
           ],
           [
-            "Evie",
-            "Rhys"
+            "",
+            ""
           ]
         ],
         [
           [
-            "Rod",
-            "Ryan"
+            "",
+            ""
           ],
           [
-            "Shyam",
-            "Lucy"
+            "",
+            ""
           ]
         ]
       ]
     }
   ],
   "activeGame": 0,
-  "updated": "2026-07-17T17:39:31.520Z"
+  "updated": "2026-07-23T21:24:13.669Z"
 }
