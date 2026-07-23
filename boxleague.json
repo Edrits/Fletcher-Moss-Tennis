@@ -210,7 +210,19 @@
           "points": 3
         },
         {
+          "name": "Keshap",
+          "played": 1,
+          "won": 1,
+          "points": 3
+        },
+        {
           "name": "Joe",
+          "played": 1,
+          "won": 0,
+          "points": 1
+        },
+        {
+          "name": "Rebecca",
           "played": 1,
           "won": 0,
           "points": 1
@@ -223,12 +235,6 @@
         },
         {
           "name": "Ather",
-          "played": 0,
-          "won": 0,
-          "points": 0
-        },
-        {
-          "name": "Keshap",
           "played": 0,
           "won": 0,
           "points": 0
@@ -256,12 +262,6 @@
           "played": 0,
           "won": 0,
           "points": 0
-        },
-        {
-          "name": "Rebecca",
-          "played": 0,
-          "won": 0,
-          "points": 0
         }
       ],
       "matches": [
@@ -271,6 +271,13 @@
           "winner": "Ali",
           "noShow": null,
           "date": "2026-07-23T21:52:38.227Z"
+        },
+        {
+          "player1": "Keshap",
+          "player2": "Rebecca",
+          "winner": "Keshap",
+          "noShow": null,
+          "date": "2026-07-23T22:15:42.380Z"
         }
       ]
     }
