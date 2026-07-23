@@ -130,7 +130,7 @@ export default async function handler(req, res) {
         recalculateBox(box);
 
       } else if (type === 'submit_score') {
-        const { boxId, player1, player2, score, winner, noShow } = match;
+        const { boxId, player1, player2, winner, noShow } = match;
 
         const box = dataToSave.boxes.find(b => b.id === boxId);
         if (!box) {
@@ -153,7 +153,6 @@ export default async function handler(req, res) {
         box.matches.push({
           player1,
           player2,
-          score,
           winner,
           noShow: noShow || null,
           date: new Date().toISOString()

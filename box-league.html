@@ -411,10 +411,6 @@
                         <option value="walkover">Walkover (opponent didn't show)</option>
                     </select>
                 </div>
-                <div class="form-group" id="scoreGroup">
-                    <label for="matchScore">Score <p>(Must be standard tennis format, e.g. 6-4, 6-3)</p></label>
-                    <input type="text" id="matchScore" placeholder="e.g. 6-4, 6-3" required>
-                </div>
                 <div class="form-group">
                     <label for="matchWinner" id="matchWinnerLabel">Match Winner</label>
                     <select id="matchWinner" required>
@@ -518,7 +514,7 @@
                         </li>
                       ` : `
                         <li style="margin-bottom: 8px; list-style-type: none; font-size: 0.95em;">
-                            🎾 ${m.player1} vs ${m.player2} — <strong>${m.score}</strong> (Winner: ${m.winner})
+                            🎾 <strong>${m.winner}</strong> beat ${m.winner === m.player1 ? m.player2 : m.player1}
                         </li>
                       `).join('')
                     : '<li style="color: #888; list-style-type: none; font-size: 0.95em;">No matches played yet in this round.</li>';
@@ -580,10 +576,6 @@
 
         function updateResultTypeUI() {
             const isWalkover = document.getElementById('matchType').value === 'walkover';
-            const scoreGroup = document.getElementById('scoreGroup');
-            const scoreInput = document.getElementById('matchScore');
-            scoreGroup.style.display = isWalkover ? 'none' : 'block';
-            scoreInput.required = !isWalkover;
             document.getElementById('matchWinnerLabel').textContent = isWalkover ? 'Who turned up?' : 'Match Winner';
         }
 
@@ -621,22 +613,7 @@
             const p2 = p2Select.value;
             const winner = winnerSelect.value;
             const isWalkover = document.getElementById('matchType').value === 'walkover';
-
-            let score;
-            let noShow = null;
-
-            if (isWalkover) {
-                score = 'W/O';
-                noShow = winner === p1 ? p2 : p1;
-            } else {
-                score = document.getElementById('matchScore').value;
-                // Strict Score Format Regex Validation (Format e.g. 6-4, 6-3)
-                const scorePattern = /^(\d{1,2}-\d{1,2})(,\s?\d{1,2}-\d{1,2})*$/;
-                if (!scorePattern.test(score)) {
-                    alert("❌ Please enter your score in standard tennis format: e.g. 6-4, 6-3 or 6-7, 6-2, 10-5");
-                    return;
-                }
-            }
+            const noShow = isWalkover ? (winner === p1 ? p2 : p1) : null;
 
             try {
                 const response = await fetch(API_URL, {
@@ -644,7 +621,7 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         type: 'submit_score',
-                        match: { boxId, player1: p1, player2: p2, score, winner, noShow }
+                        match: { boxId, player1: p1, player2: p2, winner, noShow }
                     })
                 });
 
@@ -718,7 +695,7 @@
                         box.matches.forEach((m, matchIdx) => {
                             matchListItems += `
                                 <div style="display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid #eee; font-size: 0.85em; gap: 8px;">
-                                    <span style="flex: 1; text-align: left;">🎾 ${m.player1} vs ${m.player2} (${m.score})</span>
+                                    <span style="flex: 1; text-align: left;">🎾 ${m.winner} beat ${m.winner === m.player1 ? m.player2 : m.player1}</span>
                                     <button onclick="deleteMatch('${box.id}', ${matchIdx})" style="background: #e74c3c; color: white; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 0.8em; flex-shrink: 0; transition: background 0.2s;">Undo</button>
                                 </div>
                             `;
