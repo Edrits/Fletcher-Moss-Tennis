@@ -6,12 +6,18 @@
       "players": [
         {
           "name": "Louis",
-          "played": 1,
-          "won": 1,
-          "points": 3
+          "played": 2,
+          "won": 2,
+          "points": 6
         },
         {
           "name": "Jack",
+          "played": 1,
+          "won": 0,
+          "points": 1
+        },
+        {
+          "name": "Rhys",
           "played": 1,
           "won": 0,
           "points": 1
@@ -30,12 +36,6 @@
         },
         {
           "name": "Will Richard",
-          "played": 0,
-          "won": 0,
-          "points": 0
-        },
-        {
-          "name": "Rhys",
           "played": 0,
           "won": 0,
           "points": 0
@@ -61,6 +61,14 @@
           "winner": "Louis",
           "noShow": null,
           "date": "2026-07-23T20:24:52.057Z"
+        },
+        {
+          "player1": "Louis",
+          "player2": "Rhys",
+          "score": "0-0",
+          "winner": "Louis",
+          "noShow": null,
+          "date": "2026-07-23T20:25:16.964Z"
         }
       ]
     },
