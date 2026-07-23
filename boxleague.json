@@ -141,6 +141,18 @@
       "name": "League 3",
       "players": [
         {
+          "name": "Michael",
+          "played": 1,
+          "won": 1,
+          "points": 3
+        },
+        {
+          "name": "Alan Russell",
+          "played": 1,
+          "won": 0,
+          "points": 1
+        },
+        {
           "name": "Art",
           "played": 0,
           "won": 0,
@@ -153,19 +165,7 @@
           "points": 0
         },
         {
-          "name": "Michael",
-          "played": 0,
-          "won": 0,
-          "points": 0
-        },
-        {
           "name": "Sofia",
-          "played": 0,
-          "won": 0,
-          "points": 0
-        },
-        {
-          "name": "Alan Russell",
           "played": 0,
           "won": 0,
           "points": 0
@@ -189,7 +189,15 @@
           "points": 0
         }
       ],
-      "matches": []
+      "matches": [
+        {
+          "player1": "Michael",
+          "player2": "Alan Russell",
+          "winner": "Michael",
+          "noShow": null,
+          "date": "2026-07-23T21:54:01.121Z"
+        }
+      ]
     },
     {
       "id": "league-4",
