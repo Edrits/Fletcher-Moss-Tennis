@@ -197,9 +197,15 @@
       "players": [
         {
           "name": "Ali",
-          "played": 0,
+          "played": 1,
+          "won": 1,
+          "points": 3
+        },
+        {
+          "name": "Joe",
+          "played": 1,
           "won": 0,
-          "points": 0
+          "points": 1
         },
         {
           "name": "Armin",
@@ -209,12 +215,6 @@
         },
         {
           "name": "Ather",
-          "played": 0,
-          "won": 0,
-          "points": 0
-        },
-        {
-          "name": "Joe",
           "played": 0,
           "won": 0,
           "points": 0
@@ -250,7 +250,15 @@
           "points": 0
         }
       ],
-      "matches": []
+      "matches": [
+        {
+          "player1": "Ali",
+          "player2": "Joe",
+          "winner": "Ali",
+          "noShow": null,
+          "date": "2026-07-23T21:52:38.227Z"
+        }
+      ]
     }
   ]
 }
