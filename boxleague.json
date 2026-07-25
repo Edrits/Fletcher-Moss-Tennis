@@ -149,9 +149,9 @@
       "players": [
         {
           "name": "Michael",
-          "played": 1,
-          "won": 1,
-          "points": 3
+          "played": 2,
+          "won": 2,
+          "points": 6
         },
         {
           "name": "Alan Russell",
@@ -161,9 +161,9 @@
         },
         {
           "name": "Art",
-          "played": 0,
+          "played": 1,
           "won": 0,
-          "points": 0
+          "points": 1
         },
         {
           "name": "Ted",
@@ -203,6 +203,13 @@
           "winner": "Michael",
           "noShow": null,
           "date": "2026-07-23T21:54:01.121Z"
+        },
+        {
+          "player1": "Michael",
+          "player2": "Art",
+          "winner": "Michael",
+          "noShow": null,
+          "date": "2026-07-25T13:00:15.943Z"
         }
       ]
     },
