@@ -470,7 +470,7 @@
                 let matchRows = (box.matches && box.matches.length > 0)
                     ? box.matches.slice(-5).reverse().map(m => m.noShow ? `
                         <li class="result-line">
-                            <strong>${m.winner}</strong> won by walkover — ${m.noShow} didn't show
+                            <strong>${m.winner}</strong> won by walkover. ${m.noShow} didn't show
                         </li>
                       ` : `
                         <li class="result-line">
@@ -586,7 +586,7 @@
                 });
 
                 if (response.ok) {
-                    alert("Result submitted — thanks!");
+                    alert("Result submitted, thanks!");
                     document.getElementById('scoreForm').reset();
                     p1Select.innerHTML = '<option value="">Select League First</option>';
                     p2Select.innerHTML = '<option value="">Select League First</option>';

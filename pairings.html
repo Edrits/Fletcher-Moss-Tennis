@@ -400,9 +400,9 @@
         <div id="setup-screen" style="display:none;">
             <div class="card">
                 <h3>Paste or type today's players</h3>
-                <p>Paste a list from WhatsApp, one name per line — or use the numbered slots below.</p>
+                <p>Paste a list from WhatsApp, one name per line, or use the numbered slots below.</p>
                 <textarea class="paste-box" id="paste-box" placeholder="Ed&#10;Sofia&#10;Will&#10;Adam&#10;..."></textarea>
-                <p class="paste-hint">Names will be added to the list below in order. Subs go at the bottom — they sit out game 1.</p>
+                <p class="paste-hint">Names will be added to the list below in order. Subs go at the bottom and sit out game 1.</p>
                 <button class="add-player-btn" style="margin-bottom:0" onclick="applyPaste()">✓ Apply pasted names</button>
 
                 <div class="divider">or edit individually</div>
@@ -449,7 +449,7 @@
             </div>
             <div class="tabs" id="tabs"></div>
             <div id="sitting-banner"></div>
-            <div class="drag-hint">↔ Drag any name onto another to swap their places — works with sitting-out players too.</div>
+            <div class="drag-hint">↔ Drag any name onto another to swap their places. This works with sitting-out players too.</div>
             <div id="courts-area"></div>
             <div class="tally" id="tally-card">
                 <div class="tally-title" id="tally-title">Games each this session</div>
@@ -622,7 +622,7 @@
                 return true;
             } catch (err) {
                 console.error('Save failed:', err);
-                alert('Network error — changes were not saved.');
+                alert('Network error, changes were not saved.');
                 return false;
             }
         }
@@ -788,7 +788,7 @@
             const shareUrl = `${window.location.origin}${window.location.pathname}`;
 
             navigator.clipboard.writeText(shareUrl).then(() => {
-                alert("Link copied. Paste it into the WhatsApp group — it always shows the latest pairings.");
+                alert("Link copied. Paste it into the WhatsApp group. It always shows the latest pairings.");
             }).catch(err => {
                 console.error("Failed to copy link:", err);
                 alert("URL: " + shareUrl);
@@ -810,8 +810,8 @@
             if (hint) {
                 hint.classList.toggle('view', !editMode);
                 hint.innerHTML = editMode
-                    ? '↔ Drag any name onto another to swap their places — works with sitting-out players too.'
-                    : 'View only — tap “Unlock to edit” above to change the pairings.';
+                    ? '↔ Drag any name onto another to swap their places. This works with sitting-out players too.'
+                    : 'View only. Tap “Unlock to edit” above to change the pairings.';
             }
             const tt = document.getElementById('tally-title');
             if (tt) tt.textContent = editMode ? 'Games each this session (click a name to rename)' : 'Games each this session';
@@ -827,7 +827,7 @@
                     body: JSON.stringify({ action: 'verify', password: pw })
                 });
                 if (res.status === 401) { alert('Incorrect password.'); return; }
-                if (!res.ok) { alert('Could not verify right now — please try again.'); return; }
+                if (!res.ok) { alert('Could not verify right now, please try again.'); return; }
                 sessionStorage.setItem('pw', pw);
                 editMode = true;
                 // If nothing has been set up yet, drop straight into the setup screen
@@ -838,7 +838,7 @@
                 updateModeUI();
             } catch (err) {
                 console.error('Verify failed:', err);
-                alert('Network error — could not verify the password.');
+                alert('Network error, could not verify the password.');
             }
         }
 
@@ -923,14 +923,14 @@
                             <div class="team">
                                 <div class="t-lbl">Team A</div>
                                 ${t1.map((p,pi)=>isBall(p)
-                                    ? `<div class="pp ball" data-loc="c${ci}-t0-p${pi}" title="Empty seat — drag a player here">${BALL}</div>`
+                                    ? `<div class="pp ball" data-loc="c${ci}-t0-p${pi}" title="Empty seat, drag a player here">${BALL}</div>`
                                     : `<div class="pp a" data-loc="c${ci}-t0-p${pi}" onclick="renamePlayerOnFly('${p}')" title="Drag to swap, or click to rename">${p}</div>`).join('')}
                             </div>
                             <div class="vs-col"><div class="vs">VS</div></div>
                             <div class="team">
                                 <div class="t-lbl">Team B</div>
                                 ${t2.map((p,pi)=>isBall(p)
-                                    ? `<div class="pp ball" data-loc="c${ci}-t1-p${pi}" title="Empty seat — drag a player here">${BALL}</div>`
+                                    ? `<div class="pp ball" data-loc="c${ci}-t1-p${pi}" title="Empty seat, drag a player here">${BALL}</div>`
                                     : `<div class="pp" data-loc="c${ci}-t1-p${pi}" onclick="renamePlayerOnFly('${p}')" style="background:${acc}18; border:1px solid ${acc}40; color:${acc};" title="Drag to swap, or click to rename">${p}</div>`).join('')}
                             </div>
                         </div>
