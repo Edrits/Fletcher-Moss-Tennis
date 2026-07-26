@@ -1,0 +1,63 @@
+:root{
+/* --- Base palette: green (primary, from park + club colours) --- */
+--green-950:#152b0c;
+--green-900:#213d10;
+--green-800:#2d5016;
+--green-700:#3a6c1c;
+--green-600:#4a7c2c;
+--green-500:#5f9a3c;
+--green-400:#83b562;
+--green-300:#a9cf8f;
+--green-200:#c8e6c9;
+--green-100:#e0f0e1;
+--green-50:#f3f9f1;
+
+/* --- Neutrals (warm-tinted, for premium paper/ink feel) --- */
+--ink-900:#20241d;
+--ink-700:#454b41;
+--ink-500:#63695e;
+--ink-300:#8d9285;
+--ink-150:#c9cec1;
+--paper-0:#ffffff;
+--paper-50:#faf9f5;
+--paper-100:#f4f2ea;
+
+/* --- Noticeboard / cork accents (brown + gold) --- */
+--brown-800:#5d4e37;
+--brown-600:#8b6f47;
+--gold-300:#e7b768;
+--gold-200:#f4e4c1;
+--gold-100:#fbf1dc;
+--gold-accent:#c98a2c;
+
+/* --- Sky (weather widget) --- */
+--sky-400:#7fb8dd;
+--sky-600:#3f6f92;
+
+/* --- Semantic --- */
+--color-success:var(--green-700);
+--color-alert:#a83c2d;
+--color-alert-bg:#f7e9e5;
+--color-whatsapp:#25976a;
+--color-focus:var(--green-600);
+--color-sub:#b06010;
+--color-sub-bg:#f6ede0;
+
+/* --- Surfaces --- */
+--surface-page:var(--green-50);
+--surface-card:var(--paper-0);
+--surface-sunken:var(--paper-100);
+--surface-inverse:var(--green-900);
+
+/* --- Text --- */
+--text-heading:var(--green-900);
+--text-body:var(--ink-900);
+--text-muted:var(--ink-500);
+--text-on-dark:#f4f2ea;
+--text-on-dark-muted:rgba(244,242,234,.78);
+--text-link:var(--green-700);
+
+/* --- Borders --- */
+--border-subtle:rgba(32,36,29,.1);
+--border-strong:rgba(32,36,29,.18);
+}

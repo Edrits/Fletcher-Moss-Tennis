@@ -1,0 +1,5 @@
+# Local, machine-specific Claude Code settings
+.claude/settings.local.json
+
+# Redundant design-system archive (the unzipped design-system/ folder is committed instead)
+Fletcher Moss Design System.zip
