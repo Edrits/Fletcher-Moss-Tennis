@@ -154,6 +154,12 @@
           "points": 6
         },
         {
+          "name": "Will",
+          "played": 1,
+          "won": 1,
+          "points": 3
+        },
+        {
           "name": "Alan Russell",
           "played": 1,
           "won": 0,
@@ -166,13 +172,13 @@
           "points": 1
         },
         {
-          "name": "Ted",
-          "played": 0,
+          "name": "Sofia",
+          "played": 1,
           "won": 0,
-          "points": 0
+          "points": 1
         },
         {
-          "name": "Sofia",
+          "name": "Ted",
           "played": 0,
           "won": 0,
           "points": 0
@@ -194,12 +200,6 @@
           "played": 0,
           "won": 0,
           "points": 0
-        },
-        {
-          "name": "Will",
-          "played": 0,
-          "won": 0,
-          "points": 0
         }
       ],
       "matches": [
@@ -216,6 +216,13 @@
           "winner": "Michael",
           "noShow": null,
           "date": "2026-07-25T13:00:15.943Z"
+        },
+        {
+          "player1": "Will",
+          "player2": "Sofia",
+          "winner": "Will",
+          "noShow": null,
+          "date": "2026-07-26T08:52:09.789Z"
         }
       ]
     },
