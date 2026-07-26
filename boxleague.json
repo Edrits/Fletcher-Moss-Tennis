@@ -219,9 +219,9 @@
       "players": [
         {
           "name": "Ali",
-          "played": 1,
-          "won": 1,
-          "points": 3
+          "played": 2,
+          "won": 2,
+          "points": 6
         },
         {
           "name": "Keshap",
@@ -243,9 +243,9 @@
         },
         {
           "name": "Armin",
-          "played": 0,
+          "played": 1,
           "won": 0,
-          "points": 0
+          "points": 1
         },
         {
           "name": "Ather",
@@ -292,6 +292,13 @@
           "winner": "Keshap",
           "noShow": null,
           "date": "2026-07-23T22:15:42.380Z"
+        },
+        {
+          "player1": "Ali",
+          "player2": "Armin",
+          "winner": "Ali",
+          "noShow": null,
+          "date": "2026-07-26T07:50:28.822Z"
         }
       ]
     }
