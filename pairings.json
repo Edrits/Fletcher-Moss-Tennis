@@ -1,154 +1,279 @@
 {
-  "players": [],
-  "numCourts": 3,
+  "players": [
+    {
+      "name": "Evie",
+      "sub": false
+    },
+    {
+      "name": "⁠Art",
+      "sub": false
+    },
+    {
+      "name": "⁠Ed",
+      "sub": false
+    },
+    {
+      "name": "⁠Alan",
+      "sub": false
+    },
+    {
+      "name": "⁠Sofia",
+      "sub": false
+    },
+    {
+      "name": "⁠Ting",
+      "sub": false
+    },
+    {
+      "name": "⁠Will R",
+      "sub": false
+    },
+    {
+      "name": "⁠Will",
+      "sub": false
+    },
+    {
+      "name": "⁠Sam",
+      "sub": false
+    },
+    {
+      "name": "⁠Yee",
+      "sub": false
+    },
+    {
+      "name": "⁠Q",
+      "sub": false
+    },
+    {
+      "name": "⁠Jack",
+      "sub": false
+    },
+    {
+      "name": "⁠April",
+      "sub": false
+    },
+    {
+      "name": "⁠Bridget",
+      "sub": false
+    },
+    {
+      "name": "⁠Dan",
+      "sub": false
+    },
+    {
+      "name": "⁠Shaun",
+      "sub": false
+    },
+    {
+      "name": "Sub 1. Josh",
+      "sub": true
+    },
+    {
+      "name": "Sub 2. Armin",
+      "sub": true
+    }
+  ],
+  "numCourts": 4,
   "numGames": 4,
-  "seed": 572404,
+  "seed": 878735,
   "generatedGames": [
     {
       "game": 1,
-      "sitters": [],
+      "sitters": [
+        "Sub 1. Josh",
+        "Sub 2. Armin"
+      ],
       "courts": [
         [
           [
-            "",
-            ""
+            "⁠Alan",
+            "⁠Ting"
           ],
           [
-            "",
-            ""
+            "⁠Ed",
+            "⁠Dan"
           ]
         ],
         [
           [
-            "",
-            ""
+            "⁠Sam",
+            "⁠Sofia"
           ],
           [
-            "",
-            ""
+            "⁠Bridget",
+            "Evie"
           ]
         ],
         [
           [
-            "",
-            ""
+            "⁠Art",
+            "⁠Jack"
           ],
           [
-            "",
-            ""
+            "⁠Will R",
+            "⁠Will"
+          ]
+        ],
+        [
+          [
+            "⁠Q",
+            "⁠Yee"
+          ],
+          [
+            "⁠April",
+            "⁠Shaun"
           ]
         ]
       ]
     },
     {
       "game": 2,
-      "sitters": [],
+      "sitters": [
+        "⁠Dan",
+        "⁠Shaun"
+      ],
       "courts": [
         [
           [
-            "",
-            ""
+            "Sub 1. Josh",
+            "Sub 2. Armin"
           ],
           [
-            "",
-            ""
+            "⁠Art",
+            "⁠Ting"
           ]
         ],
         [
           [
-            "",
-            ""
+            "⁠Will",
+            "⁠Bridget"
           ],
           [
-            "",
-            ""
+            "⁠Q",
+            "⁠April"
           ]
         ],
         [
           [
-            "",
-            ""
+            "Evie",
+            "⁠Jack"
           ],
           [
-            "",
-            ""
+            "⁠Alan",
+            "⁠Ed"
+          ]
+        ],
+        [
+          [
+            "⁠Will R",
+            "⁠Sofia"
+          ],
+          [
+            "⁠Yee",
+            "⁠Sam"
           ]
         ]
       ]
     },
     {
       "game": 3,
-      "sitters": [],
+      "sitters": [
+        "⁠April",
+        "⁠Bridget"
+      ],
       "courts": [
         [
           [
-            "",
-            ""
+            "⁠Ed",
+            "Sub 1. Josh"
           ],
           [
-            "",
-            ""
+            "⁠Sofia",
+            "Sub 2. Armin"
           ]
         ],
         [
           [
-            "",
-            ""
+            "⁠Jack",
+            "⁠Dan"
           ],
           [
-            "",
-            ""
+            "⁠Sam",
+            "Evie"
           ]
         ],
         [
           [
-            "",
-            ""
+            "⁠Alan",
+            "⁠Art"
           ],
           [
-            "",
-            ""
+            "⁠Q",
+            "⁠Shaun"
+          ]
+        ],
+        [
+          [
+            "⁠Will",
+            "⁠Ting"
+          ],
+          [
+            "⁠Yee",
+            "⁠Will R"
           ]
         ]
       ]
     },
     {
       "game": 4,
-      "sitters": [],
+      "sitters": [
+        "⁠Q",
+        "⁠Jack"
+      ],
       "courts": [
         [
           [
-            "",
-            ""
+            "⁠Art",
+            "⁠Bridget"
           ],
           [
-            "",
-            ""
+            "⁠Dan",
+            "⁠Ting"
           ]
         ],
         [
           [
-            "",
-            ""
+            "Evie",
+            "⁠Will R"
           ],
           [
-            "",
-            ""
+            "⁠Shaun",
+            "Sub 1. Josh"
           ]
         ],
         [
           [
-            "",
-            ""
+            "⁠Alan",
+            "Sub 2. Armin"
           ],
           [
-            "",
-            ""
+            "⁠Will",
+            "⁠Sofia"
+          ]
+        ],
+        [
+          [
+            "⁠Yee",
+            "⁠April"
+          ],
+          [
+            "⁠Sam",
+            "⁠Ed"
           ]
         ]
       ]
     }
   ],
   "activeGame": 0,
-  "updated": "2026-07-23T21:24:13.669Z"
+  "updated": "2026-07-27T14:17:02.360Z"
 }
