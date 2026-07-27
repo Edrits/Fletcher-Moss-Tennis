@@ -69,58 +69,58 @@
       "sub": true
     },
     {
-      "name": "Sub 2. Armin",
+      "name": "Sub 2. Jesse ",
       "sub": true
     }
   ],
   "numCourts": 4,
   "numGames": 4,
-  "seed": 878735,
+  "seed": 382316,
   "generatedGames": [
     {
       "game": 1,
       "sitters": [
         "Sub 1. Josh",
-        "Sub 2. Armin"
+        "Sub 2. Jesse"
       ],
       "courts": [
         [
           [
-            "⁠Alan",
+            "⁠Art",
             "⁠Ting"
           ],
           [
             "⁠Ed",
-            "⁠Bridget"
+            "⁠Dan"
+          ]
+        ],
+        [
+          [
+            "⁠Jack",
+            "⁠Q"
+          ],
+          [
+            "⁠Bridget",
+            "⁠Will R"
           ]
         ],
         [
           [
             "⁠Sam",
-            "⁠Sofia"
-          ],
-          [
-            "⁠Dan",
             "Evie"
-          ]
-        ],
-        [
-          [
-            "⁠Art",
-            "⁠Jack"
-          ],
-          [
-            "⁠Will R",
-            "⁠Will"
-          ]
-        ],
-        [
-          [
-            "⁠Q",
-            "⁠Yee"
           ],
           [
             "⁠April",
+            "⁠Sofia"
+          ]
+        ],
+        [
+          [
+            "⁠Yee",
+            "⁠Alan"
+          ],
+          [
+            "⁠Will",
             "⁠Shaun"
           ]
         ]
@@ -135,42 +135,42 @@
       "courts": [
         [
           [
-            "Sub 1. Josh",
-            "Sub 2. Armin"
+            "⁠Bridget",
+            "⁠Art"
           ],
           [
-            "⁠Art",
-            "⁠Ting"
+            "⁠Ting",
+            "⁠Sam"
           ]
         ],
         [
           [
-            "⁠Will",
-            "⁠Bridget"
+            "⁠Jack",
+            "⁠Yee"
           ],
           [
             "⁠Q",
-            "⁠April"
+            "Evie"
           ]
         ],
         [
           [
-            "Evie",
-            "⁠Jack"
+            "Sub 1. Josh",
+            "⁠Will"
+          ],
+          [
+            "⁠Will R",
+            "⁠Sofia"
+          ]
+        ],
+        [
+          [
+            "⁠April",
+            "Sub 2. Jesse"
           ],
           [
             "⁠Alan",
             "⁠Ed"
-          ]
-        ],
-        [
-          [
-            "⁠Will R",
-            "⁠Sofia"
-          ],
-          [
-            "⁠Yee",
-            "⁠Sam"
           ]
         ]
       ]
@@ -184,42 +184,42 @@
       "courts": [
         [
           [
-            "⁠Ed",
-            "Sub 1. Josh"
+            "⁠Art",
+            "⁠Shaun"
           ],
           [
-            "⁠Sofia",
-            "Sub 2. Armin"
+            "⁠Q",
+            "⁠Will"
           ]
         ],
         [
           [
-            "⁠Jack",
-            "⁠Dan"
+            "⁠Ting",
+            "⁠Ed"
           ],
           [
             "⁠Sam",
+            "⁠Jack"
+          ]
+        ],
+        [
+          [
+            "⁠Will R",
+            "Sub 1. Josh"
+          ],
+          [
+            "⁠Alan",
             "Evie"
           ]
         ],
         [
           [
-            "⁠Alan",
-            "⁠Art"
-          ],
-          [
-            "⁠Q",
-            "⁠Shaun"
-          ]
-        ],
-        [
-          [
-            "⁠Will",
-            "⁠Ting"
-          ],
-          [
             "⁠Yee",
-            "⁠Will R"
+            "⁠Dan"
+          ],
+          [
+            "⁠Sofia",
+            "Sub 2. Jesse"
           ]
         ]
       ]
@@ -233,47 +233,47 @@
       "courts": [
         [
           [
-            "⁠Art",
-            "⁠Bridget"
+            "⁠Yee",
+            "Evie"
           ],
           [
-            "⁠Dan",
-            "⁠Ting"
+            "⁠Ed",
+            "⁠Art"
           ]
         ],
         [
           [
-            "Evie",
-            "⁠Will R"
+            "⁠Ting",
+            "⁠Sofia"
           ],
           [
             "⁠Shaun",
-            "Sub 1. Josh"
+            "⁠Alan"
           ]
         ],
         [
-          [
-            "⁠Alan",
-            "Sub 2. Armin"
-          ],
-          [
-            "⁠Will",
-            "⁠Sofia"
-          ]
-        ],
-        [
-          [
-            "⁠Yee",
-            "⁠April"
-          ],
           [
             "⁠Sam",
-            "⁠Ed"
+            "⁠Dan"
+          ],
+          [
+            "⁠Will R",
+            "⁠Will"
+          ]
+        ],
+        [
+          [
+            "⁠Bridget",
+            "Sub 2. Jesse"
+          ],
+          [
+            "⁠April",
+            "Sub 1. Josh"
           ]
         ]
       ]
     }
   ],
   "activeGame": 0,
-  "updated": "2026-07-27T14:43:54.388Z"
+  "updated": "2026-07-27T16:59:30.519Z"
 }
