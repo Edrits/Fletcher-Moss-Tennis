@@ -91,6 +91,11 @@
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
         html, body { overflow-x: hidden; width: 100%; }
+        /* `clip` contains the full-bleed bands exactly like `hidden`, but without
+           creating a scroll container — which would stop the top bar sticking. */
+        @supports (overflow-x: clip) {
+            html, body { overflow-x: clip; }
+        }
         html { scroll-behavior: smooth; }
 
         body {
@@ -117,14 +122,32 @@
             padding: 12px 30px;
             box-shadow: var(--shadow-md);
             position: sticky; top: 0; left: 0; width: 100%; z-index: 1000;
-            transition: opacity var(--duration-slow) var(--ease-standard),
-                        visibility var(--duration-slow) var(--ease-standard),
-                        transform var(--duration-slow) var(--ease-standard);
+            transition: padding var(--duration-base) var(--ease-standard),
+                        background var(--duration-base) var(--ease-standard),
+                        box-shadow var(--duration-base) var(--ease-standard),
+                        transform 0.5s ease, opacity 0.5s ease;
         }
-        .top-bar.faded { opacity: 0; visibility: hidden; pointer-events: none; transform: translateY(-20px); }
+
+        /* Warm hairline along the bottom edge, fading out at both ends */
+        .top-bar::after {
+            content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 1px;
+            pointer-events: none; opacity: .8;
+            background: linear-gradient(90deg, transparent, var(--gold-300) 22%, var(--gold-accent) 50%, var(--gold-300) 78%, transparent);
+        }
+
+        /* Compacts into a slim frosted strip once you scroll past the hero */
+        .top-bar.compact {
+            padding: 6px 30px;
+            background: linear-gradient(160deg, rgba(21,43,12,.93) 0%, rgba(45,80,22,.93) 100%);
+            backdrop-filter: blur(var(--blur-glass));
+            -webkit-backdrop-filter: blur(var(--blur-glass));
+            box-shadow: var(--shadow-lg);
+        }
+        .top-bar.compact .top-logo { width: 62px; height: 62px; }
+        .top-bar.compact .top-title h1 { font-size: 1.3em; }
+        .top-bar.compact .top-title p { opacity: 0; max-height: 0; margin: 0; }
 
         @media (max-width: 768px) {
-            .top-bar { transition: transform 0.5s ease, opacity 0.5s ease; }
             .top-bar.mobile-hidden { transform: translateY(-100%); opacity: 0; }
         }
 
@@ -137,20 +160,52 @@
         .top-logo {
             width: 118px; height: 118px; object-fit: contain;
             border-radius: 50%; box-shadow: var(--shadow-md); flex-shrink: 0;
+            transition: width var(--duration-base) var(--ease-standard),
+                        height var(--duration-base) var(--ease-standard);
         }
 
-        .top-title h1 { font-size: 2em; font-weight: 600; color: #fff; margin-bottom: 3px; white-space: nowrap; }
+        .top-title h1 {
+            font-size: 2em; font-weight: 600; color: #fff; margin-bottom: 3px; white-space: nowrap;
+            transition: font-size var(--duration-base) var(--ease-standard);
+        }
         .top-title p {
             font-size: var(--text-xs); color: rgba(244,242,234,.78); white-space: nowrap;
             text-transform: uppercase; letter-spacing: var(--tracking-wider); font-weight: 600;
+            transition: opacity var(--duration-base) var(--ease-standard),
+                        max-height var(--duration-base) var(--ease-standard);
+            max-height: 2em;
+        }
+
+        /* Title letters drop into place one after another on load */
+        .ripple-text span {
+            display: inline-block;
+            animation: rippleIn .5s var(--ease-standard) both;
+        }
+        @keyframes rippleIn {
+            from { opacity: 0; transform: translateY(-16px) scale(.92); }
+            to   { opacity: 1; transform: translateY(0) scale(1); }
         }
 
         .nav-links { display: flex; gap: 22px; align-items: center; flex-shrink: 0; }
         .nav-links a {
+            position: relative; padding-bottom: 5px;
             color: rgba(244,242,234,.9); text-decoration: none; font-size: var(--text-sm);
-            font-weight: 600; transition: color .2s, transform .2s; white-space: nowrap;
+            font-weight: 600; transition: color .2s; white-space: nowrap;
         }
-        .nav-links a:hover { color: #fff; transform: translateY(-2px); }
+        /* Gold underline sweeps out from the centre on hover / for the section in view */
+        .nav-links a::after {
+            content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 2px;
+            background: var(--gold-300); border-radius: 2px;
+            transform: scaleX(0); transform-origin: center;
+            transition: transform var(--duration-base) var(--ease-standard);
+        }
+        .nav-links a:hover, .nav-links a.active { color: #fff; }
+        .nav-links a:hover::after, .nav-links a.active::after { transform: scaleX(1); }
+
+        @media (prefers-reduced-motion: reduce) {
+            .ripple-text span { animation: none; }
+            .top-bar, .top-logo, .top-title h1, .top-title p, .nav-links a::after { transition: none; }
+        }
 
         .hamburger {
             display: none; flex-direction: column; gap: 5px; background: none;
@@ -936,31 +991,66 @@
             }
         }
 
-        // Fade banner on scroll - slower and smoother
+        // Top bar: compacts into a slim strip past the hero so the nav stays reachable.
+        // On mobile it still tucks away while scrolling down, and returns on scroll up.
         let lastScrollPosition = 0;
         window.addEventListener('scroll', () => {
             const currentScroll = window.pageYOffset;
             const banner = document.getElementById('topBar');
 
-            // Desktop: gradual fade out
-            if (window.innerWidth > 768) {
-                if (currentScroll > 200) {
-                    banner.classList.add('faded');
-                } else {
-                    banner.classList.remove('faded');
-                }
-            }
-            // Mobile: hide when scrolling down
-            else {
+            banner.classList.toggle('compact', currentScroll > 120);
+
+            if (window.innerWidth <= 768) {
                 if (currentScroll > 150 && currentScroll > lastScrollPosition) {
                     banner.classList.add('mobile-hidden');
-                } else if (currentScroll < 100) {
+                } else if (currentScroll < 100 || currentScroll < lastScrollPosition) {
                     banner.classList.remove('mobile-hidden');
                 }
             }
 
             lastScrollPosition = currentScroll;
         });
+
+        // Title ripples into place letter by letter on load. Built in JS so the
+        // HTML keeps the plain heading text for search engines.
+        (function rippleTitle() {
+            const h1 = document.querySelector('.top-title h1');
+            if (!h1 || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+            const text = h1.textContent.trim();
+            h1.setAttribute('aria-label', text);
+            const wrap = document.createElement('span');
+            wrap.className = 'ripple-text';
+            wrap.setAttribute('aria-hidden', 'true');
+            Array.from(text).forEach((ch, i) => {
+                const s = document.createElement('span');
+                s.textContent = ch === ' ' ? '\u00A0' : ch;
+                s.style.animationDelay = (i * 26) + 'ms';
+                wrap.appendChild(s);
+            });
+            h1.textContent = '';
+            h1.appendChild(wrap);
+        })();
+
+        // Highlight the nav link for whichever section is currently in view.
+        // Driven by scroll position rather than IntersectionObserver so the
+        // highlight tracks the section you're reading, not just entry/exit.
+        const navSpy = Array.from(document.querySelectorAll('.nav-links a[href^="#"]'))
+            .map(link => ({ link, section: document.querySelector(link.getAttribute('href')) }))
+            .filter(pair => pair.section);
+
+        function updateActiveNav() {
+            if (!navSpy.length) return;
+            // Document-space tops: offsetTop would be relative to .page-wrap
+            const marker = window.innerHeight * 0.4;
+            let current = null;
+            navSpy.forEach(pair => {
+                if (pair.section.getBoundingClientRect().top <= marker) current = pair;
+            });
+            navSpy.forEach(pair => pair.link.classList.toggle('active', pair === current));
+        }
+
+        window.addEventListener('scroll', updateActiveNav);
+        updateActiveNav();
 
         // Weather fetch & Rain Alert logic
         async function getWeather() {
