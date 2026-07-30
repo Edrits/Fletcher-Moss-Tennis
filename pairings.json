@@ -129,13 +129,13 @@
     {
       "game": 2,
       "sitters": [
-        "Emma B",
+        "Bridget",
         "Joe"
       ],
       "courts": [
         [
           [
-            "Bridget",
+            "Emma B",
             "Sam"
           ],
           [
@@ -275,5 +275,5 @@
     }
   ],
   "activeGame": 1,
-  "updated": "2026-07-30T13:28:19.946Z"
+  "updated": "2026-07-30T13:28:25.148Z"
 }
