@@ -174,6 +174,18 @@
           "points": 3
         },
         {
+          "name": "Sam",
+          "played": 1,
+          "won": 1,
+          "points": 3
+        },
+        {
+          "name": "Sofia",
+          "played": 2,
+          "won": 0,
+          "points": 2
+        },
+        {
           "name": "Alan Russell",
           "played": 1,
           "won": 0,
@@ -181,12 +193,6 @@
         },
         {
           "name": "Art",
-          "played": 1,
-          "won": 0,
-          "points": 1
-        },
-        {
-          "name": "Sofia",
           "played": 1,
           "won": 0,
           "points": 1
@@ -205,12 +211,6 @@
         },
         {
           "name": "Sully",
-          "played": 0,
-          "won": 0,
-          "points": 0
-        },
-        {
-          "name": "Sam",
           "played": 0,
           "won": 0,
           "points": 0
@@ -237,6 +237,13 @@
           "winner": "Will",
           "noShow": null,
           "date": "2026-07-26T08:52:09.789Z"
+        },
+        {
+          "player1": "Sam",
+          "player2": "Sofia",
+          "winner": "Sam",
+          "noShow": null,
+          "date": "2026-07-30T21:47:01.656Z"
         }
       ]
     },
