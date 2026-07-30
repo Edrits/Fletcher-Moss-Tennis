@@ -128,13 +128,13 @@
     {
       "game": 2,
       "sitters": [
-        "Joe"
+        "Bridget"
       ],
       "courts": [
         [
           [
             "Rebecca",
-            "Bridget"
+            "Joe"
           ],
           [
             "Ather",
@@ -271,5 +271,5 @@
     }
   ],
   "activeGame": 1,
-  "updated": "2026-07-30T14:58:29.475Z"
+  "updated": "2026-07-30T14:58:35.214Z"
 }
