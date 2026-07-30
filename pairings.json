@@ -228,12 +228,12 @@
       "game": 4,
       "sitters": [
         "Sub2 Ting",
-        "Louis"
+        "Rebecca"
       ],
       "courts": [
         [
           [
-            "Rebecca",
+            "Louis",
             "Luke"
           ],
           [
@@ -275,5 +275,5 @@
     }
   ],
   "activeGame": 3,
-  "updated": "2026-07-30T13:30:22.779Z"
+  "updated": "2026-07-30T13:31:23.960Z"
 }
