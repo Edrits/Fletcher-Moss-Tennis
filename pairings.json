@@ -25,7 +25,7 @@
       "sub": false
     },
     {
-      "name": "Dan H?",
+      "name": "Evie",
       "sub": false
     },
     {
@@ -65,98 +65,48 @@
       "sub": false
     },
     {
-      "name": "Sub 1 Evie",
+      "name": "Sub Ting",
       "sub": false
     },
     {
-      "name": "Sub2 Ting",
+      "name": "",
       "sub": false
     }
   ],
   "numCourts": 4,
   "numGames": 4,
-  "seed": 797041,
+  "seed": 813817,
   "generatedGames": [
     {
       "game": 1,
       "sitters": [
-        "Sub 1 Evie",
-        "Sub2 Ting"
+        "Sub Ting"
       ],
       "courts": [
         [
           [
-            "Ather",
-            "Jac"
-          ],
-          [
-            "Louis",
-            "Dan H?"
-          ]
-        ],
-        [
-          [
-            "Richard",
-            "Rebecca"
-          ],
-          [
-            "Emma B",
+            "Evie",
             "Luke"
-          ]
-        ],
-        [
-          [
-            "Joe",
-            "Sope"
-          ],
-          [
-            "Elle",
-            "Sam"
-          ]
-        ],
-        [
-          [
-            "Bridget",
-            "Shyam"
           ],
           [
             "Josh",
             "Rod"
           ]
-        ]
-      ]
-    },
-    {
-      "game": 2,
-      "sitters": [
-        "Bridget",
-        "Joe"
-      ],
-      "courts": [
+        ],
         [
           [
-            "Emma B",
+            "Louis",
             "Sam"
           ],
           [
-            "Jac",
-            "Sub2 Ting"
+            "Richard",
+            "Joe"
           ]
         ],
         [
           [
-            "Dan H?",
-            "Louis"
-          ],
-          [
-            "Sope",
-            "Sub 1 Evie"
-          ]
-        ],
-        [
-          [
-            "Elle",
-            "Rod"
+            "Bridget",
+            "Jac"
           ],
           [
             "Shyam",
@@ -165,12 +115,60 @@
         ],
         [
           [
-            "Josh",
-            "Ather"
+            "Ather",
+            "Emma B"
           ],
           [
-            "Luke",
-            "Richard"
+            "Sope",
+            "Elle"
+          ]
+        ]
+      ]
+    },
+    {
+      "game": 2,
+      "sitters": [
+        "Joe"
+      ],
+      "courts": [
+        [
+          [
+            "Rebecca",
+            "Sam"
+          ],
+          [
+            "Ather",
+            "Luke"
+          ]
+        ],
+        [
+          [
+            "Sub Ting",
+            "Shyam"
+          ],
+          [
+            "Louis",
+            "Rod"
+          ]
+        ],
+        [
+          [
+            "Richard",
+            "Bridget"
+          ],
+          [
+            "Evie",
+            "Sope"
+          ]
+        ],
+        [
+          [
+            "Elle",
+            "Emma B"
+          ],
+          [
+            "Josh",
+            "Jac"
           ]
         ]
       ]
@@ -178,48 +176,47 @@
     {
       "game": 3,
       "sitters": [
-        "Sam",
-        "Rod"
+        "Emma B"
       ],
       "courts": [
         [
           [
-            "Emma B",
-            "Shyam"
+            "Sub Ting",
+            "Elle"
           ],
+          [
+            "Shyam",
+            "Richard"
+          ]
+        ],
+        [
           [
             "Louis",
-            "Rebecca"
+            "Sope"
+          ],
+          [
+            "Rebecca",
+            "Luke"
           ]
         ],
         [
+          [
+            "Josh",
+            "Ather"
+          ],
+          [
+            "Bridget",
+            "Joe"
+          ]
+        ],
+        [
+          [
+            "Rod",
+            "Evie"
+          ],
           [
             "Jac",
-            "Bridget"
-          ],
-          [
-            "Luke",
-            "Sub2 Ting"
-          ]
-        ],
-        [
-          [
-            "Sope",
-            "Sub 1 Evie"
-          ],
-          [
-            "Elle",
-            "Dan H?"
-          ]
-        ],
-        [
-          [
-            "Richard",
-            "Josh"
-          ],
-          [
-            "Joe",
-            "Ather"
+            "Sam"
           ]
         ]
       ]
@@ -227,53 +224,52 @@
     {
       "game": 4,
       "sitters": [
-        "Sub2 Ting",
-        "Rebecca"
+        "Rod"
       ],
       "courts": [
         [
           [
             "Louis",
-            "Bridget"
+            "Jac"
           ],
           [
-            "Sub 1 Evie",
-            "Luke"
-          ]
-        ],
-        [
-          [
-            "Joe",
-            "Richard"
-          ],
-          [
-            "Rod",
-            "Ather"
+            "Sope",
+            "Josh"
           ]
         ],
         [
           [
             "Sam",
-            "Shyam"
+            "Ather"
           ],
           [
-            "Jac",
-            "Sope"
+            "Emma B",
+            "Shyam"
           ]
         ],
         [
           [
-            "Dan H?",
-            "Emma B"
+            "Bridget",
+            "Rebecca"
           ],
           [
-            "Josh",
+            "Sub Ting",
+            "Richard"
+          ]
+        ],
+        [
+          [
+            "Evie",
             "Elle"
+          ],
+          [
+            "Luke",
+            "Joe"
           ]
         ]
       ]
     }
   ],
-  "activeGame": 3,
-  "updated": "2026-07-30T13:33:19.528Z"
+  "activeGame": 0,
+  "updated": "2026-07-30T14:57:43.810Z"
 }
