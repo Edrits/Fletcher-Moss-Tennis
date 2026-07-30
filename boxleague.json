@@ -243,6 +243,12 @@
           "points": 3
         },
         {
+          "name": "Josh",
+          "played": 1,
+          "won": 1,
+          "points": 3
+        },
+        {
           "name": "Joe",
           "played": 1,
           "won": 0,
@@ -261,6 +267,12 @@
           "points": 1
         },
         {
+          "name": "Ting",
+          "played": 1,
+          "won": 0,
+          "points": 1
+        },
+        {
           "name": "Ather",
           "played": 0,
           "won": 0,
@@ -274,18 +286,6 @@
         },
         {
           "name": "Tess",
-          "played": 0,
-          "won": 0,
-          "points": 0
-        },
-        {
-          "name": "Ting",
-          "played": 0,
-          "won": 0,
-          "points": 0
-        },
-        {
-          "name": "Josh",
           "played": 0,
           "won": 0,
           "points": 0
@@ -312,6 +312,13 @@
           "winner": "Ali",
           "noShow": null,
           "date": "2026-07-26T07:50:28.822Z"
+        },
+        {
+          "player1": "Ting",
+          "player2": "Josh",
+          "winner": "Josh",
+          "noShow": null,
+          "date": "2026-07-30T19:52:51.275Z"
         }
       ]
     }
