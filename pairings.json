@@ -135,7 +135,7 @@
       "courts": [
         [
           [
-            "Sub 1 Evie",
+            "Bridget",
             "Sam"
           ],
           [
@@ -145,7 +145,7 @@
         ],
         [
           [
-            "Bridget",
+            "Sub 1 Evie",
             "Louis"
           ],
           [
@@ -275,5 +275,5 @@
     }
   ],
   "activeGame": 1,
-  "updated": "2026-07-30T13:28:16.797Z"
+  "updated": "2026-07-30T13:28:19.946Z"
 }
