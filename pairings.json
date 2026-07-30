@@ -176,13 +176,13 @@
     {
       "game": 3,
       "sitters": [
-        "Emma B"
+        "Evie"
       ],
       "courts": [
         [
           [
             "Sub Ting",
-            "Evie"
+            "Emma B"
           ],
           [
             "Shyam",
@@ -271,5 +271,5 @@
     }
   ],
   "activeGame": 2,
-  "updated": "2026-07-30T14:59:01.951Z"
+  "updated": "2026-07-30T14:59:04.748Z"
 }
