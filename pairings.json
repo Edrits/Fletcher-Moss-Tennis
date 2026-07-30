@@ -224,7 +224,7 @@
     {
       "game": 4,
       "sitters": [
-        "Rod"
+        "Sub Ting"
       ],
       "courts": [
         [
@@ -234,7 +234,7 @@
           ],
           [
             "Sope",
-            "Sub Ting"
+            "Rod"
           ]
         ],
         [
@@ -271,5 +271,5 @@
     }
   ],
   "activeGame": 3,
-  "updated": "2026-07-30T14:59:46.162Z"
+  "updated": "2026-07-30T14:59:50.857Z"
 }
