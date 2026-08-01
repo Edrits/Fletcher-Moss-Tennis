@@ -99,9 +99,9 @@
       "players": [
         {
           "name": "Shyam",
-          "played": 2,
-          "won": 1,
-          "points": 4
+          "played": 3,
+          "won": 2,
+          "points": 7
         },
         {
           "name": "Evie",
@@ -116,13 +116,13 @@
           "points": 1
         },
         {
-          "name": "Ryan",
-          "played": 0,
+          "name": "Ewelina",
+          "played": 1,
           "won": 0,
-          "points": 0
+          "points": 1
         },
         {
-          "name": "Ewelina",
+          "name": "Ryan",
           "played": 0,
           "won": 0,
           "points": 0
@@ -161,6 +161,13 @@
           "winner": "Evie",
           "noShow": null,
           "date": "2026-07-30T20:18:39.027Z"
+        },
+        {
+          "player1": "Shyam",
+          "player2": "Ewelina",
+          "winner": "Shyam",
+          "noShow": null,
+          "date": "2026-08-01T13:58:01.160Z"
         }
       ]
     },
