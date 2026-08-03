@@ -182,16 +182,16 @@
           "points": 6
         },
         {
-          "name": "Will",
-          "played": 1,
-          "won": 1,
-          "points": 3
+          "name": "Sam",
+          "played": 2,
+          "won": 2,
+          "points": 6
         },
         {
-          "name": "Sam",
-          "played": 1,
+          "name": "Will",
+          "played": 2,
           "won": 1,
-          "points": 3
+          "points": 4
         },
         {
           "name": "Sofia",
@@ -258,6 +258,13 @@
           "winner": "Sam",
           "noShow": null,
           "date": "2026-07-30T21:47:01.656Z"
+        },
+        {
+          "player1": "Sam",
+          "player2": "Will",
+          "winner": "Sam",
+          "noShow": null,
+          "date": "2026-08-03T20:20:30.771Z"
         }
       ]
     },
