@@ -228,12 +228,12 @@
       "game": 4,
       "sitters": [
         "Oli",
-        "Adam Barrishi"
+        "Sub - Rebecca"
       ],
       "courts": [
         [
           [
-            "Sub - Rebecca",
+            "Adam Barrishi",
             "Sope"
           ],
           [
@@ -275,5 +275,5 @@
     }
   ],
   "activeGame": 3,
-  "updated": "2026-08-06T14:51:15.286Z"
+  "updated": "2026-08-06T14:51:18.625Z"
 }
