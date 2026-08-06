@@ -179,12 +179,12 @@
       "game": 3,
       "sitters": [
         "Alan",
-        "Lilliana (new)"
+        "Ed"
       ],
       "courts": [
         [
           [
-            "Ed",
+            "Lilliana (new)",
             "Adam Barrishi"
           ],
           [
@@ -275,5 +275,5 @@
     }
   ],
   "activeGame": 2,
-  "updated": "2026-08-06T14:49:55.102Z"
+  "updated": "2026-08-06T14:49:58.798Z"
 }
