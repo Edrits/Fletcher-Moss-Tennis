@@ -25,7 +25,7 @@
       "sub": false
     },
     {
-      "name": "Jessr",
+      "name": "Ali",
       "sub": false
     },
     {
@@ -97,7 +97,7 @@
         [
           [
             "Shyam",
-            "Jessr"
+            "Ali"
           ],
           [
             "Josh",
@@ -130,7 +130,7 @@
       "game": 2,
       "sitters": [
         "Bridget",
-        "Jessr"
+        "Ali"
       ],
       "courts": [
         [
@@ -194,7 +194,7 @@
         ],
         [
           [
-            "Jessr",
+            "Ali",
             "Lucy"
           ],
           [
@@ -253,7 +253,7 @@
         ],
         [
           [
-            "Jessr",
+            "Ali",
             "Hannah"
           ],
           [
@@ -274,6 +274,6 @@
       ]
     }
   ],
-  "activeGame": 3,
-  "updated": "2026-08-06T14:57:03.796Z"
+  "activeGame": 0,
+  "updated": "2026-08-06T15:44:59.613Z"
 }
