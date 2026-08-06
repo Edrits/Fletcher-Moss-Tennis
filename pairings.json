@@ -130,12 +130,12 @@
       "game": 2,
       "sitters": [
         "Bridget",
-        "Adam O’Brien (new)"
+        "Jessr"
       ],
       "courts": [
         [
           [
-            "Jessr",
+            "Adam O’Brien (new)",
             "Adam Barrishi"
           ],
           [
@@ -275,5 +275,5 @@
     }
   ],
   "activeGame": 1,
-  "updated": "2026-08-06T14:55:26.519Z"
+  "updated": "2026-08-06T14:55:31.174Z"
 }
