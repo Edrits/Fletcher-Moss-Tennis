@@ -1,275 +1,194 @@
 {
-  "players": [
-    {
-      "name": "Rebecca",
-      "sub": false
-    },
-    {
-      "name": "Bridget",
-      "sub": false
-    },
-    {
-      "name": "Sope",
-      "sub": false
-    },
-    {
-      "name": "Shyam",
-      "sub": false
-    },
-    {
-      "name": "Richard",
-      "sub": false
-    },
-    {
-      "name": "Jac",
-      "sub": false
-    },
-    {
-      "name": "Evie",
-      "sub": false
-    },
-    {
-      "name": "Elle",
-      "sub": false
-    },
-    {
-      "name": "Josh",
-      "sub": false
-    },
-    {
-      "name": "Ather",
-      "sub": false
-    },
-    {
-      "name": "Luke",
-      "sub": false
-    },
-    {
-      "name": "Louis",
-      "sub": false
-    },
-    {
-      "name": "Sam",
-      "sub": false
-    },
-    {
-      "name": "Rod",
-      "sub": false
-    },
-    {
-      "name": "Emma B",
-      "sub": false
-    },
-    {
-      "name": "Joe",
-      "sub": false
-    },
-    {
-      "name": "Sub Ting",
-      "sub": false
-    },
-    {
-      "name": "",
-      "sub": false
-    }
-  ],
+  "players": [],
   "numCourts": 4,
   "numGames": 4,
   "seed": 813817,
   "generatedGames": [
     {
       "game": 1,
-      "sitters": [
-        "Sub Ting"
-      ],
+      "sitters": [],
       "courts": [
         [
           [
-            "Evie",
-            "Luke"
+            "",
+            ""
           ],
           [
-            "Josh",
-            "Rod"
+            "",
+            ""
           ]
         ],
         [
           [
-            "Louis",
-            "Sam"
+            "",
+            ""
           ],
           [
-            "Richard",
-            "Joe"
+            "",
+            ""
           ]
         ],
         [
           [
-            "Bridget",
-            "Jac"
+            "",
+            ""
           ],
           [
-            "Shyam",
-            "Rebecca"
+            "",
+            ""
           ]
         ],
         [
           [
-            "Ather",
-            "Emma B"
+            "",
+            ""
           ],
           [
-            "Sope",
-            "Elle"
+            "",
+            ""
           ]
         ]
       ]
     },
     {
       "game": 2,
-      "sitters": [
-        "Bridget"
-      ],
+      "sitters": [],
       "courts": [
         [
           [
-            "Rebecca",
-            "Joe"
+            "",
+            ""
           ],
           [
-            "Ather",
-            "Luke"
+            "",
+            ""
           ]
         ],
         [
           [
-            "Sub Ting",
-            "Louis"
+            "",
+            ""
           ],
           [
-            "Sam",
-            "Rod"
+            "",
+            ""
           ]
         ],
         [
           [
-            "Richard",
-            "Shyam"
+            "",
+            ""
           ],
           [
-            "Evie",
-            "Sope"
+            "",
+            ""
           ]
         ],
         [
           [
-            "Elle",
-            "Josh"
+            "",
+            ""
           ],
           [
-            "Jac",
-            "Emma B"
+            "",
+            ""
           ]
         ]
       ]
     },
     {
       "game": 3,
-      "sitters": [
-        "Evie"
-      ],
+      "sitters": [],
       "courts": [
         [
           [
-            "Sub Ting",
-            "Shyam"
+            "",
+            ""
           ],
           [
-            "Emma B",
-            "Richard"
+            "",
+            ""
           ]
         ],
         [
           [
-            "Louis",
-            "Rebecca"
+            "",
+            ""
           ],
           [
-            "Bridget",
-            "Luke"
+            "",
+            ""
           ]
         ],
         [
           [
-            "Josh",
-            "Ather"
+            "",
+            ""
           ],
           [
-            "Elle",
-            "Joe"
+            "",
+            ""
           ]
         ],
         [
           [
-            "Rod",
-            "Sope"
+            "",
+            ""
           ],
           [
-            "Jac",
-            "Sam"
+            "",
+            ""
           ]
         ]
       ]
     },
     {
       "game": 4,
-      "sitters": [
-        "Sub Ting"
-      ],
+      "sitters": [],
       "courts": [
         [
           [
-            "Louis",
-            "Jac"
+            "",
+            ""
           ],
           [
-            "Sope",
-            "Rod"
+            "",
+            ""
           ]
         ],
         [
           [
-            "Sam",
-            "Ather"
+            "",
+            ""
           ],
           [
-            "Richard",
-            "Shyam"
+            "",
+            ""
           ]
         ],
         [
           [
-            "Bridget",
-            "Rebecca"
+            "",
+            ""
           ],
           [
-            "Emma B",
-            "Elle"
+            "",
+            ""
           ]
         ],
         [
           [
-            "Evie",
-            "Josh"
+            "",
+            ""
           ],
           [
-            "Luke",
-            "Joe"
+            "",
+            ""
           ]
         ]
       ]
     }
   ],
   "activeGame": 3,
-  "updated": "2026-07-30T15:02:59.732Z"
+  "updated": "2026-08-06T14:43:49.297Z"
 }
