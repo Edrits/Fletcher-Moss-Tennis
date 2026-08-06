@@ -6,9 +6,9 @@
       "players": [
         {
           "name": "Louis",
-          "played": 4,
-          "won": 4,
-          "points": 12
+          "played": 5,
+          "won": 5,
+          "points": 15
         },
         {
           "name": "Jack",
@@ -42,9 +42,9 @@
         },
         {
           "name": "Digby",
-          "played": 0,
+          "played": 1,
           "won": 0,
-          "points": 0
+          "points": 1
         },
         {
           "name": "Robbie",
@@ -90,6 +90,13 @@
           "winner": "Jack",
           "noShow": null,
           "date": "2026-08-01T13:38:56.231Z"
+        },
+        {
+          "player1": "Digby",
+          "player2": "Louis",
+          "winner": "Louis",
+          "noShow": null,
+          "date": "2026-08-06T21:20:30.803Z"
         }
       ]
     },
