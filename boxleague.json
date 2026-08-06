@@ -286,16 +286,16 @@
           "points": 6
         },
         {
-          "name": "SK",
-          "played": 2,
-          "won": 2,
-          "points": 6
-        },
-        {
           "name": "Ting",
           "played": 2,
           "won": 1,
           "points": 4
+        },
+        {
+          "name": "SK",
+          "played": 1,
+          "won": 1,
+          "points": 3
         },
         {
           "name": "Keshap",
@@ -317,9 +317,9 @@
         },
         {
           "name": "Ather",
-          "played": 2,
+          "played": 1,
           "won": 0,
-          "points": 2
+          "points": 1
         },
         {
           "name": "Joe",
@@ -382,13 +382,6 @@
           "winner": "SK",
           "noShow": null,
           "date": "2026-08-06T21:36:34.088Z"
-        },
-        {
-          "player1": "Ather",
-          "player2": "SK",
-          "winner": "SK",
-          "noShow": null,
-          "date": "2026-08-06T21:36:58.260Z"
         }
       ]
     }
