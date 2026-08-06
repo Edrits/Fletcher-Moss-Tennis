@@ -1,194 +1,279 @@
 {
-  "players": [],
+  "players": [
+    {
+      "name": "Bridget",
+      "sub": false
+    },
+    {
+      "name": "Ed",
+      "sub": false
+    },
+    {
+      "name": "Imran",
+      "sub": false
+    },
+    {
+      "name": "Josh",
+      "sub": false
+    },
+    {
+      "name": "Shyam",
+      "sub": false
+    },
+    {
+      "name": "Lucy",
+      "sub": false
+    },
+    {
+      "name": "Jessr",
+      "sub": false
+    },
+    {
+      "name": "Sope",
+      "sub": false
+    },
+    {
+      "name": "Hannah",
+      "sub": false
+    },
+    {
+      "name": "Michael",
+      "sub": false
+    },
+    {
+      "name": "Oli",
+      "sub": false
+    },
+    {
+      "name": "Adam Barrishi",
+      "sub": false
+    },
+    {
+      "name": "Alan",
+      "sub": false
+    },
+    {
+      "name": "Lilliana (new)",
+      "sub": false
+    },
+    {
+      "name": "Bailey (new)",
+      "sub": false
+    },
+    {
+      "name": "Adam O’Brien (new)",
+      "sub": false
+    },
+    {
+      "name": "Sub - Rebecca",
+      "sub": false
+    },
+    {
+      "name": "Sub - Ting",
+      "sub": false
+    }
+  ],
   "numCourts": 4,
   "numGames": 4,
-  "seed": 813817,
+  "seed": 575776,
   "generatedGames": [
     {
       "game": 1,
-      "sitters": [],
+      "sitters": [
+        "Sub - Rebecca",
+        "Sub - Ting"
+      ],
       "courts": [
         [
           [
-            "",
-            ""
+            "Lucy",
+            "Ed"
           ],
           [
-            "",
-            ""
+            "Oli",
+            "Michael"
           ]
         ],
         [
           [
-            "",
-            ""
+            "Shyam",
+            "Jessr"
           ],
           [
-            "",
-            ""
+            "Josh",
+            "Adam Barrishi"
           ]
         ],
         [
           [
-            "",
-            ""
+            "Lilliana (new)",
+            "Bridget"
           ],
           [
-            "",
-            ""
+            "Adam O’Brien (new)",
+            "Alan"
           ]
         ],
         [
           [
-            "",
-            ""
+            "Imran",
+            "Bailey (new)"
           ],
           [
-            "",
-            ""
+            "Sope",
+            "Hannah"
           ]
         ]
       ]
     },
     {
       "game": 2,
-      "sitters": [],
+      "sitters": [
+        "Bailey (new)",
+        "Adam O’Brien (new)"
+      ],
       "courts": [
         [
           [
-            "",
-            ""
+            "Bridget",
+            "Adam Barrishi"
           ],
           [
-            "",
-            ""
+            "Oli",
+            "Sub - Rebecca"
           ]
         ],
         [
           [
-            "",
-            ""
+            "Jessr",
+            "Lilliana (new)"
           ],
           [
-            "",
-            ""
+            "Imran",
+            "Ed"
           ]
         ],
         [
           [
-            "",
-            ""
+            "Josh",
+            "Sub - Ting"
           ],
           [
-            "",
-            ""
+            "Michael",
+            "Alan"
           ]
         ],
         [
           [
-            "",
-            ""
+            "Sope",
+            "Shyam"
           ],
           [
-            "",
-            ""
+            "Lucy",
+            "Hannah"
           ]
         ]
       ]
     },
     {
       "game": 3,
-      "sitters": [],
+      "sitters": [
+        "Alan",
+        "Lilliana (new)"
+      ],
       "courts": [
         [
           [
-            "",
-            ""
+            "Jessr",
+            "Adam Barrishi"
           ],
           [
-            "",
-            ""
+            "Bailey (new)",
+            "Michael"
           ]
         ],
         [
           [
-            "",
-            ""
+            "Josh",
+            "Lucy"
           ],
           [
-            "",
-            ""
+            "Hannah",
+            "Imran"
           ]
         ],
         [
           [
-            "",
-            ""
+            "Oli",
+            "Adam O’Brien (new)"
           ],
           [
-            "",
-            ""
+            "Sub - Rebecca",
+            "Sub - Ting"
           ]
         ],
         [
           [
-            "",
-            ""
+            "Sope",
+            "Bridget"
           ],
           [
-            "",
-            ""
+            "Ed",
+            "Shyam"
           ]
         ]
       ]
     },
     {
       "game": 4,
-      "sitters": [],
+      "sitters": [
+        "Oli",
+        "Adam Barrishi"
+      ],
       "courts": [
         [
           [
-            "",
-            ""
+            "Bailey (new)",
+            "Sope"
           ],
           [
-            "",
-            ""
+            "Josh",
+            "Adam O’Brien (new)"
           ]
         ],
         [
           [
-            "",
-            ""
+            "Ed",
+            "Michael"
           ],
           [
-            "",
-            ""
+            "Imran",
+            "Sub - Rebecca"
           ]
         ],
         [
           [
-            "",
-            ""
+            "Jessr",
+            "Bridget"
           ],
           [
-            "",
-            ""
+            "Sub - Ting",
+            "Hannah"
           ]
         ],
         [
           [
-            "",
-            ""
+            "Lilliana (new)",
+            "Alan"
           ],
           [
-            "",
-            ""
+            "Shyam",
+            "Lucy"
           ]
         ]
       ]
     }
   ],
-  "activeGame": 3,
-  "updated": "2026-08-06T14:43:49.297Z"
+  "activeGame": 0,
+  "updated": "2026-08-06T14:44:28.897Z"
 }
