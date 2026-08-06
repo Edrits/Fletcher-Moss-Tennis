@@ -279,6 +279,12 @@
           "points": 6
         },
         {
+          "name": "Ting",
+          "played": 2,
+          "won": 1,
+          "points": 4
+        },
+        {
           "name": "Keshap",
           "played": 1,
           "won": 1,
@@ -291,25 +297,19 @@
           "points": 3
         },
         {
+          "name": "Rebecca",
+          "played": 2,
+          "won": 0,
+          "points": 2
+        },
+        {
           "name": "Joe",
           "played": 1,
           "won": 0,
           "points": 1
         },
         {
-          "name": "Rebecca",
-          "played": 1,
-          "won": 0,
-          "points": 1
-        },
-        {
           "name": "Armin",
-          "played": 1,
-          "won": 0,
-          "points": 1
-        },
-        {
-          "name": "Ting",
           "played": 1,
           "won": 0,
           "points": 1
@@ -361,6 +361,13 @@
           "winner": "Josh",
           "noShow": null,
           "date": "2026-07-30T19:52:51.275Z"
+        },
+        {
+          "player1": "Rebecca",
+          "player2": "Ting",
+          "winner": "Ting",
+          "noShow": null,
+          "date": "2026-08-06T19:44:02.436Z"
         }
       ]
     }
