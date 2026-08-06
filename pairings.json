@@ -227,13 +227,13 @@
     {
       "game": 4,
       "sitters": [
-        "Oli",
+        "Sub - Ting",
         "Sub - Rebecca"
       ],
       "courts": [
         [
           [
-            "Sub - Ting",
+            "Oli",
             "Sope"
           ],
           [
@@ -275,5 +275,5 @@
     }
   ],
   "activeGame": 3,
-  "updated": "2026-08-06T14:51:32.764Z"
+  "updated": "2026-08-06T14:51:37.646Z"
 }
