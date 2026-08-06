@@ -129,13 +129,13 @@
     {
       "game": 2,
       "sitters": [
-        "Bailey (new)",
+        "Bridget",
         "Adam O’Brien (new)"
       ],
       "courts": [
         [
           [
-            "Bridget",
+            "Bailey (new)",
             "Adam Barrishi"
           ],
           [
@@ -274,6 +274,6 @@
       ]
     }
   ],
-  "activeGame": 0,
-  "updated": "2026-08-06T14:45:52.520Z"
+  "activeGame": 1,
+  "updated": "2026-08-06T14:46:24.231Z"
 }
