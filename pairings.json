@@ -84,14 +84,14 @@
     {
       "game": 1,
       "sitters": [
-        "Alex",
+        "Q",
         "Sub.Luke Bibby",
         "Sub Sully"
       ],
       "courts": [
         [
           [
-            "Q",
+            "Alex",
             "Ben Doherty"
           ],
           [
@@ -282,6 +282,6 @@
       ]
     }
   ],
-  "activeGame": 3,
-  "updated": "2026-08-07T19:20:39.327Z"
+  "activeGame": 0,
+  "updated": "2026-08-07T19:21:25.369Z"
 }
