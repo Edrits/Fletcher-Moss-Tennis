@@ -1,194 +1,279 @@
 {
-  "players": [],
+  "players": [
+    {
+      "name": "Ed",
+      "sub": false
+    },
+    {
+      "name": "Art",
+      "sub": false
+    },
+    {
+      "name": "Rebecca",
+      "sub": false
+    },
+    {
+      "name": "Evie",
+      "sub": false
+    },
+    {
+      "name": "Adam",
+      "sub": false
+    },
+    {
+      "name": "Ting",
+      "sub": false
+    },
+    {
+      "name": "Imran",
+      "sub": false
+    },
+    {
+      "name": "Liliana Flem",
+      "sub": false
+    },
+    {
+      "name": "Michael",
+      "sub": false
+    },
+    {
+      "name": "Q",
+      "sub": false
+    },
+    {
+      "name": "Mani",
+      "sub": false
+    },
+    {
+      "name": "Ryan Phillips",
+      "sub": false
+    },
+    {
+      "name": "Ben Doherty",
+      "sub": false
+    },
+    {
+      "name": "Emma B",
+      "sub": false
+    },
+    {
+      "name": "Ash",
+      "sub": false
+    },
+    {
+      "name": "acroxburgh",
+      "sub": false
+    },
+    {
+      "name": "Sub.Luke Bibby",
+      "sub": true
+    },
+    {
+      "name": "Sub Sully",
+      "sub": true
+    }
+  ],
   "numCourts": 4,
   "numGames": 4,
-  "seed": 575776,
+  "seed": 52405,
   "generatedGames": [
     {
       "game": 1,
-      "sitters": [],
+      "sitters": [
+        "Sub.Luke Bibby",
+        "Sub Sully"
+      ],
       "courts": [
         [
           [
-            "",
-            ""
+            "Ryan Phillips",
+            "Liliana Flem"
           ],
           [
-            "",
-            ""
+            "Ben Doherty",
+            "acroxburgh"
           ]
         ],
         [
           [
-            "",
-            ""
+            "Q",
+            "Adam"
           ],
           [
-            "",
-            ""
+            "Ting",
+            "Art"
           ]
         ],
         [
           [
-            "",
-            ""
+            "Mani",
+            "Evie"
           ],
           [
-            "",
-            ""
+            "Michael",
+            "Ash"
           ]
         ],
         [
           [
-            "",
-            ""
+            "Emma B",
+            "Rebecca"
           ],
           [
-            "",
-            ""
+            "Imran",
+            "Ed"
           ]
         ]
       ]
     },
     {
       "game": 2,
-      "sitters": [],
+      "sitters": [
+        "Ash",
+        "acroxburgh"
+      ],
       "courts": [
         [
           [
-            "",
-            ""
+            "Ryan Phillips",
+            "Sub Sully"
           ],
           [
-            "",
-            ""
+            "Adam",
+            "Evie"
           ]
         ],
         [
           [
-            "",
-            ""
+            "Liliana Flem",
+            "Rebecca"
           ],
           [
-            "",
-            ""
+            "Emma B",
+            "Q"
           ]
         ],
         [
           [
-            "",
-            ""
+            "Ed",
+            "Ting"
           ],
           [
-            "",
-            ""
+            "Mani",
+            "Art"
           ]
         ],
         [
           [
-            "",
-            ""
+            "Michael",
+            "Ben Doherty"
           ],
           [
-            "",
-            ""
+            "Sub.Luke Bibby",
+            "Imran"
           ]
         ]
       ]
     },
     {
       "game": 3,
-      "sitters": [],
+      "sitters": [
+        "Ben Doherty",
+        "Emma B"
+      ],
       "courts": [
         [
           [
-            "",
-            ""
+            "Sub.Luke Bibby",
+            "Evie"
           ],
           [
-            "",
-            ""
+            "Q",
+            "Mani"
           ]
         ],
         [
           [
-            "",
-            ""
+            "Imran",
+            "Michael"
           ],
           [
-            "",
-            ""
+            "Liliana Flem",
+            "Ed"
           ]
         ],
         [
           [
-            "",
-            ""
+            "acroxburgh",
+            "Rebecca"
           ],
           [
-            "",
-            ""
+            "Adam",
+            "Ting"
           ]
         ],
         [
           [
-            "",
-            ""
+            "Ryan Phillips",
+            "Ash"
           ],
           [
-            "",
-            ""
+            "Art",
+            "Sub Sully"
           ]
         ]
       ]
     },
     {
       "game": 4,
-      "sitters": [],
+      "sitters": [
+        "Mani",
+        "Ryan Phillips"
+      ],
       "courts": [
         [
           [
-            "",
-            ""
+            "Q",
+            "Ting"
           ],
           [
-            "",
-            ""
+            "Sub Sully",
+            "Imran"
           ]
         ],
         [
           [
-            "",
-            ""
+            "Ed",
+            "Art"
           ],
           [
-            "",
-            ""
+            "Evie",
+            "Liliana Flem"
           ]
         ],
         [
           [
-            "",
-            ""
+            "Ash",
+            "Rebecca"
           ],
           [
-            "",
-            ""
+            "Sub.Luke Bibby",
+            "acroxburgh"
           ]
         ],
         [
           [
-            "",
-            ""
+            "Emma B",
+            "Michael"
           ],
           [
-            "",
-            ""
+            "Ben Doherty",
+            "Adam"
           ]
         ]
       ]
     }
   ],
   "activeGame": 0,
-  "updated": "2026-08-07T18:27:46.215Z"
+  "updated": "2026-08-07T18:28:18.076Z"
 }
