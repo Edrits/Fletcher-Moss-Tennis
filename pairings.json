@@ -236,7 +236,7 @@
       "sitters": [
         "Liliana Flem",
         "Michael",
-        "Q"
+        "Art"
       ],
       "courts": [
         [
@@ -251,7 +251,7 @@
         ],
         [
           [
-            "Art",
+            "Q",
             "Sub.Luke Bibby"
           ],
           [
@@ -282,6 +282,6 @@
       ]
     }
   ],
-  "activeGame": 2,
-  "updated": "2026-08-07T18:30:41.339Z"
+  "activeGame": 3,
+  "updated": "2026-08-07T19:20:39.327Z"
 }
