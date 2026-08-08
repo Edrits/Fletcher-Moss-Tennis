@@ -84,7 +84,7 @@
     {
       "game": 1,
       "sitters": [
-        "Q",
+        "Evie",
         "Ryan Phillips",
         "Alex"
       ],
@@ -121,7 +121,7 @@
         ],
         [
           [
-            "Evie",
+            "Q",
             "Sub Sully"
           ],
           [
@@ -283,5 +283,5 @@
     }
   ],
   "activeGame": 0,
-  "updated": "2026-08-08T17:07:14.567Z"
+  "updated": "2026-08-08T17:07:21.005Z"
 }
