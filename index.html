@@ -224,6 +224,15 @@
             display: none; flex-direction: column; gap: 0; background: rgba(21,43,12,.98);
             position: absolute; top: 100%; left: 0; right: 0; z-index: 999;
             border-top: 1px solid rgba(255,255,255,0.12); box-shadow: var(--shadow-lg);
+            /* The header is sticky, so this menu travels with it and can never be
+               scrolled into view. Cap it to the space actually on screen below the
+               header and let it scroll itself, or the last links are unreachable
+               on a short phone. --header-h is measured in toggleMobileNav(). */
+            max-height: calc(100vh - var(--header-h, 92px));
+            max-height: calc(100dvh - var(--header-h, 92px));
+            overflow-y: auto;
+            overscroll-behavior: contain;
+            -webkit-overflow-scrolling: touch;
         }
         .mobile-nav.open { display: flex; }
         .mobile-nav a {
@@ -886,6 +895,8 @@
         function toggleMobileNav() {
             const nav = document.getElementById('mobileNav');
             const btn = document.getElementById('hamburger');
+            // Measure the header so the menu can cap itself to the visible space below it.
+            nav.style.setProperty('--header-h', nav.parentElement.offsetHeight + 'px');
             nav.classList.toggle('open');
             btn.classList.toggle('open');
         }

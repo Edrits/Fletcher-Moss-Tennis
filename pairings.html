@@ -134,6 +134,15 @@
             display: none; flex-direction: column; gap: 0; background: rgba(21,43,12,.98);
             position: absolute; top: 100%; left: 0; right: 0; z-index: 999;
             border-top: 1px solid rgba(255,255,255,0.12); box-shadow: var(--shadow-lg);
+            /* The header is sticky, so this menu travels with it and can never be
+               scrolled into view. Cap it to the space actually on screen below the
+               header and let it scroll itself, or the last links are unreachable
+               on a short phone. --header-h is measured in toggleMobileNav(). */
+            max-height: calc(100vh - var(--header-h, 92px));
+            max-height: calc(100dvh - var(--header-h, 92px));
+            overflow-y: auto;
+            overscroll-behavior: contain;
+            -webkit-overflow-scrolling: touch;
         }
         .mobile-nav.open { display: flex; }
         .mobile-nav a {
@@ -987,13 +996,24 @@
             if (e.button && e.button !== 0) return;              // left button / touch only
             const el = e.target.closest('[data-loc]');
             if (!el) return;
-            drag = { el, loc: el.getAttribute('data-loc'), startX: e.clientX, startY: e.clientY, moved: false, ghost: null, over: null };
+            if (drag) endDrag(false);                            // never leave an earlier drag half-finished
+            drag = {
+                el, loc: el.getAttribute('data-loc'),
+                startX: e.clientX, startY: e.clientY,
+                x: e.clientX, y: e.clientY,
+                moved: false, ghost: null, over: null, timer: null
+            };
             document.addEventListener('pointermove', onDragMove);
-            document.addEventListener('pointerup', onDragEnd);
+            document.addEventListener('pointerup', onDragUp);
+            // A touch drag can be taken away from us at any point: a second finger, an
+            // incoming call, the browser claiming the gesture. Without pointercancel the
+            // ghost is left floating on screen with nothing able to clear it.
+            document.addEventListener('pointercancel', onDragCancel);
         }
 
         function onDragMove(e) {
             if (!drag) return;
+            drag.x = e.clientX; drag.y = e.clientY;
             if (!drag.moved) {
                 if (Math.hypot(e.clientX - drag.startX, e.clientY - drag.startY) < 8) return;
                 drag.moved = true;
@@ -1005,12 +1025,17 @@
                 document.body.appendChild(ghost);
                 drag.ghost = ghost;
                 drag.el.classList.add('drag-source');
+                drag.timer = setInterval(autoScrollTick, 16);
             }
-            drag.ghost.style.left = e.clientX + 'px';
-            drag.ghost.style.top = e.clientY + 'px';
+            drag.ghost.style.left = drag.x + 'px';
+            drag.ghost.style.top = drag.y + 'px';
+            updateDropTarget();
+        }
 
+        function updateDropTarget() {
+            if (!drag || !drag.ghost) return;
             drag.ghost.style.display = 'none';
-            const under = document.elementFromPoint(e.clientX, e.clientY);
+            const under = document.elementFromPoint(drag.x, drag.y);
             drag.ghost.style.display = '';
             const target = under && under.closest('[data-loc]');
             const valid = target && target !== drag.el ? target : null;
@@ -1021,21 +1046,53 @@
             }
         }
 
-        function onDragEnd() {
+        // Hold a name near the top or bottom of the screen and the page scrolls under it,
+        // so a player can be dragged from the top of the list all the way down to court 4
+        // on a phone without having to let go.
+        const DRAG_EDGE = 90;        // px from the viewport edge where scrolling kicks in
+        const DRAG_SPEED = 14;       // px per tick at the very edge, easing off inwards
+
+        // Driven by setInterval rather than requestAnimationFrame: the drag already ends on
+        // pointerup/pointercancel, so there is no long-lived timer to leak, and a plain
+        // interval behaves the same whether or not the page is painting frames.
+        function autoScrollTick() {
+            if (!drag || !drag.moved) return;
+            const h = window.innerHeight;
+            let dy = 0;
+            if (drag.y < DRAG_EDGE) dy = -DRAG_SPEED * (1 - drag.y / DRAG_EDGE);
+            else if (drag.y > h - DRAG_EDGE) dy = DRAG_SPEED * (1 - (h - drag.y) / DRAG_EDGE);
+            if (!dy) return;
+            const before = window.scrollY;
+            // 'instant' matters: the page sets scroll-behavior:smooth, which would
+            // otherwise queue an animation every tick and barely move at all.
+            window.scrollBy({ top: dy, behavior: 'instant' });
+            // The thumb has not moved but the page under it has, so the slot the name is
+            // hovering over has changed.
+            if (window.scrollY !== before) updateDropTarget();
+        }
+
+        function onDragUp() { endDrag(true); }
+        function onDragCancel() { endDrag(false); }
+
+        function endDrag(commit) {
             document.removeEventListener('pointermove', onDragMove);
-            document.removeEventListener('pointerup', onDragEnd);
+            document.removeEventListener('pointerup', onDragUp);
+            document.removeEventListener('pointercancel', onDragCancel);
             const d = drag; drag = null;
             if (!d) return;
-            if (d.over) d.over.classList.remove('drop-target');
-            if (d.ghost) d.ghost.remove();
-            d.el.classList.remove('drag-source');
+            if (d.timer) clearInterval(d.timer);
+            // Sweep the document rather than only this drag's own nodes, so any ghost
+            // orphaned by an earlier interrupted drag gets cleared too.
+            document.querySelectorAll('.drag-ghost').forEach(g => g.remove());
+            document.querySelectorAll('.drop-target').forEach(el => el.classList.remove('drop-target'));
+            document.querySelectorAll('.drag-source').forEach(el => el.classList.remove('drag-source'));
             d.el.style.opacity = '';
             if (d.moved) {
                 // Swallow the click that follows a drag so it doesn't also trigger rename
                 const swallow = ev => { ev.stopPropagation(); ev.preventDefault(); };
                 document.addEventListener('click', swallow, { capture: true, once: true });
                 setTimeout(() => document.removeEventListener('click', swallow, { capture: true }), 350);
-                if (d.over) swapSlots(d.loc, d.over.getAttribute('data-loc'));
+                if (commit && d.over) swapSlots(d.loc, d.over.getAttribute('data-loc'));
             }
         }
 
@@ -1045,6 +1102,8 @@
         function toggleMobileNav() {
             const nav = document.getElementById('mobileNav');
             const btn = document.getElementById('hamburger');
+            // Measure the header so the menu can cap itself to the visible space below it.
+            nav.style.setProperty('--header-h', nav.parentElement.offsetHeight + 'px');
             nav.classList.toggle('open');
             btn.classList.toggle('open');
         }
