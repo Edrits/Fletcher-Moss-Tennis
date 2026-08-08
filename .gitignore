@@ -3,3 +3,6 @@
 
 # Redundant design-system archive (the unzipped design-system/ folder is committed instead)
 Fletcher Moss Design System.zip
+
+# macOS Finder metadata
+.DS_Store

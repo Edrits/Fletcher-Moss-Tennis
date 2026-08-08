@@ -10,23 +10,13 @@ Use British English spelling in all content, copy, and comments (e.g. "colour" n
 
 A static marketing/community website for Fletcher Moss Social Tennis Club, deployed on Vercel. There is no build step, no bundler, and no frontend framework — each page is a single self-contained HTML file with inline `<style>` and `<script>` blocks. Data persistence is handled by Vercel serverless functions in `api/` that read/write JSON files directly in this GitHub repo via the GitHub Contents API (the JSON files act as the "database").
 
-## Pages
+## Page naming
 
-- `index.html` — homepage (hero, about, full-bleed photo feature bands, noticeboard display, weather widget, contact/QR sign-up)
-- `box-league.html` — the **FMST Singles League** (the file/route keeps the `box-league` name; the product was renamed). Standings, player self-service result entry, admin player/match management.
-- `pairings.html` — court pairing/session generator
-
-Each page is large (35–55KB) and structured as: `<head>` with SEO meta/canonical/favicon tags → inline `<style>` → page markup → inline `<script>` at the bottom containing all page logic (fetch calls, DOM rendering, event handlers).
+`box-league.html` is the **FMST Singles League**. The file and route keep the old `box-league` name, only the product was renamed.
 
 ## Data flow
 
 Each data-backed page follows the same pattern: `<script>` in the HTML calls `fetch('/api/<name>')` on load to GET the current JSON, renders it, and POSTs updates back through the same endpoint. There is no database — `api/*.js` functions read and write the corresponding root-level JSON file (`noticeboard.json`, `boxleague.json`, `pairings.json`) in this repo using the GitHub Contents API, so every save creates a commit to this repo.
-
-| Page | API endpoint | Data file |
-|---|---|---|
-| `index.html` (noticeboard section) | `api/noticeboard.js` | `noticeboard.json` |
-| `box-league.html` | `api/boxleague.js` | `boxleague.json` |
-| `pairings.html` | `api/pairings.js` | `pairings.json` |
 
 Each `api/*.js` handler requires `GIT_TOKEN` as a Vercel environment variable (a GitHub token with contents write access to this repo) — there is no local `.env` file, so these functions only work when deployed on Vercel, not run locally as plain Node.
 
@@ -44,7 +34,7 @@ When changing the shape of data used by a page (e.g. adding a field to a box-lea
 
 ## Design system
 
-The `design-system/` directory is the **Fletcher Moss Design System** — a self-contained brand kit and reference export (design tokens, brand/type/colour guideline cards, React component specimens, and an interactive `ui_kits/site/` recreation of the three real screens). It is a *reference*, **not** wired into the live site: the production pages do not `<link>` its `styles.css` or import its `.jsx` components, and there is no build step that consumes them. Apply the system by hand-translating its tokens and rules into each page's inline `<style>`. Treat the `.jsx`/`ui_kits` files as design specimens, not shippable code.
+The `design-system/` directory is the **Fletcher Moss Design System**, a self-contained brand kit and reference export. It is a *reference*, **not** wired into the live site: the production pages do not `<link>` its `styles.css` or import its `.jsx` components, and there is no build step that consumes them. Apply the system by hand-translating its tokens and rules into each page's inline `<style>`. Treat the `.jsx`/`ui_kits` files as design specimens, not shippable code.
 
 Token source of truth is `design-system/tokens/*.css` (also flattened in `design-system/_ds_manifest.json`). Core values already reflected in the pages: park green `--green-800` `#2d5016` (brand/header) and `--green-600` `#4a7c2c` (primary action); `Lora` for all headings, `Plus Jakarta Sans` for body/UI; warm ink/paper neutrals rather than pure black/white/grey.
 
@@ -63,7 +53,7 @@ All three production pages have been converted to the system (tokens copied into
 
 ## No build/test/lint tooling
 
-`package.json` has no dependencies and no scripts. There is nothing to install, build, lint, or test. Verify changes by running a static file server from the repo root and checking behaviour in a browser:
+Verify changes by running a static file server from the repo root and checking behaviour in a browser:
 
 ```
 python3 -m http.server 8000
@@ -79,4 +69,4 @@ python3 -m http.server 8000
 
 Project-specific Claude Code skills live under `.claude/skills/<name>/SKILL.md` and are indexed in [SKILLS.md](SKILLS.md). Check there before creating a new skill, and add a row when adding one.
 
-The design system also ships its own user-invocable skill at [design-system/SKILL.md](design-system/SKILL.md) (`fletcher-moss-design`) for generating on-brand interfaces and prototypes. It lives inside `design-system/` rather than `.claude/skills/` and is not yet listed in [SKILLS.md](SKILLS.md).
+`fletcher-moss-design` generates on-brand interfaces and prototypes from the design system. The loadable skill is [.claude/skills/fletcher-moss-design/SKILL.md](.claude/skills/fletcher-moss-design/SKILL.md), which points at the brand kit in `design-system/`. The original export also ships a `design-system/SKILL.md`, but Claude Code only scans `.claude/skills/`, so that copy never loads. Leave it as part of the untouched export and keep the `.claude/skills/` copy as the live one.
