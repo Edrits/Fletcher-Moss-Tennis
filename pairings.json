@@ -85,7 +85,7 @@
       "game": 1,
       "sitters": [
         "Q",
-        "Sub.Luke Bibby",
+        "Ryan Phillips",
         "Alex"
       ],
       "courts": [
@@ -105,7 +105,7 @@
             "Mani"
           ],
           [
-            "Ryan Phillips",
+            "Sub.Luke Bibby",
             "Ting"
           ]
         ],
@@ -283,5 +283,5 @@
     }
   ],
   "activeGame": 0,
-  "updated": "2026-08-08T17:06:58.452Z"
+  "updated": "2026-08-08T17:07:06.994Z"
 }
