@@ -201,6 +201,12 @@
           "points": 4
         },
         {
+          "name": "Art",
+          "played": 2,
+          "won": 1,
+          "points": 4
+        },
+        {
           "name": "Sofia",
           "played": 2,
           "won": 0,
@@ -213,19 +219,13 @@
           "points": 1
         },
         {
-          "name": "Art",
+          "name": "Ben",
           "played": 1,
           "won": 0,
           "points": 1
         },
         {
           "name": "Ted",
-          "played": 0,
-          "won": 0,
-          "points": 0
-        },
-        {
-          "name": "Ben",
           "played": 0,
           "won": 0,
           "points": 0
@@ -272,6 +272,13 @@
           "winner": "Sam",
           "noShow": null,
           "date": "2026-08-03T20:20:30.771Z"
+        },
+        {
+          "player1": "Art",
+          "player2": "Ben",
+          "winner": "Art",
+          "noShow": null,
+          "date": "2026-08-08T13:02:03.510Z"
         }
       ]
     },
