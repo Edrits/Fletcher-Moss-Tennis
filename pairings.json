@@ -185,13 +185,13 @@
       "game": 3,
       "sitters": [
         "Mani",
-        "Ryan Phillips",
+        "Alex",
         "Ben Doherty"
       ],
       "courts": [
         [
           [
-            "Alex",
+            "Ryan Phillips",
             "Sub Sully"
           ],
           [
@@ -283,5 +283,5 @@
     }
   ],
   "activeGame": 2,
-  "updated": "2026-08-08T09:54:07.107Z"
+  "updated": "2026-08-08T09:54:13.861Z"
 }
