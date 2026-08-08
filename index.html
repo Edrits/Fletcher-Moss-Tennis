@@ -4,13 +4,13 @@
     <link rel="canonical" href="https://www.fletchermoss-socialtennisclub.co.uk/" />
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fletcher Moss Social Tennis Club | Free Social Tennis in Didsbury, Manchester</title>
-    <meta name="description" content="Free community tennis in Didsbury at Fletcher Moss Park. Social tennis sessions Monday, Thursday evenings and Saturday mornings. No membership fees, new players welcome. South Manchester.">
-    <meta name="keywords" content="free tennis didsbury, social tennis manchester, fletcher moss tennis, community tennis south manchester, tennis didsbury, free tennis sessions, social tennis group">
+    <title>Didsbury Tennis | Fletcher Moss Social Tennis Club, Free & Social</title>
+    <meta name="description" content="Didsbury tennis, free and social. Fletcher Moss Park sessions Monday, Thursday evenings and Saturday mornings. No membership fees, new players welcome. South Manchester.">
+    <meta name="keywords" content="didsbury tennis, free tennis didsbury, social tennis manchester, fletcher moss tennis, community tennis south manchester, tennis didsbury, free tennis sessions, social tennis group">
 
     <!-- Open Graph / Social Media -->
-    <meta property="og:title" content="Fletcher Moss Social Tennis Club - Free Social Tennis in Didsbury">
-    <meta property="og:description" content="Join our friendly community tennis group in Didsbury. Free sessions, no sign up or membership fees.">
+    <meta property="og:title" content="Didsbury Tennis | Fletcher Moss Social Tennis Club, Free & Social">
+    <meta property="og:description" content="Didsbury tennis, free and social. Join our friendly community tennis group. Free sessions, no sign up or membership fees.">
     <meta property="og:type" content="website">
     <meta property="og:image" content="fletcher-moss-logo.png">
 
@@ -144,8 +144,8 @@
             box-shadow: var(--shadow-lg);
         }
         .top-bar.compact .top-logo { width: 62px; height: 62px; }
-        .top-bar.compact .top-title h1 { font-size: 1.3em; }
-        .top-bar.compact .top-title p { opacity: 0; max-height: 0; margin: 0; }
+        .top-bar.compact .top-title .brand-name { font-size: 1.3em; }
+        .top-bar.compact .top-title .tagline { opacity: 0; max-height: 0; margin: 0; }
 
         @media (max-width: 768px) {
             .top-bar.mobile-hidden { transform: translateY(-100%); opacity: 0; }
@@ -164,11 +164,12 @@
                         height var(--duration-base) var(--ease-standard);
         }
 
-        .top-title h1 {
+        .top-title .brand-name {
+            font-family: var(--font-display);
             font-size: 2em; font-weight: 600; color: #fff; margin-bottom: 3px; white-space: nowrap;
             transition: font-size var(--duration-base) var(--ease-standard);
         }
-        .top-title p {
+        .top-title .tagline {
             font-size: var(--text-xs); color: rgba(244,242,234,.78); white-space: nowrap;
             text-transform: uppercase; letter-spacing: var(--tracking-wider); font-weight: 600;
             transition: opacity var(--duration-base) var(--ease-standard),
@@ -204,7 +205,7 @@
 
         @media (prefers-reduced-motion: reduce) {
             .ripple-text span { animation: none; }
-            .top-bar, .top-logo, .top-title h1, .top-title p, .nav-links a::after { transition: none; }
+            .top-bar, .top-logo, .top-title .brand-name, .top-title .tagline, .nav-links a::after { transition: none; }
         }
 
         .hamburger {
@@ -539,8 +540,8 @@
             .top-bar-left { gap: 10px; min-width: 0; }
             .top-logo { width: 72px; height: 72px; }
             .top-title { min-width: 0; overflow: hidden; }
-            .top-title h1 { font-size: 1.1em; overflow: hidden; text-overflow: ellipsis; }
-            .top-title p { overflow: hidden; text-overflow: ellipsis; }
+            .top-title .brand-name { font-size: 1.1em; overflow: hidden; text-overflow: ellipsis; }
+            .top-title .tagline { overflow: hidden; text-overflow: ellipsis; }
 
             .hero-content h1 { font-size: var(--text-2xl); }
             .hero-content .hero-sub { font-size: var(--text-md); }
@@ -570,8 +571,8 @@
             <div class="top-bar-left">
                 <img src="fletcher-moss-logo.png" alt="Fletcher Moss Social Tennis Club - Free Social Tennis in Didsbury Manchester" class="top-logo">
                 <div class="top-title">
-                    <h1>Fletcher Moss Social Tennis Club</h1>
-                    <p>Didsbury Social Tennis</p>
+                    <p class="brand-name">Fletcher Moss Social Tennis Club</p>
+                    <p class="tagline">Didsbury Social Tennis</p>
                 </div>
             </div>
             <nav class="nav-links">
@@ -839,7 +840,7 @@
       "@type": "SportsActivityLocation",
       "name": "Fletcher Moss Social Tennis Club",
       "description": "Free community-run social tennis group in Didsbury, South Manchester. No membership fees.",
-      "url": "https://fletcher-moss-tennis.vercel.app",
+      "url": "https://www.fletchermoss-socialtennisclub.co.uk/",
       "telephone": "",
       "address": {
         "@type": "PostalAddress",
@@ -1014,7 +1015,7 @@
         // Title ripples into place letter by letter on load. Built in JS so the
         // HTML keeps the plain heading text for search engines.
         (function rippleTitle() {
-            const h1 = document.querySelector('.top-title h1');
+            const h1 = document.querySelector('.top-title .brand-name');
             if (!h1 || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
             const text = h1.textContent.trim();
             h1.setAttribute('aria-label', text);
