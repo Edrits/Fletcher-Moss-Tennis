@@ -294,22 +294,22 @@
       "name": "League 4",
       "players": [
         {
+          "name": "SK",
+          "played": 3,
+          "won": 3,
+          "points": 9
+        },
+        {
           "name": "Ali",
           "played": 2,
           "won": 2,
           "points": 6
         },
         {
-          "name": "SK",
-          "played": 2,
-          "won": 2,
-          "points": 6
-        },
-        {
           "name": "Ting",
-          "played": 3,
+          "played": 4,
           "won": 1,
-          "points": 5
+          "points": 6
         },
         {
           "name": "Keshap",
@@ -403,6 +403,13 @@
           "winner": "SK",
           "noShow": null,
           "date": "2026-08-10T19:30:07.316Z"
+        },
+        {
+          "player1": "SK",
+          "player2": "Ting",
+          "winner": "SK",
+          "noShow": null,
+          "date": "2026-08-10T19:32:12.778Z"
         }
       ]
     }
