@@ -1,14 +1,6 @@
 {
   "players": [
     {
-      "name": "Ed",
-      "sub": false
-    },
-    {
-      "name": "Art",
-      "sub": false
-    },
-    {
       "name": "Rebecca",
       "sub": false
     },
@@ -17,116 +9,119 @@
       "sub": false
     },
     {
-      "name": "Adam",
+      "name": "Bridget",
+      "sub": false
+    },
+    {
+      "name": "Jamie",
+      "sub": false
+    },
+    {
+      "name": "Oliver",
+      "sub": false
+    },
+    {
+      "name": "Sam",
+      "sub": false
+    },
+    {
+      "name": "Bailey",
+      "sub": false
+    },
+    {
+      "name": "Ryan",
+      "sub": false
+    },
+    {
+      "name": "Liliana",
+      "sub": false
+    },
+    {
+      "name": "Jesse",
+      "sub": false
+    },
+    {
+      "name": "Quazim",
+      "sub": false
+    },
+    {
+      "name": "Sope",
+      "sub": false
+    },
+    {
+      "name": "Will",
+      "sub": false
+    },
+    {
+      "name": "Alan",
+      "sub": false
+    },
+    {
+      "name": "Laura",
+      "sub": false
+    },
+    {
+      "name": "Andrew",
       "sub": false
     },
     {
       "name": "Ting",
-      "sub": false
-    },
-    {
-      "name": "Imran",
-      "sub": false
-    },
-    {
-      "name": "Liliana Flem",
-      "sub": false
-    },
-    {
-      "name": "Michael",
-      "sub": false
-    },
-    {
-      "name": "Q",
-      "sub": false
-    },
-    {
-      "name": "Mani",
-      "sub": false
-    },
-    {
-      "name": "Ryan Phillips",
-      "sub": false
-    },
-    {
-      "name": "Ben Doherty",
-      "sub": false
-    },
-    {
-      "name": "Emma B",
-      "sub": false
-    },
-    {
-      "name": "Ash",
-      "sub": false
-    },
-    {
-      "name": "acroxburgh",
-      "sub": false
-    },
-    {
-      "name": "Sub.Luke Bibby",
       "sub": true
     },
     {
-      "name": "Sub Sully",
+      "name": "Shyam",
       "sub": true
-    },
-    {
-      "name": "Alex ",
-      "sub": false
     }
   ],
   "numCourts": 4,
   "numGames": 4,
-  "seed": 894711,
+  "seed": 232680,
   "generatedGames": [
     {
       "game": 1,
       "sitters": [
-        "Evie",
-        "Ryan Phillips",
-        "Alex"
+        "Ting",
+        "Shyam"
       ],
       "courts": [
         [
           [
-            "Adam",
-            "Art"
+            "Laura",
+            "Rebecca"
           ],
           [
-            "Ben Doherty",
-            "Ed"
+            "Jesse",
+            "Alan"
           ]
         ],
         [
           [
-            "Ash",
-            "Sub.Luke Bibby"
+            "Jamie",
+            "Evie"
           ],
           [
-            "Mani",
-            "Ting"
+            "Ryan",
+            "Quazim"
           ]
         ],
         [
           [
-            "Michael",
-            "Emma B"
+            "Andrew",
+            "Bridget"
           ],
           [
-            "Rebecca",
-            "Liliana Flem"
+            "Bailey",
+            "Will"
           ]
         ],
         [
           [
-            "Q",
-            "Sub Sully"
+            "Liliana",
+            "Oliver"
           ],
           [
-            "acroxburgh",
-            "Imran"
+            "Sope",
+            "Sam"
           ]
         ]
       ]
@@ -134,49 +129,48 @@
     {
       "game": 2,
       "sitters": [
-        "Emma B",
-        "Ash",
-        "Alex"
+        "Laura",
+        "Andrew"
       ],
       "courts": [
         [
           [
-            "Imran",
-            "Sub.Luke Bibby"
+            "Quazim",
+            "Liliana"
           ],
           [
-            "Michael",
-            "Ed"
+            "Alan",
+            "Bridget"
           ]
         ],
         [
           [
-            "Q",
-            "Rebecca"
+            "Jesse",
+            "Shyam"
           ],
           [
-            "Evie",
+            "Bailey",
+            "Evie"
+          ]
+        ],
+        [
+          [
+            "Oliver",
+            "Sam"
+          ],
+          [
+            "Will",
+            "Jamie"
+          ]
+        ],
+        [
+          [
+            "Rebecca",
+            "Sope"
+          ],
+          [
+            "Ryan",
             "Ting"
-          ]
-        ],
-        [
-          [
-            "Art",
-            "Ryan Phillips"
-          ],
-          [
-            "Liliana Flem",
-            "acroxburgh"
-          ]
-        ],
-        [
-          [
-            "Mani",
-            "Adam"
-          ],
-          [
-            "Ben Doherty",
-            "Sub Sully"
           ]
         ]
       ]
@@ -184,49 +178,48 @@
     {
       "game": 3,
       "sitters": [
-        "Mani",
-        "Alex",
-        "Ben Doherty"
+        "Will",
+        "Alan"
       ],
       "courts": [
         [
           [
-            "Liliana Flem",
-            "Sub Sully"
+            "Bailey",
+            "Laura"
           ],
           [
-            "Michael",
-            "Ed"
+            "Sam",
+            "Quazim"
           ]
         ],
         [
           [
-            "Q",
-            "Evie"
+            "Jamie",
+            "Sope"
           ],
           [
-            "Sub.Luke Bibby",
-            "Adam"
-          ]
-        ],
-        [
-          [
-            "Ash",
-            "acroxburgh"
-          ],
-          [
-            "Emma B",
+            "Shyam",
             "Rebecca"
           ]
         ],
         [
           [
-            "Ting",
-            "Ryan Phillips"
+            "Ryan",
+            "Evie"
           ],
           [
-            "Imran",
-            "Art"
+            "Bridget",
+            "Oliver"
+          ]
+        ],
+        [
+          [
+            "Andrew",
+            "Ting"
+          ],
+          [
+            "Liliana",
+            "Jesse"
           ]
         ]
       ]
@@ -234,54 +227,53 @@
     {
       "game": 4,
       "sitters": [
-        "Liliana Flem",
-        "Alex",
-        "Art"
+        "Quazim",
+        "Sope"
       ],
       "courts": [
         [
           [
-            "Evie",
-            "Ash"
+            "Sam",
+            "Alan"
           ],
           [
-            "Ed",
-            "Sub Sully"
+            "Andrew",
+            "Shyam"
           ]
         ],
         [
           [
-            "Q",
-            "Sub.Luke Bibby"
+            "Jesse",
+            "Rebecca"
           ],
           [
-            "Mani",
-            "Imran"
+            "Liliana",
+            "Bridget"
           ]
         ],
         [
           [
-            "Ryan Phillips",
-            "Ben Doherty"
-          ],
-          [
-            "acroxburgh",
-            "Emma B"
-          ]
-        ],
-        [
-          [
-            "Adam",
-            "Michael"
-          ],
-          [
-            "Rebecca",
+            "Laura",
             "Ting"
+          ],
+          [
+            "Oliver",
+            "Ryan"
+          ]
+        ],
+        [
+          [
+            "Bailey",
+            "Jamie"
+          ],
+          [
+            "Evie",
+            "Will"
           ]
         ]
       ]
     }
   ],
   "activeGame": 0,
-  "updated": "2026-08-08T17:07:21.005Z"
+  "updated": "2026-08-10T16:04:21.817Z"
 }
