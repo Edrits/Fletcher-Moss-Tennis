@@ -1,279 +1,194 @@
 {
-  "players": [
-    {
-      "name": "Rebecca",
-      "sub": false
-    },
-    {
-      "name": "Evie",
-      "sub": false
-    },
-    {
-      "name": "Bridget",
-      "sub": false
-    },
-    {
-      "name": "Jamie",
-      "sub": false
-    },
-    {
-      "name": "Oliver",
-      "sub": false
-    },
-    {
-      "name": "Sam",
-      "sub": false
-    },
-    {
-      "name": "Bailey",
-      "sub": false
-    },
-    {
-      "name": "Ryan",
-      "sub": false
-    },
-    {
-      "name": "Liliana",
-      "sub": false
-    },
-    {
-      "name": "Jesse",
-      "sub": false
-    },
-    {
-      "name": "Quazim",
-      "sub": false
-    },
-    {
-      "name": "Sope",
-      "sub": false
-    },
-    {
-      "name": "Will",
-      "sub": false
-    },
-    {
-      "name": "Alan",
-      "sub": false
-    },
-    {
-      "name": "Laura",
-      "sub": false
-    },
-    {
-      "name": "Andrew",
-      "sub": false
-    },
-    {
-      "name": "Ting",
-      "sub": true
-    },
-    {
-      "name": "Shyam",
-      "sub": true
-    }
-  ],
+  "players": [],
   "numCourts": 4,
   "numGames": 4,
   "seed": 232680,
   "generatedGames": [
     {
       "game": 1,
-      "sitters": [
-        "Ting",
-        "Shyam"
-      ],
+      "sitters": [],
       "courts": [
         [
           [
-            "Laura",
-            "Rebecca"
+            "",
+            ""
           ],
           [
-            "Jesse",
-            "Alan"
+            "",
+            ""
           ]
         ],
         [
           [
-            "Jamie",
-            "Evie"
+            "",
+            ""
           ],
           [
-            "Ryan",
-            "Quazim"
+            "",
+            ""
           ]
         ],
         [
           [
-            "Andrew",
-            "Bridget"
+            "",
+            ""
           ],
           [
-            "Bailey",
-            "Will"
+            "",
+            ""
           ]
         ],
         [
           [
-            "Liliana",
-            "Oliver"
+            "",
+            ""
           ],
           [
-            "Sope",
-            "Sam"
+            "",
+            ""
           ]
         ]
       ]
     },
     {
       "game": 2,
-      "sitters": [
-        "Laura",
-        "Andrew"
-      ],
+      "sitters": [],
       "courts": [
         [
           [
-            "Quazim",
-            "Liliana"
+            "",
+            ""
           ],
           [
-            "Alan",
-            "Bridget"
+            "",
+            ""
           ]
         ],
         [
           [
-            "Jesse",
-            "Shyam"
+            "",
+            ""
           ],
           [
-            "Bailey",
-            "Evie"
+            "",
+            ""
           ]
         ],
         [
           [
-            "Oliver",
-            "Sam"
+            "",
+            ""
           ],
           [
-            "Will",
-            "Jamie"
+            "",
+            ""
           ]
         ],
         [
           [
-            "Rebecca",
-            "Sope"
+            "",
+            ""
           ],
           [
-            "Ryan",
-            "Ting"
+            "",
+            ""
           ]
         ]
       ]
     },
     {
       "game": 3,
-      "sitters": [
-        "Will",
-        "Alan"
-      ],
+      "sitters": [],
       "courts": [
         [
           [
-            "Bailey",
-            "Laura"
+            "",
+            ""
           ],
           [
-            "Sam",
-            "Quazim"
+            "",
+            ""
           ]
         ],
         [
           [
-            "Jamie",
-            "Sope"
+            "",
+            ""
           ],
           [
-            "Shyam",
-            "Rebecca"
+            "",
+            ""
           ]
         ],
         [
           [
-            "Ryan",
-            "Evie"
+            "",
+            ""
           ],
           [
-            "Bridget",
-            "Oliver"
+            "",
+            ""
           ]
         ],
         [
           [
-            "Andrew",
-            "Ting"
+            "",
+            ""
           ],
           [
-            "Liliana",
-            "Jesse"
+            "",
+            ""
           ]
         ]
       ]
     },
     {
       "game": 4,
-      "sitters": [
-        "Quazim",
-        "Sope"
-      ],
+      "sitters": [],
       "courts": [
         [
           [
-            "Sam",
-            "Alan"
+            "",
+            ""
           ],
           [
-            "Andrew",
-            "Shyam"
+            "",
+            ""
           ]
         ],
         [
           [
-            "Jesse",
-            "Rebecca"
+            "",
+            ""
           ],
           [
-            "Liliana",
-            "Bridget"
+            "",
+            ""
           ]
         ],
         [
           [
-            "Laura",
-            "Ting"
+            "",
+            ""
           ],
           [
-            "Oliver",
-            "Ryan"
+            "",
+            ""
           ]
         ],
         [
           [
-            "Bailey",
-            "Jamie"
+            "",
+            ""
           ],
           [
-            "Evie",
-            "Will"
+            "",
+            ""
           ]
         ]
       ]
     }
   ],
   "activeGame": 0,
-  "updated": "2026-08-10T16:04:21.817Z"
+  "updated": "2026-08-11T14:05:08.760Z"
 }
