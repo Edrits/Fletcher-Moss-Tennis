@@ -173,15 +173,47 @@ export async function joinAtomic({ token, displayBase, limit, at }) {
   }
 }
 
-// Removing by exact stored value is what produces the cascade: LREM shifts everything
+// Removing by NAME, not by position.
+//
+// Positions shift the instant anybody else leaves, so an admin screen that is even a few
+// seconds stale would take off the wrong person. Display names are unique by construction,
+// because the join script disambiguates clashes, which makes them a safe key.
+//
+// Removing by exact stored value is also what produces the cascade: LREM shifts everything
 // below up by one, so sub 1 becomes main 16 with no separate promotion step.
-export async function removeAt(position) {
+export async function removeByNames(names) {
+  const wanted = new Set((names || []).map(n => String(n).trim().toLowerCase()).filter(Boolean));
+  if (!wanted.size) return { removed: [], missing: [] };
+
   const items = await command(['LRANGE', KEYS.queue, 0, -1]);
-  if (!Array.isArray(items) || position < 1 || position > items.length) {
-    return { error: 'That person is no longer on the list.' };
+  if (!Array.isArray(items)) return { removed: [], missing: [...wanted] };
+
+  const removed = [];
+  for (const raw of items) {
+    let entry;
+    try { entry = JSON.parse(raw); } catch { continue; }
+    const key = String(entry.key || entry.name || '').toLowerCase();
+    if (wanted.has(key)) {
+      await command(['LREM', KEYS.queue, 1, raw]);
+      removed.push(entry.name);
+      wanted.delete(key);
+    }
   }
-  await command(['LREM', KEYS.queue, 1, items[position - 1]]);
-  return { ok: true };
+  return { removed, missing: [...wanted] };
+}
+
+// Crude per-caller throttle. The endpoint is public and unauthenticated, so without this
+// one script can take all 28 places in a couple of seconds at opening time, before any
+// member's thumb lands. INCR then EXPIRE on first hit keeps it to two commands.
+//
+// Keyed on the forwarded client IP. Several members on the same home wifi or on mobile
+// carrier NAT share an address, so the limit has to be loose enough not to catch a couple
+// of housemates signing up together.
+export async function hitRateLimit(bucket, id, limit, windowSeconds) {
+  const key = `fm:rate:${bucket}:${id}`;
+  const count = Number(await command(['INCR', key]));
+  if (count === 1) await command(['EXPIRE', key, windowSeconds]);
+  return { allowed: count <= limit, count };
 }
 
 export async function removeByToken(token) {

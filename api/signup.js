@@ -16,11 +16,12 @@
 // to the repo once, on reset.
 import {
   KEYS, isConfigured, describeCredentialEnv, hgetall, hset, lrangeJSON, del,
-  joinAtomic, removeAt, removeByToken
+  joinAtomic, removeByNames, removeByToken, hitRateLimit
 } from './_lib/redis.js';
+import { randomUUID } from 'node:crypto';
 import { archiveSession } from './_lib/archive.js';
 import {
-  DEFAULT_CAPACITY, MAX_SEEDS, nextSession, defaultOpensAt,
+  DEFAULT_CAPACITY, nextSession, defaultOpensAt, sessionEndsAt,
   validateName, shortenName, totalSlots, tierFor, viewModel
 } from './_lib/signup-core.js';
 
@@ -54,17 +55,38 @@ export default async function handler(req, res) {
 
   try {
     if (req.method === 'GET') {
-      return res.status(200).json(await readState(now, req.headers['x-signup-token'] || null));
+      // Every GET costs two Redis commands, and the page polls while it is open. Thirty
+      // members watching the list around opening time is thousands of commands in half an
+      // hour, which is enough to run into the Upstash daily allowance and take the list
+      // down for everyone. A few seconds of caching removes almost all of it, and the
+      // list simply cannot move faster than people can read it anyway.
+      //
+      // Only cache the anonymous view. A response carrying somebody's own `mine` flags
+      // must never be handed to the next caller.
+      const myToken = req.headers['x-signup-token'] || null;
+      if (!myToken) res.setHeader('Cache-Control', 'public, max-age=5, s-maxage=5');
+      else res.setHeader('Cache-Control', 'private, no-store');
+      return res.status(200).json(await readState(now, myToken));
     }
 
     if (req.method !== 'POST') {
       return res.status(405).json({ error: 'Method not allowed' });
     }
 
-    const { action, name, token, password, date, label, opensAt, position, capacity } = req.body || {};
+    const { action, name, names, token, password, date, label, opensAt, capacity, organiser } = req.body || {};
 
     // ── Member actions, no password ──────────────────────────────────────────────
     if (action === 'join') {
+      // Loose enough for a few people on the same wifi, tight enough that a script
+      // cannot swallow the list. Genuine members join once.
+      const gateCheck = await hitRateLimit('join', clientId(req), 8, 3600);
+      if (!gateCheck.allowed) {
+        return res.status(429).json({
+          ok: false, error: 'too_many',
+          message: 'Too many sign-up attempts from this connection. Wait a little and try again.'
+        });
+      }
+
       const meta = await hgetall(KEYS.meta);
       const gate = openState(meta, now);
       if (!gate.open) return res.status(200).json({ ok: false, error: 'not_open', message: gate.message });
@@ -104,6 +126,12 @@ export default async function handler(req, res) {
     if (!ADMIN_PASSWORD) {
       return res.status(500).json({ error: 'Server is missing ADMIN_PASSWORD configuration' });
     }
+    // One shared, human-chosen password with an unlimited-rate check is a dictionary
+    // attack waiting to happen, and CORS is open so it can be driven from any page.
+    const pwTries = await hitRateLimit('admin', clientId(req), 10, 900);
+    if (!pwTries.allowed) {
+      return res.status(429).json({ error: 'Too many attempts. Wait fifteen minutes and try again.' });
+    }
     if (password !== ADMIN_PASSWORD) {
       return res.status(401).json({ error: 'Incorrect password' });
     }
@@ -112,11 +140,46 @@ export default async function handler(req, res) {
       return res.status(200).json({ valid: true });
     }
 
+
     // Opens the next session. Archives whatever the last one held before clearing, so the
     // record survives even though the live list does not.
     if (action === 'open') {
       const previous = await hgetall(KEYS.meta);
       const previousEntries = await lrangeJSON(KEYS.queue);
+
+      const slot = nextSession(now);
+      const useDate = date || (slot && slot.date);
+      if (!useDate) return res.status(400).json({ error: 'No upcoming session found' });
+      const useLabel = label || (slot && slot.label) || '';
+      const useOpensAt = opensAt || defaultOpensAt(useDate).toISOString();
+      const cap = normaliseCapacity(capacity) || DEFAULT_CAPACITY;
+
+      // Validate BEFORE anything is destroyed. This used to run after the wipe, so a
+      // rejected organiser name left the old list archived and gone and the new session
+      // live with nobody at position 1, while the admin was told the name was invalid and
+      // reasonably assumed nothing had happened.
+      let organiserDisplay = '';
+      if (organiser) {
+        const check = validateName(organiser);
+        if (!check.ok) return res.status(400).json({ error: `Organiser name: ${check.error}` });
+        organiserDisplay = shortenName(check.name);
+      }
+
+      // Re-opening the session that is already live would archive and delete everyone who
+      // has already tapped, and the date box is pre-filled with that very date, so an
+      // admin correcting a typo could wipe the list. Treat it as an edit instead.
+      if (previous.date && previous.date === useDate && previousEntries.length) {
+        await hset(KEYS.meta, {
+          label: useLabel, opensAt: useOpensAt, state: 'open',
+          endsAt: endsAtFor(useDate)
+        });
+        return res.status(200).json({
+          ok: true, edited: true,
+          message: 'That session was already open, so the details were updated and the list left alone.',
+          ...(await readState(now, null))
+        });
+      }
+
       if (previous.date && previousEntries.length) {
         const archived = await archiveSession({
           date: previous.date,
@@ -129,53 +192,76 @@ export default async function handler(req, res) {
         if (!archived.ok) return res.status(502).json({ error: `Could not archive the last session: ${archived.error}` });
       }
 
-      const slot = nextSession(now);
-      const useDate = date || (slot && slot.date);
-      if (!useDate) return res.status(400).json({ error: 'No upcoming session found' });
-      const useLabel = label || (slot && slot.label) || '';
-      const useOpensAt = opensAt || defaultOpensAt(useDate).toISOString();
-      const cap = normaliseCapacity(capacity) || DEFAULT_CAPACITY;
-
       await del(KEYS.queue, KEYS.meta);
       await hset(KEYS.meta, {
         date: useDate, label: useLabel, opensAt: useOpensAt,
-        state: 'open', seeds: '0', capacity: JSON.stringify(cap)
+        state: 'open', seeds: '0', capacity: JSON.stringify(cap),
+        organiser: '', endsAt: endsAtFor(useDate)
       });
+
+      // Whoever is running the session takes position 1. Added here, against an empty
+      // queue, so they are first before anybody can tap. Not protected from removal:
+      // if the organiser changes, take them off and add the new one.
+      if (organiserDisplay) {
+        const seated = await joinAtomic({
+          // Must be unguessable. An earlier version used `organiser:<date>`, and the date
+          // is published in every public GET, so anyone could post a leave with that token
+          // and knock whoever was running the session off the list.
+          token: `organiser:${randomUUID()}`,
+          displayBase: organiserDisplay,
+          limit: totalSlots(cap),
+          at: now.toISOString()
+        });
+        // Record the name that actually landed, so the "Running today" tag matches a real
+        // row rather than pointing at nobody.
+        await hset(KEYS.meta, { organiser: seated.error ? '' : seated.name });
+      }
+
       return res.status(200).json({ ok: true, ...(await readState(now, null)) });
     }
 
-    // Admins may take a few places before the button goes live. Capped so a real race
-    // remains for everyone else.
-    if (action === 'seed') {
+    // The organiser can put someone on the list at any point, before or after the button
+    // goes live. Added to the END of the queue, so it never jumps anyone who has already
+    // tapped. `seed` is accepted as well as `add` so older callers keep working.
+    if (action === 'add' || action === 'seed') {
       const meta = await hgetall(KEYS.meta);
       if (!meta.date) return res.status(400).json({ error: 'Open a session first' });
-      const used = Number(meta.seeds || 0);
-      if (used >= MAX_SEEDS) {
-        return res.status(400).json({ error: `Only ${MAX_SEEDS} places can be reserved before opening` });
-      }
-      if (openState(meta, now).open) {
-        return res.status(400).json({ error: 'Sign-up is already open, so places can no longer be reserved' });
-      }
       const check = validateName(name);
       if (!check.ok) return res.status(400).json({ error: check.error });
 
       const cap = parseCapacity(meta);
+      const used = Number(meta.seeds || 0);
       const result = await joinAtomic({
-        token: `seed:${used + 1}:${Date.now()}`,
+        token: `admin:${used + 1}:${now.getTime()}`,
         displayBase: shortenName(check.name),
         limit: totalSlots(cap),
         at: now.toISOString()
       });
-      if (result.error) return res.status(400).json({ error: JOIN_ERRORS[result.error] || 'Could not reserve that place' });
+      if (result.error) {
+        return res.status(400).json({ error: JOIN_ERRORS[result.error] || 'Could not add that person' });
+      }
 
       await hset(KEYS.meta, { seeds: String(used + 1) });
-      return res.status(200).json({ ok: true, position: result.position, name: result.name });
+      return res.status(200).json({
+        ok: true, position: result.position, name: result.name,
+        tier: tierFor(result.position, cap)
+      });
     }
 
+    // Remove one person or several in a single call. Keyed on NAME rather than position,
+    // because positions shift the moment anyone leaves and an admin screen a few seconds
+    // out of date would otherwise take off the wrong person.
     if (action === 'remove') {
-      const out = await removeAt(Number(position));
-      if (out.error) return res.status(400).json({ error: out.error });
-      return res.status(200).json({ ok: true });
+      const wanted = Array.isArray(names) ? names : (name ? [name] : []);
+      if (!wanted.length) return res.status(400).json({ error: 'No names given to remove' });
+
+      const out = await removeByNames(wanted);
+      if (!out.removed.length) {
+        return res.status(400).json({
+          error: 'Nobody on the list matched those names. The list may have changed, try refreshing.'
+        });
+      }
+      return res.status(200).json({ ok: true, removed: out.removed, missing: out.missing });
     }
 
     // Archive and clear without opening the next one.
@@ -200,6 +286,19 @@ export default async function handler(req, res) {
   }
 }
 
+function endsAtFor(dateStr) {
+  const end = sessionEndsAt(dateStr);
+  return end ? end.toISOString() : '';
+}
+
+// Vercel puts the real caller at the front of x-forwarded-for. Anything absent falls back
+// to a shared bucket, which throttles a little too eagerly rather than not at all.
+function clientId(req) {
+  const fwd = req.headers['x-forwarded-for'];
+  const first = Array.isArray(fwd) ? fwd[0] : String(fwd || '').split(',')[0];
+  return (first || req.headers['x-real-ip'] || 'unknown').trim().slice(0, 45);
+}
+
 async function readState(now, myToken) {
   const [meta, entries] = await Promise.all([hgetall(KEYS.meta), lrangeJSON(KEYS.queue)]);
   return viewModel({ meta: { ...meta, capacity: parseCapacity(meta) }, entries, now, myToken });
@@ -212,6 +311,14 @@ function openState(meta, now) {
   if (meta.state !== 'open') return { open: false, message: 'Sign-up is not open yet.' };
   if (meta.opensAt && now < new Date(meta.opensAt)) {
     return { open: false, message: 'Sign-up has not opened yet.' };
+  }
+  // A played session must stop taking names even if nobody reset it. Otherwise a tap on
+  // Wednesday joins the waiting list for Monday's game.
+  if (meta.endsAt) {
+    const endsAt = new Date(meta.endsAt);
+    if (!Number.isNaN(endsAt.getTime()) && now >= endsAt) {
+      return { open: false, message: 'That session has finished. Sign-up for the next one opens the night before.' };
+    }
   }
   return { open: true };
 }

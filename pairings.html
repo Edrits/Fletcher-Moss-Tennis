@@ -191,6 +191,7 @@
         }
         .paste-box:focus { outline: none; border-color: var(--green-600); background: var(--paper-0); }
         .paste-hint { font-size: 11.5px; color: var(--text-muted); margin-top: 6px; margin-bottom: 12px; }
+        .paste-hint a { color: var(--text-link); font-weight: 700; }
 
         .divider { display: flex; align-items: center; gap: 10px; margin: 14px 0; color: var(--text-muted); font-size: 12px; font-weight: 600; }
         .divider::before, .divider::after { content: ''; flex: 1; height: 1px; background: var(--border-subtle); }
@@ -249,6 +250,9 @@
             margin-top: 10px;
         }
         .generate-btn:hover { background: var(--green-700); transform: translateY(-2px); box-shadow: var(--shadow-md); }
+        .generate-btn:disabled, .generate-btn:disabled:hover {
+            background: var(--ink-300); cursor: default; transform: none; box-shadow: none;
+        }
         .val-msg { font-size: 13px; color: var(--color-alert); font-weight: 600; margin-top: 8px; display: none; }
 
         .screen-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; flex-wrap: wrap; gap: 8px; }
@@ -414,18 +418,22 @@
 
         <div id="setup-screen" style="display:none;">
             <div class="card">
-                <h3>Paste or type today's players</h3>
-                <p>Paste a list from WhatsApp, one name per line, or use the numbered slots below.</p>
+                <h3>Today's players</h3>
+                <p>Start from the sign-up list. Pasting from WhatsApp still works if you need it.</p>
+
+                <button class="generate-btn" style="margin-top:0" id="btn-load-signup" onclick="loadFromSignup()">Fill the list from today's sign-up</button>
+                <p class="paste-hint">
+                    <span id="signup-load-msg">Takes the 16 main players and the 2 subs who signed up and replaces the list below. Anyone on the waiting list is left out.</span>
+                    <a href="signup.html">See who has signed up</a>
+                </p>
+
+                <div class="divider">or paste a list from WhatsApp</div>
+
                 <textarea class="paste-box" id="paste-box" placeholder="Ed&#10;Sofia&#10;Will&#10;Adam&#10;..."></textarea>
-                <p class="paste-hint">Names will be added to the list below in order. Subs go at the bottom and sit out game 1.</p>
+                <p class="paste-hint">One name per line. Names will be added to the list below in order. Subs go at the bottom and sit out game 1.</p>
                 <button class="add-player-btn" style="margin-bottom:0" onclick="applyPaste()">✓ Apply pasted names</button>
 
-                <div class="divider">or load who signed up</div>
-
-                <button class="add-player-btn" style="margin-bottom:0" onclick="loadFromSignup()">↓ Load from sign-up</button>
-                <p class="paste-hint" id="signup-load-msg">Brings across the 16 main players and the 2 subs from the sign-up page.</p>
-
-                <div class="divider">or edit individually</div>
+                <div class="divider">check and edit the list</div>
 
                 <div class="player-input-area" id="player-inputs"></div>
                 <button class="add-player-btn" onclick="addPlayer()">+ Add player</button>
@@ -452,7 +460,7 @@
                         </div>
                     </div>
                 </div>
-                <button class="generate-btn" onclick="generate()">Generate Pairings →</button>
+                <button class="generate-btn" id="btn-generate" onclick="generate()">Generate Pairings →</button>
             </div>
         </div>
 
@@ -563,22 +571,53 @@
             renderPlayerInputs();
         }
 
+        // Name the session the way the organiser would say it out loud, e.g.
+        // "Thursday 6:00 to 8:00 PM, 13 August". Either half may be missing.
+        function describeSignupSession(data) {
+            const parts = [];
+            if (data.label) parts.push(data.label);
+            if (data.date) {
+                const d = new Date(data.date + 'T00:00:00');
+                parts.push(isNaN(d) ? data.date : d.toLocaleDateString('en-GB', { day: 'numeric', month: 'long' }));
+            }
+            return parts.join(', ') || 'the next session';
+        }
+
+        function plural(n, word) { return `${n} ${word}${n === 1 ? '' : 's'}`; }
+
         // Pull today's list straight off the sign-up page, so the organiser does not have to
         // copy names out of WhatsApp by hand. The two subs come across flagged as subs, which
         // is what generate() already uses to decide who sits out first.
         async function loadFromSignup() {
+            const btn = document.getElementById('btn-load-signup');
             const msg = document.getElementById('signup-load-msg');
             const say = text => { msg.textContent = text; };
-            say('Loading the sign-up list...');
+
+            // This replaces the whole list, so check first if there is anything worth keeping.
+            // Blank rows do not count, an untouched or empty list has nothing to lose.
+            const alreadyThere = players.filter(p => p.name.trim()).length;
+            if (alreadyThere) {
+                const ok = confirm(`This clears the ${plural(alreadyThere, 'name')} in your list and puts today's sign-up in place instead. Carry on?`);
+                if (!ok) { say('Left your list as it was. Nothing was loaded.'); return; }
+            }
+
+            // Locked while the request is in flight, so a second tap cannot start a second load
+            const label = btn.textContent;
+            btn.disabled = true;
+            btn.textContent = 'Loading…';
+            say('Checking who has signed up.');
             try {
                 const res = await fetch('/api/signup');
-                if (!res.ok) throw new Error('Could not reach the sign-up list');
+                if (!res.ok) throw new Error('The sign-up list returned ' + res.status);
                 const data = await res.json();
+                const when = describeSignupSession(data);
 
                 const main = (data.main || []).map(p => ({ name: p.name, sub: false }));
                 const subs = (data.subs || []).map(p => ({ name: p.name, sub: true }));
                 if (!main.length && !subs.length) {
-                    say('Nobody has signed up for the next session yet.');
+                    say(data.state === 'pending'
+                        ? `Sign-up for ${when} has not opened yet, so there is nobody to load. Try again once it opens, or paste the names in below.`
+                        : `Nobody has signed up yet for ${when}. Try again later, or paste the names in below.`);
                     return;
                 }
 
@@ -586,12 +625,21 @@
                 // turn up, and adding them would change who sits out.
                 players = [...main, ...subs];
                 renderPlayerInputs();
+
                 const waiting = (data.waitlist || []).length;
-                say(`Loaded ${main.length} players and ${subs.length} subs from ${data.label || 'the next session'}.`
-                    + (waiting ? ` ${waiting} more are on the waiting list and were not added.` : ''));
+                const subCount = subs.length ? plural(subs.length, 'sub') : 'no subs';
+                let text = `Loaded ${plural(main.length, 'main player')} and ${subCount} for ${when}.`;
+                if (waiting) text += waiting === 1
+                    ? ` 1 person on the waiting list was not added, because they are not expected to turn up.`
+                    : ` ${waiting} people on the waiting list were not added, because they are not expected to turn up.`;
+                if (players.length < 4) text += ` That is not enough for a session yet. You need at least 4, so add the others by hand below.`;
+                say(text);
             } catch (err) {
                 console.error('Sign-up load failed:', err);
-                say('Could not load the sign-up list. Paste the names in instead.');
+                say('Could not reach the sign-up list. Check your connection and try again, or paste the names in below instead.');
+            } finally {
+                btn.disabled = false;
+                btn.textContent = label;
             }
         }
 
@@ -600,7 +648,7 @@
             document.getElementById('player-inputs').innerHTML = players.map((p, i) => `
                 <div class="player-row">
                     <span class="pos">${i+1}</span>
-                    <input type="text" value="${p.name}" placeholder="Player name"
+                    <input type="text" value="${escapeHtml(p.name)}" placeholder="Player name"
                         oninput="players[${i}].name=this.value" />
                     <button class="sub-toggle${p.sub?' is-sub':''}" onclick="toggleSub(${i})">
                         ${p.sub ? 'Sub ✓' : 'Sub?'}
@@ -732,7 +780,8 @@
                 newGames.push({ game: g+1, sitters, courts });
             }
 
-            const btn = document.querySelector('.generate-btn');
+            // By id, not by class: the sign-up loader above uses .generate-btn too
+            const btn = document.getElementById('btn-generate');
             btn.disabled = true;
             btn.textContent = 'Saving…';
 
@@ -934,6 +983,23 @@
             }
         }
 
+        // Player names reach this page from the paste box, where an organiser copies a list
+        // straight out of WhatsApp. Nothing validates that text, and the names are written
+        // into markup with innerHTML, so a crafted "name" would run as script for every
+        // member who opens the board, and would be committed to the public repo in
+        // pairings.json. Everything derived from a name goes through these.
+        function escapeHtml(value) {
+            return String(value == null ? '' : value)
+                .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+        }
+
+        // For a name sitting inside an inline onclick, which is a JS string inside an HTML
+        // attribute. Neutralise the JS quoting first, then the HTML.
+        function escapeArg(value) {
+            return escapeHtml(String(value == null ? '' : value).replace(/\\/g, '\\\\').replace(/'/g, "\\'"));
+        }
+
         // ── Render ──
         function renderGameScreen() {
             const allNames = players.filter(p=>p.name.trim()).map(p=>p.name.trim());
@@ -955,7 +1021,7 @@
                 document.getElementById('sitting-banner').innerHTML =
                     `<div class="sitting-banner has-sitters">
                         <span class="s-label">Sitting Out</span>
-                        ${g.sitters.map((p,si)=>isBall(p)?'':`<span class="sitting-pill" data-loc="sit-${si}" onclick="renamePlayerOnFly('${p}')" title="Drag to swap, or click to rename">${p}</span>`).join('')}
+                        ${g.sitters.map((p,si)=>isBall(p)?'':`<span class="sitting-pill" data-loc="sit-${si}" onclick="renamePlayerOnFly('${escapeArg(p)}')" title="Drag to swap, or click to rename">${escapeHtml(p)}</span>`).join('')}
                      </div>`;
             } else {
                 document.getElementById('sitting-banner').innerHTML =
@@ -976,14 +1042,14 @@
                                 <div class="t-lbl">Team A</div>
                                 ${t1.map((p,pi)=>isBall(p)
                                     ? `<div class="pp ball" data-loc="c${ci}-t0-p${pi}" title="Empty seat, drag a player here">${BALL}</div>`
-                                    : `<div class="pp a" data-loc="c${ci}-t0-p${pi}" onclick="renamePlayerOnFly('${p}')" title="Drag to swap, or click to rename">${p}</div>`).join('')}
+                                    : `<div class="pp a" data-loc="c${ci}-t0-p${pi}" onclick="renamePlayerOnFly('${escapeArg(p)}')" title="Drag to swap, or click to rename">${escapeHtml(p)}</div>`).join('')}
                             </div>
                             <div class="vs-col"><div class="vs">VS</div></div>
                             <div class="team">
                                 <div class="t-lbl">Team B</div>
                                 ${t2.map((p,pi)=>isBall(p)
                                     ? `<div class="pp ball" data-loc="c${ci}-t1-p${pi}" title="Empty seat, drag a player here">${BALL}</div>`
-                                    : `<div class="pp" data-loc="c${ci}-t1-p${pi}" onclick="renamePlayerOnFly('${p}')" style="background:${acc}18; border:1px solid ${acc}40; color:${acc};" title="Drag to swap, or click to rename">${p}</div>`).join('')}
+                                    : `<div class="pp" data-loc="c${ci}-t1-p${pi}" onclick="renamePlayerOnFly('${escapeArg(p)}')" style="background:${acc}18; border:1px solid ${acc}40; color:${acc};" title="Drag to swap, or click to rename">${escapeHtml(p)}</div>`).join('')}
                             </div>
                         </div>
                     </div>`;
@@ -996,7 +1062,7 @@
                 const isOut = g.sitters.includes(p);
                 const c = counts[p];
                 const col = c>=max?'var(--c1)':c>=max-1?'var(--c2)':'var(--amber)';
-                return `<span class="tp${isOut?' out':''}"><span class="tn" onclick="renamePlayerOnFly('${p}')" style="cursor:pointer; border-bottom:1px dotted #666;" title="Click to swap player">${p}</span><span class="tc" style="color:${col}">${c}</span></span>`;
+                return `<span class="tp${isOut?' out':''}"><span class="tn" onclick="renamePlayerOnFly('${escapeArg(p)}')" style="cursor:pointer; border-bottom:1px dotted #666;" title="Click to swap player">${escapeHtml(p)}</span><span class="tc" style="color:${col}">${c}</span></span>`;
             }).join('');
         }
 

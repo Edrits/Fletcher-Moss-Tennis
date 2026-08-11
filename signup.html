@@ -299,6 +299,22 @@
         .entry.is-sub { background: var(--color-sub-bg); border-color: rgba(231,183,104,.55); }
         .entry.is-sub .entry-name { color: var(--color-sub); }
         .entry.is-wait { background: var(--paper-0); border-style: dashed; }
+
+        /* Marks whoever is running the session, always place 1. */
+        .entry .entry-tag.organiser { background: var(--green-800); color: #fff; border-color: var(--green-800); }
+
+        /* Only rendered while the organiser is unlocked. Sized to a comfortable thumb
+           target rather than a tiny glyph, since this gets used on a phone courtside. */
+        .entry-x {
+            margin-left: auto; flex-shrink: 0;
+            width: 30px; height: 30px; line-height: 1; padding: 0;
+            display: inline-flex; align-items: center; justify-content: center;
+            font-size: 19px; font-weight: 700; cursor: pointer;
+            background: none; color: var(--color-alert);
+            border: 1px solid rgba(168,60,45,.4); border-radius: var(--radius-sm);
+            transition: background var(--duration-base) var(--ease-standard);
+        }
+        .entry-x:hover, .entry-x:active { background: var(--color-alert); color: #fff; }
         .entry.is-wait .entry-name { color: var(--text-muted); }
 
         .empty-note { font-size: 13px; color: var(--text-muted); font-style: italic; padding: 6px 2px; }
@@ -520,7 +536,8 @@
                     <input class="text-input" id="adm-opens" type="datetime-local" style="min-width:190px;">
                 </div>
                 <input class="text-input" id="adm-label" type="text" maxlength="60" placeholder="Thursday 6:00 to 8:00 PM">
-                <p class="admin-note">The date is the session itself. The second box is when the button goes live, usually 7:00 PM the night before.</p>
+                <input class="text-input" id="adm-organiser" type="text" maxlength="40" placeholder="Who is running it" style="margin-top:8px;">
+                <p class="admin-note">The date is the session itself. The second box is when the button goes live, usually 7:00 PM the night before. Whoever is running it takes place 1 automatically.</p>
                 <button class="edit-btn primary" style="margin-top:10px;" onclick="adminOpen()">Open sign-up</button>
             </div>
 
@@ -532,16 +549,12 @@
                     <input class="text-input" id="adm-seed" type="text" maxlength="40" placeholder="Name">
                     <button class="edit-btn" onclick="adminSeed()">Add to list</button>
                 </div>
-                <p class="admin-note">For people who cannot use the site. Up to four names.</p>
+                <p class="admin-note">For anyone who cannot use the site. They go on the end, so nobody who has already tapped gets jumped.</p>
             </div>
 
             <div class="admin-block">
-                <label for="adm-remove">Remove by number</label>
-                <div class="admin-row">
-                    <input class="text-input" id="adm-remove" type="number" min="1" step="1" placeholder="Position" style="max-width:140px;">
-                    <button class="edit-btn danger" onclick="adminRemove()">Remove</button>
-                </div>
-                <p class="admin-note">Everyone below that number moves up one.</p>
+                <label>Remove people</label>
+                <p class="admin-note" style="margin-top:0;">While you are unlocked, every name has an <strong>&times;</strong> beside it. Tap it to take that person off. Everyone below moves up straight away, so subs and the waiting list re-shuffle themselves.</p>
             </div>
 
             <div class="admin-block">
@@ -601,7 +614,7 @@
         const USE_MOCK = new URLSearchParams(location.search).has('mock');
 
         // ── State ──
-        const POLL_MS = 10000;          // how often to re-read the list while the page is on screen
+        const POLL_MS = 25000;          // how often to re-read the list while the page is on screen
         const OPENING_RETRY_MS = 3000;  // faster re-checks in the seconds around opensAt
 
         let current = null;      // the last good view model from GET /api/signup
@@ -662,7 +675,11 @@
             server_error: 'The sign-up list could not be reached. Please try again in a moment.'
         };
 
-        function errorCopy(code) {
+        // `serverMessage` is preferred over the canned copy for invalid_name, because the
+        // server knows WHY a name was refused and the generic line just repeats the
+        // instruction the member already followed.
+        function errorCopy(code, serverMessage) {
+            if (serverMessage && /\s/.test(String(serverMessage))) return String(serverMessage);
             if (!code) return 'Something went wrong. Please try again.';
             if (ERROR_COPY[code]) return ERROR_COPY[code];
             // The server may send a ready-made sentence rather than a code
@@ -865,13 +882,49 @@
                 return;
             }
             const cls = tier === 'subs' ? ' is-sub' : tier === 'waitlist' ? ' is-wait' : '';
+            const admin = isAdmin();
             el.innerHTML = rows.map(function (r) {
+                const isOrganiser = current && current.organiser && r.name === current.organiser;
+                // Removal is keyed on the name, never the position. Positions shift the
+                // moment anyone leaves, so a screen a few seconds stale would otherwise
+                // take off the wrong person.
+                const x = admin
+                    ? '<button class="entry-x" title="Remove ' + escapeHtml(r.name) + '"' +
+                      ' aria-label="Remove ' + escapeHtml(r.name) + '"' +
+                      ' onclick="removePerson(\'' + escapeAttr(r.name) + '\')">&times;</button>'
+                    : '';
                 return '<div class="entry' + cls + (r.mine ? ' mine' : '') + '">' +
                        '<span class="pos-badge">' + escapeHtml(r.position) + '</span>' +
                        '<span class="entry-name">' + escapeHtml(r.name) + '</span>' +
+                       (isOrganiser ? '<span class="entry-tag organiser">Running today</span>' : '') +
                        (r.mine ? '<span class="entry-tag">You</span>' : '') +
+                       x +
                        '</div>';
             }).join('');
+        }
+
+        function isAdmin() {
+            try { return !!sessionStorage.getItem('pw'); } catch (err) { return false; }
+        }
+
+        // Names go into an inline onclick, so quotes and backslashes have to be neutralised
+        // as JS string content before the HTML escaping runs.
+        function escapeAttr(value) {
+            return escapeHtml(String(value == null ? '' : value).replace(/\\/g, '\\\\').replace(/'/g, "\\'"));
+        }
+
+        // One tap removes one person, so several can be cleared quickly without a
+        // select-then-confirm dance. The endpoint also accepts a list of names, so a
+        // bulk action can be added later without touching the server.
+        async function removePerson(name) {
+            if (!isAdmin()) return;
+            const res = await adminPost({ action: 'remove', names: [name] });
+            if (res && res.ok) {
+                showMsg('admin-msg', 'Removed ' + (res.removed || []).join(', ') + '. Everyone below moved up.', 'good');
+            } else {
+                showMsg('admin-msg', (res && res.error) || 'Could not remove that person.', 'bad');
+            }
+            await refresh();
         }
 
         function escapeHtml(value) {
@@ -938,7 +991,7 @@
                     rememberName(name);
                     showMsg('join-msg', 'You are in. ' + placeSentence(res.position, res.tier), 'good');
                 } else {
-                    showMsg('join-msg', errorCopy(res && res.error), 'bad');
+                    showMsg('join-msg', errorCopy(res && res.error, res && res.message), 'bad');
                 }
             } catch (err) {
                 console.error('Join failed:', err);
@@ -969,7 +1022,7 @@
                 if (res && res.ok) {
                     showMsg('join-msg', 'Your place has been given up. Thanks for letting everyone know.', 'info');
                 } else {
-                    showMsg('join-msg', errorCopy(res && res.error), 'bad');
+                    showMsg('join-msg', errorCopy(res && res.error, res && res.message), 'bad');
                 }
             } catch (err) {
                 console.error('Leave failed:', err);
@@ -1027,6 +1080,9 @@
             document.getElementById('btn-unlock').style.display = on ? 'none' : 'inline-block';
             document.getElementById('btn-lock').style.display = on ? 'inline-block' : 'none';
             if (!on) showMsg('admin-msg', '', null);
+            // The × beside each name only exists while unlocked, so the lists have to be
+            // drawn again whenever admin mode is turned on or off.
+            if (current) render();
         }
 
         // Sensible defaults: tomorrow's session, opening at 7:00 PM tonight
@@ -1062,7 +1118,7 @@
                     alert('That password was not right.');
                     return null;
                 }
-                showMsg('admin-msg', errorCopy(res && res.error), 'bad');
+                showMsg('admin-msg', errorCopy(res && res.error, res && res.message), 'bad');
                 return null;
             } catch (err) {
                 console.error('Admin action failed:', err);
@@ -1086,14 +1142,17 @@
                 showMsg('admin-msg', 'That opening time could not be read. Please set it again.', 'bad');
                 return;
             }
+            const organiser = document.getElementById('adm-organiser').value.trim();
             const res = await adminPost({
                 action: 'open',
                 date: date,
                 label: label || 'Club session',
-                opensAt: opensAt.toISOString()
+                opensAt: opensAt.toISOString(),
+                organiser: organiser
             });
             if (res) {
-                showMsg('admin-msg', 'Sign-up is set. The button goes live at ' + formatTime(opensAt) + '.', 'good');
+                showMsg('admin-msg', 'Sign-up is set. The button goes live at ' + formatTime(opensAt) + '.'
+                    + (organiser ? ' ' + organiser + ' is place 1.' : ''), 'good');
                 await refresh();
             }
         }
@@ -1110,18 +1169,10 @@
             }
         }
 
-        async function adminRemove() {
-            const input = document.getElementById('adm-remove');
-            const position = parseInt(input.value, 10);
-            if (!position || position < 1) { showMsg('admin-msg', 'Type the number of the person to remove.', 'bad'); return; }
-            if (!confirm('Remove number ' + position + '? Everyone below moves up one.')) return;
-            const res = await adminPost({ action: 'remove', position: position });
-            if (res) {
-                input.value = '';
-                showMsg('admin-msg', 'Number ' + position + ' removed and the list has closed up.', 'good');
-                await refresh();
-            }
-        }
+        // Removal now happens from the × beside each name, in removePerson(), keyed on the
+        // name rather than the position. The old remove-by-number box is gone: positions
+        // move whenever anybody leaves, so typing a number off a slightly stale screen
+        // could take off the wrong person.
 
         async function adminReset() {
             if (!confirm('Clear the whole list? Every name goes and sign-up closes. There is no undo.')) return;
@@ -1321,8 +1372,17 @@
                 return { ok: true, position: mockStore.entries.length };
             }
             if (body.action === 'remove') {
-                mockStore.entries.splice(body.position - 1, 1);
-                return { ok: true };
+                // Mirror the server: keyed on name, and several at once.
+                const wanted = (body.names || (body.name ? [body.name] : [])).map(function (n) {
+                    return String(n).toLowerCase();
+                });
+                const removed = [];
+                mockStore.entries = mockStore.entries.filter(function (e) {
+                    if (wanted.indexOf(e.name.toLowerCase()) !== -1) { removed.push(e.name); return false; }
+                    return true;
+                });
+                if (!removed.length) return { ok: false, error: 'Nobody on the list matched those names.' };
+                return { ok: true, removed: removed, missing: [] };
             }
             if (body.action === 'reset') {
                 mockStore.entries = [];

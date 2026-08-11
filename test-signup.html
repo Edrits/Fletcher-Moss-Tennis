@@ -156,7 +156,7 @@ footer.foot{
 
 <script type="module">
 import {
-  SCHEDULE, DEFAULT_CAPACITY, MAX_SEEDS, NAME_MAX,
+  SCHEDULE, DEFAULT_CAPACITY, NAME_MAX, sessionEndsAt,
   isoDate, nextSession, defaultOpensAt,
   normaliseName, validateName, shortenName, disambiguate,
   totalSlots, tierFor, splitEntries, viewModel
@@ -231,7 +231,17 @@ function joinAtomicSim(queue, { token, displayBase, limit, at: joinedAt }) {
 /* ---------------------------------------------------------------------------
    SCHEDULE and the capacity constants
 --------------------------------------------------------------------------- */
-group('Constants: SCHEDULE, DEFAULT_CAPACITY, MAX_SEEDS, NAME_MAX');
+group('Constants: SCHEDULE, DEFAULT_CAPACITY, NAME_MAX');
+
+// A full stop is legitimate in a name. The page's own placeholder is "e.g. Ed R." and the
+// site publishes "Sarah J.", so rejecting it turned members away with an error telling
+// them to type exactly what had just failed.
+check('accepts a trailing initial with a full stop', validateName('Ed R.').ok, true);
+check('accepts the published name format', validateName('Sarah J.').ok, true);
+check('still rejects digits', validateName('Ed 123').ok, false);
+check('still rejects links', validateName('http://x.com').ok, false);
+
+
 
 check('SCHEDULE holds three weekly sessions', SCHEDULE.length, 3);
 check('SCHEDULE days are Monday, Thursday, Saturday', SCHEDULE.map(s => s.day), [1, 4, 6]);
@@ -240,7 +250,6 @@ check('Monday label', SCHEDULE[0].label, 'Monday 6:00 to 8:00 PM');
 check('Thursday label', SCHEDULE[1].label, 'Thursday 6:00 to 8:00 PM');
 check('Saturday label', SCHEDULE[2].label, 'Saturday 11:00 AM to 2:00 PM');
 check('DEFAULT_CAPACITY is 16 main, 2 subs, 10 waitlist', DEFAULT_CAPACITY, { main: 16, subs: 2, waitlist: 10 });
-check('MAX_SEEDS is 4', MAX_SEEDS, 4);
 check('NAME_MAX is 30', NAME_MAX, 30);
 
 /* ---------------------------------------------------------------------------
@@ -350,7 +359,10 @@ check('rejects a name with a URL inside it', validateName('Visit https://spam.io
 check('rejects a bare domain', validateName('spam.io').ok, false);
 check('rejects an exclamation mark', validateName('John!').ok, false);
 check('rejects an underscore', validateName('John_Smith').ok, false);
-check('rejects a full stop', validateName('John Smith.').ok, false);
+check('rejects a trailing full stop after a full word', validateName('John Smith.').ok, false);
+check('rejects a bare domain even without digits', validateName('example.com').ok, false);
+check('accepts a single-letter initial', validateName('Ed R.').ok, true);
+check('accepts two initials', validateName('Ed R. J.').ok, true);
 check('rejects an at sign', validateName('John@club').ok, false);
 check('accepts an accented name', validateName('Renée').ok, true);
 check('returns the accented name unchanged', validateName('Renée').name, 'Renée');
@@ -544,6 +556,18 @@ const tokenEntries = Array.from({ length: 20 }, (_, i) => ({
 }));
 const MY = tokenEntries[16].token;              // position 17, the first sub
 const NOW = new Date('2026-08-13T09:00:00.000Z');
+
+group('Session end and closing');
+// A played session must stop advertising itself as open.
+check('sessionEndsAt uses the Thursday end hour', sessionEndsAt('2026-08-13').getHours(), 20);
+check('sessionEndsAt uses the Saturday end hour', sessionEndsAt('2026-08-15').getHours(), 14);
+truthy('a finished session reads as closed',
+  viewModel({ meta: { state: 'open', opensAt: '2020-01-01T00:00:00Z', endsAt: '2020-01-02T00:00:00Z' },
+              entries: [], now: NOW }).state === 'closed');
+truthy('a session still to come stays open',
+  viewModel({ meta: { state: 'open', opensAt: '2020-01-01T00:00:00Z', endsAt: '2999-01-01T00:00:00Z' },
+              entries: [], now: NOW }).state === 'open');
+
 
 const vm = viewModel({
   meta: {

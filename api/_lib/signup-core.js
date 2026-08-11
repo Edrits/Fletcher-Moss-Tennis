@@ -20,21 +20,40 @@ export const SCHEDULE = [
 // a public button being used to pile junk into the list.
 export const DEFAULT_CAPACITY = { main: 16, subs: 2, waitlist: 10 };
 
-// Admins may take a few places before the button goes live. Capped so that a real race
-// remains for the rest, rather than the list quietly becoming invitation-only.
-export const MAX_SEEDS = 4;
-
 export const NAME_MAX = 30;
 
 // Letters (including accented ones), spaces, hyphens and apostrophes. No digits and no
 // punctuation, which keeps URLs and spam text out of a repo that is public.
-const NAME_PATTERN = /^[\p{L}][\p{L} '’-]*$/u;
+// Checked per word rather than as one pattern, because a full stop has to be allowed in
+// exactly one place and nowhere else.
+//
+// It must be allowed: the site publishes names as "Sarah J." and the box suggests
+// "e.g. Ed R.", so refusing it turns members away with an error telling them to type the
+// very thing that just failed. It must not be allowed loose: "example.com" contains no
+// digits, so a blanket full stop would let links onto a public page and into a public repo.
+const WORD = /^[\p{L}][\p{L}'’-]*$/u;      // Ed, O'Brien, Anne-Marie, Renée
+const INITIAL = /^\p{L}\.$/u;              // R.  J.
+
+function isNameShaped(name) {
+  const words = name.split(' ');
+  return words.length > 0 && words.every(w => WORD.test(w) || INITIAL.test(w));
+}
 
 export function isoDate(d) {
   const y = d.getFullYear();
   const m = String(d.getMonth() + 1).padStart(2, '0');
   const day = String(d.getDate()).padStart(2, '0');
   return `${y}-${m}-${day}`;
+}
+
+// When a given session finishes, so a played session can stop advertising itself as open.
+// Without this, Monday's list still says "Open now" on Wednesday and accepts joins.
+export function sessionEndsAt(dateStr) {
+  const [y, m, d] = String(dateStr || '').split('-').map(Number);
+  if (!y || !m || !d) return null;
+  const day = new Date(y, m - 1, d);
+  const slot = SCHEDULE.find(s => s.day === day.getDay());
+  return new Date(y, m - 1, d, slot ? slot.endHour : 23, slot ? 0 : 59, 0, 0);
 }
 
 // The next session that has not yet finished. A session stays current until it ends, so
@@ -68,7 +87,7 @@ export function validateName(raw) {
   const name = normaliseName(raw);
   if (!name) return { ok: false, error: 'Please enter a name.' };
   if (name.length > NAME_MAX) return { ok: false, error: `Names must be ${NAME_MAX} characters or fewer.` };
-  if (!NAME_PATTERN.test(name)) return { ok: false, error: 'Please use letters only, no numbers or links.' };
+  if (!isNameShaped(name)) return { ok: false, error: 'Please use letters only, no numbers or links.' };
   return { ok: true, name };
 }
 
@@ -154,6 +173,12 @@ export function viewModel({ meta = {}, entries = [], now, myToken = null }) {
   if (state === 'open' && meta.opensAt && !opensAtValid) state = 'pending';
   else if (state === 'open' && opensAtValid && now < parsed) state = 'pending';
 
+  // A session that has been played is over, whether or not anyone remembered to reset it.
+  // Otherwise Monday's list still reads "Open now" on Wednesday, and a tap lands somebody
+  // on the waiting list for a game that already happened.
+  const endsAt = meta.endsAt ? new Date(meta.endsAt) : null;
+  if (endsAt && !Number.isNaN(endsAt.getTime()) && now >= endsAt) state = 'closed';
+
   const decorate = (e, i) => ({
     position: i + 1,
     name: e.name,
@@ -173,6 +198,8 @@ export function viewModel({ meta = {}, entries = [], now, myToken = null }) {
     date: meta.date || null,
     label: meta.label || null,
     opensAt: meta.opensAt || null,
+    // Whoever is running the session, so the page can mark them at the top of the list.
+    organiser: meta.organiser || null,
     serverTime: now.toISOString(),
     capacity,
     counts: {
