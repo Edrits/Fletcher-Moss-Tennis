@@ -401,6 +401,7 @@
             <a href="index.html#location" onclick="closeMobileNav()">Location</a>
             <a href="box-league.html" onclick="closeMobileNav()">FMST Singles League</a>
             <a href="pairings.html" onclick="closeMobileNav()">Court Pairings</a>
+            <a href="signup.html" onclick="closeMobileNav()">Session sign-up</a>
         </nav>
     </header>
 
@@ -418,6 +419,11 @@
                 <textarea class="paste-box" id="paste-box" placeholder="Ed&#10;Sofia&#10;Will&#10;Adam&#10;..."></textarea>
                 <p class="paste-hint">Names will be added to the list below in order. Subs go at the bottom and sit out game 1.</p>
                 <button class="add-player-btn" style="margin-bottom:0" onclick="applyPaste()">✓ Apply pasted names</button>
+
+                <div class="divider">or load who signed up</div>
+
+                <button class="add-player-btn" style="margin-bottom:0" onclick="loadFromSignup()">↓ Load from sign-up</button>
+                <p class="paste-hint" id="signup-load-msg">Brings across the 16 main players and the 2 subs from the sign-up page.</p>
 
                 <div class="divider">or edit individually</div>
 
@@ -555,6 +561,38 @@
             players = lines.map(name => ({ name, sub: false }));
             document.getElementById('paste-box').value = '';
             renderPlayerInputs();
+        }
+
+        // Pull today's list straight off the sign-up page, so the organiser does not have to
+        // copy names out of WhatsApp by hand. The two subs come across flagged as subs, which
+        // is what generate() already uses to decide who sits out first.
+        async function loadFromSignup() {
+            const msg = document.getElementById('signup-load-msg');
+            const say = text => { msg.textContent = text; };
+            say('Loading the sign-up list...');
+            try {
+                const res = await fetch('/api/signup');
+                if (!res.ok) throw new Error('Could not reach the sign-up list');
+                const data = await res.json();
+
+                const main = (data.main || []).map(p => ({ name: p.name, sub: false }));
+                const subs = (data.subs || []).map(p => ({ name: p.name, sub: true }));
+                if (!main.length && !subs.length) {
+                    say('Nobody has signed up for the next session yet.');
+                    return;
+                }
+
+                // The waiting list is deliberately left out. Those people are not expected to
+                // turn up, and adding them would change who sits out.
+                players = [...main, ...subs];
+                renderPlayerInputs();
+                const waiting = (data.waitlist || []).length;
+                say(`Loaded ${main.length} players and ${subs.length} subs from ${data.label || 'the next session'}.`
+                    + (waiting ? ` ${waiting} more are on the waiting list and were not added.` : ''));
+            } catch (err) {
+                console.error('Sign-up load failed:', err);
+                say('Could not load the sign-up list. Paste the names in instead.');
+            }
         }
 
         // ── Player list UI ──

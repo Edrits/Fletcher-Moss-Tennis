@@ -14,6 +14,8 @@ A static marketing/community website for Fletcher Moss Social Tennis Club, deplo
 
 `box-league.html` is the **FMST Singles League**. The file and route keep the old `box-league` name, only the product was renamed.
 
+`signup.html` is the session sign-up page. It does **not** use the GitHub-as-a-database pattern the other pages use. See "Session sign-up" below before changing it.
+
 ## Data flow
 
 Each data-backed page follows the same pattern: `<script>` in the HTML calls `fetch('/api/<name>')` on load to GET the current JSON, renders it, and POSTs updates back through the same endpoint. There is no database — `api/*.js` functions read and write the corresponding root-level JSON file (`noticeboard.json`, `boxleague.json`, `pairings.json`) in this repo using the GitHub Contents API, so every save creates a commit to this repo.
@@ -22,11 +24,30 @@ Each `api/*.js` handler requires `GIT_TOKEN` as a Vercel environment variable (a
 
 Write operations (POST) are gated by a shared admin password checked server-side inside each handler; GET requests are unauthenticated and public. `boxleague.js` additionally accepts an unauthenticated `submit_score` request type for players to record match results without the admin password.
 
+The admin password comes from the `ADMIN_PASSWORD` environment variable, not a literal in the source. It used to be hardcoded, and because this repo is public it was readable by anyone; that value is burned and must never be reused. Each handler returns a 500 if the variable is missing rather than falling through to an unauthenticated write.
+
 **Important operational caveat:** the live noticeboard, league and pairings backends each commit to `main` whenever someone uses the site, so `origin/main` frequently moves under you. Always `git pull --rebase origin main` before pushing (a plain push will often be rejected as non-fast-forward). These auto-commits only touch the JSON data files, so they rebase cleanly against code/markup changes.
 
 ### League scoring (domain logic in `api/boxleague.js`)
 
 `recalculateBox()` is the single source of truth for standings, re-run server-side after every change. Points: **3** for a win (walkovers included), **1** for playing and losing, **0** for a no-show. Matches store `winner` and an optional `noShow` (there is no game-score field — scores were removed). Players self-report results including walkovers; only roster edits and match deletion require the admin password. Leagues hold any number of players (blank admin rows are dropped).
+
+## Session sign-up (`signup.html`, `api/signup.js`)
+
+**This is the one feature that does not store its live state in the repo, and the exception is deliberate.** Sign-up opens at a set time the night before and everyone taps at once. The GitHub Contents API accepts one PUT per file version, so thirty simultaneous writers means one winner and twenty-nine conflicts, then twenty-eight, and so on: roughly 450 write attempts to seat thirty people, plus GitHub's secondary rate limits and a Vercel redeploy per commit. Do not "simplify" this back onto a JSON file in the repo.
+
+- **Live state: Upstash Redis**, via the Vercel marketplace integration. `api/_lib/redis.js` is a thin REST client and reads `KV_REST_API_URL` / `KV_REST_API_TOKEN` (or the `UPSTASH_REDIS_REST_*` spelling).
+- **History: the repo.** `api/_lib/archive.js` writes the finished list to `signups/<date>.json` once, when the session is reset. One commit per session, not one per tap.
+
+The queue is a single Redis list and **its order is the queue**: positions 1-16 are main players (4 courts of 4), 17-18 are subs, 19-28 are the waiting list. Removing anyone shifts everyone below up one, which is exactly the club's promotion rule (next in line becomes a sub, sub 1 becomes main 16) with no separate promotion code.
+
+`JOIN_SCRIPT` in `api/_lib/redis.js` is Lua and runs inside Redis. Joining checks the token, checks capacity, and resolves a display-name clash in **one atomic step**. Splitting any of that into separate commands reintroduces the race.
+
+Names are published as first name plus an initial ("John Smith" becomes "John S."). A clash becomes "John S.2". This is not cosmetic: the pairings tool matches players by name string, so two identical names would be renamed and swapped as one person.
+
+Cancel tokens are never returned by the API. They are the only thing stopping a stranger cancelling someone else's place, and the endpoint is public. The caller sends its own token and gets a `mine` flag back.
+
+The server decides whether sign-up is open, by comparing its own clock to `opensAt`. Never gate the button on the browser clock.
 
 ## Editing data-backed pages
 

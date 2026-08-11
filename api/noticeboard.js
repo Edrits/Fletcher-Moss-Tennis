@@ -1,7 +1,8 @@
 // Save this as: api/noticeboard.js (for Vercel)
 
 export default async function handler(req, res) {
-  const ADMIN_PASSWORD = 'Fletchertennis909';
+  // Set in the Vercel environment config, never committed to this repo
+  const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
   const GITHUB_TOKEN = process.env.GIT_TOKEN;
   const GITHUB_USER = 'Edrits';
   const GITHUB_REPO = 'Fletcher-Moss-Tennis';
@@ -43,6 +44,10 @@ export default async function handler(req, res) {
     // POST - Update noticeboard
     if (req.method === 'POST') {
       const { password, message } = req.body;
+
+      if (!ADMIN_PASSWORD) {
+        return res.status(500).json({ error: 'Server is missing ADMIN_PASSWORD configuration' });
+      }
 
       if (password !== ADMIN_PASSWORD) {
         return res.status(401).json({ error: 'Incorrect password' });

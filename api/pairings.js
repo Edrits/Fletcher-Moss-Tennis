@@ -1,5 +1,6 @@
 export default async function handler(req, res) {
-  const ADMIN_PASSWORD = 'Fletchertennis909';
+  // Set in the Vercel environment config, never committed to this repo
+  const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
   const GITHUB_TOKEN = process.env.GIT_TOKEN;
   const GITHUB_USER = 'Edrits';
   const GITHUB_REPO = 'Fletcher-Moss-Tennis';
@@ -50,6 +51,10 @@ export default async function handler(req, res) {
     // POST - Save the current pairings session (requires admin password)
     if (req.method === 'POST') {
       const { action, password, players, numCourts, numGames, seed, generatedGames, activeGame } = req.body;
+
+      if (!ADMIN_PASSWORD) {
+        return res.status(500).json({ error: 'Server is missing ADMIN_PASSWORD configuration' });
+      }
 
       if (password !== ADMIN_PASSWORD) {
         return res.status(401).json({ error: 'Incorrect password' });

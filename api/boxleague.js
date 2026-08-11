@@ -1,5 +1,6 @@
 export default async function handler(req, res) {
-  const ADMIN_PASSWORD = 'Fletchertennis909';
+  // Set in the Vercel environment config, never committed to this repo
+  const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
   const GITHUB_TOKEN = process.env.GIT_TOKEN;
   const GITHUB_USER = 'Edrits';
   const GITHUB_REPO = 'Fletcher-Moss-Tennis';
@@ -95,6 +96,9 @@ export default async function handler(req, res) {
       let dataToSave = currentData;
 
       if (type === 'admin_update_players') {
+        if (!ADMIN_PASSWORD) {
+          return res.status(500).json({ error: 'Server is missing ADMIN_PASSWORD configuration' });
+        }
         if (password !== ADMIN_PASSWORD) {
           return res.status(401).json({ error: 'Incorrect password' });
         }
@@ -117,6 +121,9 @@ export default async function handler(req, res) {
         dataToSave.boxes.forEach(recalculateBox);
 
       } else if (type === 'delete_match') {
+        if (!ADMIN_PASSWORD) {
+          return res.status(500).json({ error: 'Server is missing ADMIN_PASSWORD configuration' });
+        }
         if (password !== ADMIN_PASSWORD) {
           return res.status(401).json({ error: 'Incorrect password' });
         }

@@ -1,0 +1,856 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Sign-up logic tests | Fletcher Moss Social Tennis</title>
+<style>
+:root{
+  --green-950:#152b0c; --green-900:#213d10; --green-800:#2d5016;
+  --green-700:#3a6c1c; --green-600:#4a7c2c; --green-500:#5f9a3c;
+  --green-100:#e0f0e1; --green-50:#f3f9f1;
+  --ink-900:#20241d; --ink-700:#454b41; --ink-500:#63695e; --ink-300:#8d9285;
+  --paper-0:#ffffff; --paper-50:#faf9f5; --paper-100:#f4f2ea;
+  --color-alert:#a83c2d; --color-alert-bg:#f7e9e5;
+  --border-subtle:rgba(32,36,29,.1); --border-strong:rgba(32,36,29,.18);
+  --font-display:'Lora',Georgia,'Times New Roman',serif;
+  --font-body:'Plus Jakarta Sans','Segoe UI',-apple-system,BlinkMacSystemFont,sans-serif;
+  --font-mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  --radius-sm:8px; --radius-md:12px; --radius-lg:18px;
+  --shadow-sm:0 2px 8px rgba(32,36,29,.06);
+  --shadow-md:0 12px 28px rgba(32,36,29,.08),0 2px 6px rgba(32,36,29,.04);
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0; padding:0 0 4rem;
+  font-family:var(--font-body);
+  color:var(--ink-900);
+  background:linear-gradient(180deg,var(--green-50) 0%,var(--paper-50) 60%,var(--paper-0) 100%);
+  background-attachment:fixed;
+  line-height:1.5;
+}
+.wrap{max-width:52rem; margin:0 auto; padding:0 1rem}
+
+header.masthead{
+  background:linear-gradient(160deg,var(--green-900) 0%,var(--green-800) 55%,var(--green-700) 100%);
+  color:#fff; padding:1.5rem 0 1.25rem;
+}
+.masthead h1{
+  font-family:var(--font-display); font-weight:600;
+  font-size:1.375rem; line-height:1.2; margin:0;
+}
+.masthead p{margin:.35rem 0 0; font-size:.875rem; color:var(--green-100)}
+
+/* Summary banner: the one thing that must read at a glance on a phone. */
+.summary{
+  position:sticky; top:0; z-index:5;
+  margin:0 0 1.25rem; padding:1.1rem 1rem;
+  border-radius:0 0 var(--radius-lg) var(--radius-lg);
+  box-shadow:var(--shadow-md);
+  text-align:center; color:#fff;
+  background:var(--ink-500);
+}
+.summary.pass{background:linear-gradient(160deg,var(--green-700) 0%,var(--green-600) 100%)}
+.summary.fail{background:linear-gradient(160deg,#8d2f22 0%,var(--color-alert) 100%)}
+.summary .tally{
+  font-family:var(--font-display); font-weight:700;
+  font-size:clamp(2.25rem,12vw,3.25rem); line-height:1.05;
+  letter-spacing:-.01em; display:block;
+}
+.summary .verdict{
+  display:block; margin-top:.3rem;
+  font-size:.8125rem; font-weight:600;
+  text-transform:uppercase; letter-spacing:.12em;
+}
+.summary .detail{display:block; margin-top:.5rem; font-size:.9375rem; opacity:.92}
+
+section.group{
+  background:var(--paper-0);
+  border-radius:var(--radius-md);
+  box-shadow:var(--shadow-sm);
+  margin:0 0 1rem; overflow:hidden;
+}
+section.group > h2{
+  margin:0; padding:.7rem .9rem;
+  font-family:var(--font-display); font-size:1.0625rem; font-weight:600;
+  color:var(--green-900);
+  background:var(--green-50);
+  border-bottom:1px solid var(--border-subtle);
+  display:flex; align-items:baseline; justify-content:space-between; gap:.6rem;
+}
+section.group > h2 .count{
+  font-family:var(--font-body); font-size:.75rem; font-weight:600;
+  letter-spacing:.08em; text-transform:uppercase; color:var(--ink-500);
+  white-space:nowrap;
+}
+section.group.has-fail > h2{background:var(--color-alert-bg); color:#7d2b20}
+
+ol.rows{list-style:none; margin:0; padding:0}
+ol.rows > li{
+  padding:.5rem .9rem;
+  border-top:1px solid var(--border-subtle);
+  display:flex; align-items:flex-start; gap:.6rem;
+  font-size:.9375rem;
+}
+ol.rows > li:first-child{border-top:none}
+ol.rows > li.fail{background:var(--color-alert-bg)}
+.mark{
+  flex:0 0 auto; width:1.25rem; height:1.25rem; margin-top:.15rem;
+  border-radius:50%; display:grid; place-items:center;
+  font-size:.6875rem; font-weight:700; color:#fff;
+}
+li.pass .mark{background:var(--green-600)}
+li.fail .mark{background:var(--color-alert)}
+.body{flex:1 1 auto; min-width:0}
+.label{display:block; overflow-wrap:anywhere}
+li.fail .label{font-weight:600; color:#7d2b20}
+.diff{
+  margin:.35rem 0 0; padding:.45rem .55rem;
+  background:var(--paper-100); border-radius:var(--radius-sm);
+  font-family:var(--font-mono); font-size:.75rem; line-height:1.45;
+  overflow-x:auto; white-space:pre-wrap; overflow-wrap:anywhere;
+}
+.diff b{display:inline-block; min-width:5.25rem; font-weight:600; color:var(--ink-700)}
+
+.note{
+  margin:0 0 1rem; padding:.8rem .9rem;
+  border-left:3px solid var(--green-500); background:var(--paper-100);
+  border-radius:0 var(--radius-sm) var(--radius-sm) 0;
+  font-size:.875rem; color:var(--ink-700);
+}
+.note strong{color:var(--ink-900)}
+.crash{
+  margin:1rem 0; padding:1rem;
+  background:var(--color-alert-bg); border-radius:var(--radius-md);
+  color:#7d2b20; font-family:var(--font-mono); font-size:.8125rem;
+  white-space:pre-wrap; overflow-x:auto;
+}
+footer.foot{
+  max-width:52rem; margin:1.5rem auto 0; padding:0 1rem;
+  font-size:.8125rem; color:var(--ink-500);
+}
+</style>
+</head>
+<body>
+
+<header class="masthead">
+  <div class="wrap">
+    <h1>Sign-up logic tests</h1>
+    <p>Browser harness for api/_lib/signup-core.js</p>
+  </div>
+</header>
+
+<div class="wrap">
+  <div id="summary" class="summary"><span class="tally">Running</span><span class="verdict">Loading module</span></div>
+  <p class="note"><strong>How to run.</strong> Serve the repo root with <code>python3 -m http.server 8000</code> and open
+  <code>/test-signup.html</code>. The module is imported straight from <code>api/_lib/signup-core.js</code>, so opening this
+  file from the file system will fail on the browser's module origin rules.</p>
+  <div id="out"></div>
+</div>
+
+<footer class="foot">
+  <p>No network calls, no build step. Every clock is injected, so results do not depend on the time of day.</p>
+</footer>
+
+<script type="module">
+import {
+  SCHEDULE, DEFAULT_CAPACITY, MAX_SEEDS, NAME_MAX,
+  isoDate, nextSession, defaultOpensAt,
+  normaliseName, validateName, shortenName, disambiguate,
+  totalSlots, tierFor, splitEntries, viewModel
+} from './api/_lib/signup-core.js';
+// redis.js is imported only for its two pure helpers. Everything else in it needs fetch
+// and live credentials, but pickCredentials and describeCredentialEnv are plain functions
+// over an object, so they can be exercised here.
+import { pickCredentials, describeCredentialEnv } from './api/_lib/redis.js';
+
+/* ---------------------------------------------------------------------------
+   Assertion plumbing
+--------------------------------------------------------------------------- */
+
+const groups = [];
+let current = null;
+
+function group(title) {
+  current = { title, rows: [] };
+  groups.push(current);
+}
+
+// Rendered as JSON so that the string "true" and the boolean true never look alike.
+function show(v) {
+  if (v instanceof Date) return `Date(${v.toISOString()})`;
+  const s = JSON.stringify(v);
+  return s === undefined ? String(v) : s;
+}
+
+function check(label, actual, expected) {
+  const a = show(actual), e = show(expected);
+  current.rows.push({ label, pass: a === e, actual: a, expected: e });
+}
+
+function truthy(label, condition, detail) {
+  current.rows.push({
+    label,
+    pass: condition === true,
+    actual: detail === undefined ? show(condition) : String(detail),
+    expected: 'true'
+  });
+}
+
+// A Date built from local parts, so it matches how signup-core builds its own dates.
+const at = (y, m, d, h = 0, min = 0) => new Date(y, m - 1, d, h, min, 0, 0);
+
+/* ---------------------------------------------------------------------------
+   Simulation of the Lua JOIN_SCRIPT
+   ---------------------------------------------------------------------------
+   IMPORTANT: this MIRRORS the documented semantics of JOIN_SCRIPT in
+   api/_lib/redis.js against an in-memory array. It does NOT execute the Lua.
+   Redis cannot run in a browser, so these assertions validate the join LOGIC
+   (already_in, full, name disambiguation, 1-based position) but they do not
+   validate the script itself. A change to the Lua will not fail these tests.
+--------------------------------------------------------------------------- */
+function joinAtomicSim(queue, { token, displayBase, limit, at: joinedAt }) {
+  const names = new Set();
+  for (const entry of queue) {
+    if (entry.token === token) return { error: 'already_in' };
+    if (entry.name) names.add(entry.name.toLowerCase());
+  }
+  if (queue.length >= limit) return { error: 'full' };
+  let candidate = displayBase;
+  let n = 1;
+  while (names.has(candidate.toLowerCase())) {
+    n += 1;
+    candidate = `${displayBase}${n}`;
+  }
+  queue.push({ name: candidate, token, at: joinedAt });
+  return { position: queue.length, name: candidate };
+}
+
+/* ---------------------------------------------------------------------------
+   SCHEDULE and the capacity constants
+--------------------------------------------------------------------------- */
+group('Constants: SCHEDULE, DEFAULT_CAPACITY, MAX_SEEDS, NAME_MAX');
+
+check('SCHEDULE holds three weekly sessions', SCHEDULE.length, 3);
+check('SCHEDULE days are Monday, Thursday, Saturday', SCHEDULE.map(s => s.day), [1, 4, 6]);
+check('SCHEDULE end hours are 20, 20, 14', SCHEDULE.map(s => s.endHour), [20, 20, 14]);
+check('Monday label', SCHEDULE[0].label, 'Monday 6:00 to 8:00 PM');
+check('Thursday label', SCHEDULE[1].label, 'Thursday 6:00 to 8:00 PM');
+check('Saturday label', SCHEDULE[2].label, 'Saturday 11:00 AM to 2:00 PM');
+check('DEFAULT_CAPACITY is 16 main, 2 subs, 10 waitlist', DEFAULT_CAPACITY, { main: 16, subs: 2, waitlist: 10 });
+check('MAX_SEEDS is 4', MAX_SEEDS, 4);
+check('NAME_MAX is 30', NAME_MAX, 30);
+
+/* ---------------------------------------------------------------------------
+   isoDate
+--------------------------------------------------------------------------- */
+group('isoDate');
+
+check('pads a single-digit month and day', isoDate(at(2026, 1, 5)), '2026-01-05');
+check('last day of the year', isoDate(at(2026, 12, 31)), '2026-12-31');
+check('mid-year date', isoDate(at(2026, 8, 9)), '2026-08-09');
+check('ignores the time of day', isoDate(at(2026, 8, 9, 23, 59)), '2026-08-09');
+check('leap day', isoDate(at(2028, 2, 29)), '2028-02-29');
+
+/* ---------------------------------------------------------------------------
+   nextSession
+   Reference week: 2026-08-09 Sun, 10 Mon, 11 Tue, 12 Wed, 13 Thu, 14 Fri,
+   15 Sat, 16 Sun, 17 Mon.
+--------------------------------------------------------------------------- */
+group('nextSession (fixed clock)');
+
+check('Sunday morning finds Monday', nextSession(at(2026, 8, 9, 8, 0)),
+  { date: '2026-08-10', label: 'Monday 6:00 to 8:00 PM' });
+check('Monday morning still finds today', nextSession(at(2026, 8, 10, 10, 0)),
+  { date: '2026-08-10', label: 'Monday 6:00 to 8:00 PM' });
+check('Monday one minute before the end hour still finds today', nextSession(at(2026, 8, 10, 19, 59)),
+  { date: '2026-08-10', label: 'Monday 6:00 to 8:00 PM' });
+check('Monday exactly at the end hour skips to Thursday', nextSession(at(2026, 8, 10, 20, 0)),
+  { date: '2026-08-13', label: 'Thursday 6:00 to 8:00 PM' });
+check('Monday late evening skips to Thursday', nextSession(at(2026, 8, 10, 23, 0)),
+  { date: '2026-08-13', label: 'Thursday 6:00 to 8:00 PM' });
+check('Tuesday finds Thursday', nextSession(at(2026, 8, 11, 9, 0)),
+  { date: '2026-08-13', label: 'Thursday 6:00 to 8:00 PM' });
+check('Wednesday finds Thursday', nextSession(at(2026, 8, 12, 18, 30)),
+  { date: '2026-08-13', label: 'Thursday 6:00 to 8:00 PM' });
+check('Thursday after the end hour finds Saturday', nextSession(at(2026, 8, 13, 21, 0)),
+  { date: '2026-08-15', label: 'Saturday 11:00 AM to 2:00 PM' });
+check('Friday finds Saturday', nextSession(at(2026, 8, 14, 12, 0)),
+  { date: '2026-08-15', label: 'Saturday 11:00 AM to 2:00 PM' });
+check('Saturday before its 2:00 PM end still finds today', nextSession(at(2026, 8, 15, 13, 59)),
+  { date: '2026-08-15', label: 'Saturday 11:00 AM to 2:00 PM' });
+check('Saturday at 2:00 PM rolls on to Monday', nextSession(at(2026, 8, 15, 14, 0)),
+  { date: '2026-08-17', label: 'Monday 6:00 to 8:00 PM' });
+check('Saturday at midnight finds today, not next week', nextSession(at(2026, 8, 15, 0, 1)),
+  { date: '2026-08-15', label: 'Saturday 11:00 AM to 2:00 PM' });
+check('crosses a month boundary', nextSession(at(2026, 8, 31, 21, 0)),
+  { date: '2026-09-03', label: 'Thursday 6:00 to 8:00 PM' });
+check('New Year\'s Eve is a Thursday session, still current at 9:00 AM',
+  nextSession(at(2026, 12, 31, 9, 0)),
+  { date: '2026-12-31', label: 'Thursday 6:00 to 8:00 PM' });
+check('crosses a year boundary once that Thursday has finished',
+  nextSession(at(2026, 12, 31, 21, 0)),
+  { date: '2027-01-02', label: 'Saturday 11:00 AM to 2:00 PM' });
+truthy('never returns null within a normal week',
+  [9, 10, 11, 12, 13, 14, 15].every(d => nextSession(at(2026, 8, d, 12, 0)) !== null));
+
+/* ---------------------------------------------------------------------------
+   defaultOpensAt
+--------------------------------------------------------------------------- */
+group('defaultOpensAt');
+
+const opensThu = defaultOpensAt('2026-08-13');
+check('opens the night before', isoDate(opensThu), '2026-08-12');
+check('opens at 8:00 PM', opensThu.getHours(), 20);
+check('minutes are zeroed', opensThu.getMinutes(), 0);
+check('seconds are zeroed', opensThu.getSeconds(), 0);
+check('milliseconds are zeroed', opensThu.getMilliseconds(), 0);
+check('handles the first of the month', isoDate(defaultOpensAt('2026-09-01')), '2026-08-31');
+check('handles the first of January', isoDate(defaultOpensAt('2026-01-01')), '2025-12-31');
+check('handles the first of March in a leap year', isoDate(defaultOpensAt('2028-03-01')), '2028-02-29');
+truthy('returns a Date', defaultOpensAt('2026-08-13') instanceof Date);
+truthy('opens before the session it belongs to',
+  defaultOpensAt('2026-08-13') < at(2026, 8, 13, 18, 0));
+
+/* ---------------------------------------------------------------------------
+   normaliseName
+--------------------------------------------------------------------------- */
+group('normaliseName');
+
+check('trims and collapses runs of spaces', normaliseName('  John   Smith  '), 'John Smith');
+check('collapses tabs and newlines', normaliseName('\tJohn\nSmith '), 'John Smith');
+check('null becomes an empty string', normaliseName(null), '');
+check('undefined becomes an empty string', normaliseName(undefined), '');
+check('whitespace only becomes an empty string', normaliseName('   '), '');
+check('a clean name is untouched', normaliseName('Ed'), 'Ed');
+check('does not change case', normaliseName('jOhN'), 'jOhN');
+
+/* ---------------------------------------------------------------------------
+   validateName
+--------------------------------------------------------------------------- */
+group('validateName');
+
+const thirty = 'A'.repeat(30);
+const thirtyOne = 'A'.repeat(31);
+
+check('rejects an empty string', validateName('').ok, false);
+check('rejects whitespace only', validateName('   ').ok, false);
+check('rejects null', validateName(null).ok, false);
+truthy('gives a reason when rejecting', typeof validateName('').error === 'string' && validateName('').error.length > 0);
+check('accepts exactly NAME_MAX characters', validateName(thirty).ok, true);
+check('rejects NAME_MAX + 1 characters', validateName(thirtyOne).ok, false);
+check('the over-length message names the limit', validateName(thirtyOne).error,
+  'Names must be 30 characters or fewer.');
+check('rejects digits', validateName('John5').ok, false);
+check('rejects a bare number', validateName('12345').ok, false);
+check('rejects a URL', validateName('http://x.com').ok, false);
+check('rejects a name with a URL inside it', validateName('Visit https://spam.io now').ok, false);
+check('rejects a bare domain', validateName('spam.io').ok, false);
+check('rejects an exclamation mark', validateName('John!').ok, false);
+check('rejects an underscore', validateName('John_Smith').ok, false);
+check('rejects a full stop', validateName('John Smith.').ok, false);
+check('rejects an at sign', validateName('John@club').ok, false);
+check('accepts an accented name', validateName('Renée').ok, true);
+check('returns the accented name unchanged', validateName('Renée').name, 'Renée');
+check('accepts a Scandinavian letter', validateName('Ana Sørensen').ok, true);
+check('accepts a hyphenated name', validateName('Anne-Marie').ok, true);
+check('accepts a straight apostrophe', validateName("O'Brien").ok, true);
+check('accepts a curly apostrophe', validateName('O’Brien').ok, true);
+check('accepts a two-word name', validateName('John Smith').ok, true);
+check('returns the normalised name', validateName('  John   Smith  ').name, 'John Smith');
+check('rejects a leading hyphen', validateName('-John').ok, false);
+
+/* ---------------------------------------------------------------------------
+   shortenName
+--------------------------------------------------------------------------- */
+group('shortenName');
+
+check('"John Smith" becomes "John S."', shortenName('John Smith'), 'John S.');
+check('lower case input is title-cased', shortenName('john smith'), 'John S.');
+check('a single word is left alone', shortenName('Ed'), 'Ed');
+check('a single lower-case word is title-cased', shortenName('ed'), 'Ed');
+check('three words use the LAST word for the initial', shortenName('Mary Jane Watson'), 'Mary W.');
+check('a hyphenated surname gives one initial', shortenName('Anne Smith-Jones'), 'Anne S.');
+check('a single apostrophe name is unchanged', shortenName("O'Brien"), "O'Brien");
+check('an apostrophe surname gives one initial', shortenName("Sean O'Brien"), 'Sean O.');
+check('an accented first name survives', shortenName('Renée Dupont'), 'Renée D.');
+check('an accented surname initial is upper-cased', shortenName('Ana ørsted'), 'Ana Ø.');
+check('an empty string returns an empty string', shortenName(''), '');
+check('whitespace only returns an empty string', shortenName('   '), '');
+check('surrounding and internal whitespace is normalised', shortenName('  john   SMITH  '), 'John S.');
+// A name typed in capitals is folded so it does not shout from a public list, but only
+// when the WHOLE word was capitals. Internal capitals are meaningful in real names.
+check('an all-capitals first name is folded', shortenName('JOHN smith'), 'John S.');
+check('an internal capital is preserved', shortenName("O'Brien Smith"), "O'Brien S.");
+check('a Mc name keeps its capital', shortenName('McDonald Smith'), 'McDonald S.');
+truthy('never publishes a full surname',
+  !shortenName('John Smith').toLowerCase().includes('smith'));
+
+/* ---------------------------------------------------------------------------
+   disambiguate
+--------------------------------------------------------------------------- */
+group('disambiguate');
+
+check('no clash returns the name unchanged', disambiguate('John S.', ['Anne S.', 'Bob T.']), 'John S.');
+check('an empty list returns the name unchanged', disambiguate('John S.', []), 'John S.');
+check('a missing list returns the name unchanged', disambiguate('John S.'), 'John S.');
+check('one clash gives "John S.2"', disambiguate('John S.', ['John S.']), 'John S.2');
+check('two clashes give "John S.3"', disambiguate('John S.', ['John S.', 'John S.2']), 'John S.3');
+check('three clashes give "John S.4"', disambiguate('John S.', ['John S.', 'John S.2', 'John S.3']), 'John S.4');
+check('matching is case-insensitive', disambiguate('John S.', ['john s.']), 'John S.2');
+check('matching is case-insensitive the other way', disambiguate('john s.', ['JOHN S.']), 'john s.2');
+check('a gap in the numbering is filled', disambiguate('John S.', ['John S.', 'John S.3']), 'John S.2');
+check('a partial match is not a clash', disambiguate('John S.', ['John Sm.']), 'John S.');
+check('a longer name is not shadowed by a shorter one', disambiguate('Jo S.', ['John S.']), 'Jo S.');
+check('single-word names disambiguate too', disambiguate('Ed', ['Ed']), 'Ed2');
+
+/* ---------------------------------------------------------------------------
+   totalSlots
+--------------------------------------------------------------------------- */
+group('totalSlots');
+
+check('default capacity totals 28', totalSlots(), 28);
+check('default capacity passed explicitly totals 28', totalSlots(DEFAULT_CAPACITY), 28);
+const SMALL = { main: 8, subs: 1, waitlist: 3 };
+check('a smaller capacity totals 12', totalSlots(SMALL), 12);
+check('a capacity with no waitlist', totalSlots({ main: 16, subs: 2, waitlist: 0 }), 18);
+
+/* ---------------------------------------------------------------------------
+   tierFor
+--------------------------------------------------------------------------- */
+group('tierFor (boundaries)');
+
+check('position 1 is main', tierFor(1), 'main');
+check('position 15 is main', tierFor(15), 'main');
+check('position 16 is main (last on court)', tierFor(16), 'main');
+check('position 17 is sub (first sub)', tierFor(17), 'sub');
+check('position 18 is sub (last sub)', tierFor(18), 'sub');
+check('position 19 is waitlist (first waiting)', tierFor(19), 'waitlist');
+check('position 27 is waitlist', tierFor(27), 'waitlist');
+check('position 28 is waitlist (last place)', tierFor(28), 'waitlist');
+check('position 29 is overflow', tierFor(29), 'overflow');
+check('position 100 is overflow', tierFor(100), 'overflow');
+check('custom capacity: position 8 is main', tierFor(8, SMALL), 'main');
+check('custom capacity: position 9 is sub', tierFor(9, SMALL), 'sub');
+check('custom capacity: position 10 is waitlist', tierFor(10, SMALL), 'waitlist');
+check('custom capacity: position 12 is waitlist', tierFor(12, SMALL), 'waitlist');
+check('custom capacity: position 13 is overflow', tierFor(13, SMALL), 'overflow');
+
+/* ---------------------------------------------------------------------------
+   splitEntries
+--------------------------------------------------------------------------- */
+group('splitEntries');
+
+const mk = n => Array.from({ length: n }, (_, i) => ({ id: `p${i + 1}`, name: `Player ${i + 1}` }));
+
+const s30 = splitEntries(mk(30));
+check('30 entries: 16 main', s30.main.length, 16);
+check('30 entries: 2 subs', s30.subs.length, 2);
+check('30 entries: 10 waitlist', s30.waitlist.length, 10);
+check('30 entries: 2 overflow', s30.overflow.length, 2);
+check('30 entries: last main player is entry 16', s30.main[15].id, 'p16');
+check('30 entries: first sub is entry 17', s30.subs[0].id, 'p17');
+check('30 entries: first waiting is entry 19', s30.waitlist[0].id, 'p19');
+check('30 entries: first overflow is entry 29', s30.overflow[0].id, 'p29');
+
+const s10 = splitEntries(mk(10));
+check('10 entries: 10 main', s10.main.length, 10);
+check('10 entries: no subs', s10.subs.length, 0);
+check('10 entries: no waitlist', s10.waitlist.length, 0);
+check('10 entries: no overflow', s10.overflow.length, 0);
+
+const s0 = splitEntries();
+check('no entries: every group empty',
+  [s0.main.length, s0.subs.length, s0.waitlist.length, s0.overflow.length], [0, 0, 0, 0]);
+
+const sSmall = splitEntries(mk(15), SMALL);
+check('custom capacity: 8 main', sSmall.main.length, 8);
+check('custom capacity: 1 sub', sSmall.subs.length, 1);
+check('custom capacity: 3 waitlist', sSmall.waitlist.length, 3);
+check('custom capacity: 3 overflow', sSmall.overflow.length, 3);
+
+/* ---------------------------------------------------------------------------
+   The cascade: remove one person, everybody below moves up exactly one place.
+   This is the club's actual promotion rule.
+--------------------------------------------------------------------------- */
+group('The cascade (remove one, promote everybody below)');
+
+const before = mk(20);
+const beforeSplit = splitEntries(before);
+check('before: 16 main', beforeSplit.main.length, 16);
+check('before: 2 subs', beforeSplit.subs.length, 2);
+check('before: 2 waiting', beforeSplit.waitlist.length, 2);
+check('before: p16 is the last main player', beforeSplit.main[15].id, 'p16');
+check('before: p17 is the first sub', beforeSplit.subs[0].id, 'p17');
+check('before: p19 is first on the waiting list', beforeSplit.waitlist[0].id, 'p19');
+
+const after = before.slice();
+const removed = after.splice(4, 1)[0];           // index 4 is position 5, "p5"
+check('the person removed was p5', removed.id, 'p5');
+check('19 remain', after.length, 19);
+const afterSplit = splitEntries(after);
+
+check('after: p17 has been promoted to the last main place', afterSplit.main[15].id, 'p17');
+check('after: p18 is now the first sub', afterSplit.subs[0].id, 'p18');
+check('after: p19 is now the second sub', afterSplit.subs[1].id, 'p19');
+check('after: p20 is the only one left waiting', afterSplit.waitlist.map(e => e.id), ['p20']);
+check('after: 16 main', afterSplit.main.length, 16);
+check('after: 2 subs', afterSplit.subs.length, 2);
+check('after: 1 waiting', afterSplit.waitlist.length, 1);
+check('after: no overflow', afterSplit.overflow.length, 0);
+
+truthy('p5 has gone from every group',
+  [...afterSplit.main, ...afterSplit.subs, ...afterSplit.waitlist, ...afterSplit.overflow]
+    .every(e => e.id !== 'p5'));
+
+// Positions 1..4 are above the removal, so they must not have moved at all.
+const positionOf = (list, id) => list.findIndex(e => e.id === id) + 1;
+const unmovedProblems = [];
+for (let i = 1; i <= 4; i++) {
+  const p = positionOf(after, `p${i}`);
+  if (p !== i) unmovedProblems.push(`p${i} moved to ${p}`);
+}
+truthy('nobody above the removal moved',
+  unmovedProblems.length === 0, unmovedProblems.join(', ') || 'none moved');
+
+// Positions 6..20 are below the removal, so each must have moved up exactly one.
+const cascadeProblems = [];
+for (let i = 6; i <= 20; i++) {
+  const wasAt = i;
+  const nowAt = positionOf(after, `p${i}`);
+  if (nowAt !== wasAt - 1) cascadeProblems.push(`p${i}: ${wasAt} -> ${nowAt}`);
+}
+truthy('everyone below the removal moved up exactly one place',
+  cascadeProblems.length === 0, cascadeProblems.join(', ') || 'all 15 moved up by one');
+
+check('p17 went from position 17 to position 16', positionOf(after, 'p17'), 16);
+check('p17 was a sub before the removal', tierFor(17), 'sub');
+check('p17 is a main player after the removal', tierFor(positionOf(after, 'p17')), 'main');
+check('p19 went from waitlist to sub',
+  [tierFor(19), tierFor(positionOf(after, 'p19'))], ['waitlist', 'sub']);
+
+/* ---------------------------------------------------------------------------
+   viewModel: the public shape. Tokens must never appear.
+--------------------------------------------------------------------------- */
+group('viewModel: tokens must never leak');
+
+const TOKEN_PREFIX = 'tok-SECRET-';
+const tokenEntries = Array.from({ length: 20 }, (_, i) => ({
+  name: `Player ${i + 1}`,
+  token: `${TOKEN_PREFIX}${String(i + 1).padStart(4, '0')}`,
+  at: '2026-08-12T20:00:00.000Z'
+}));
+const MY = tokenEntries[16].token;              // position 17, the first sub
+const NOW = new Date('2026-08-13T09:00:00.000Z');
+
+const vm = viewModel({
+  meta: {
+    state: 'open',
+    date: '2026-08-13',
+    label: 'Thursday 6:00 to 8:00 PM',
+    opensAt: '2026-08-12T19:00:00.000Z'
+  },
+  entries: tokenEntries,
+  now: NOW,
+  myToken: MY
+});
+const vmJson = JSON.stringify(vm);
+
+const leaked = tokenEntries.map(e => e.token).filter(t => vmJson.includes(t));
+truthy('no individual token appears in the serialised view model',
+  leaked.length === 0, leaked.join(', ') || 'none of the 20 tokens found');
+truthy('the token prefix does not appear anywhere in the serialised view model',
+  !vmJson.includes(TOKEN_PREFIX), vmJson.includes(TOKEN_PREFIX) ? 'prefix found' : 'prefix absent');
+truthy('the caller\'s own token is not echoed back', !vmJson.includes(MY));
+truthy('no "token" key survives serialisation', !/"token"/.test(vmJson));
+truthy('no "at" timestamp key survives serialisation', !/"at"\s*:/.test(vmJson));
+check('a row exposes only position, name and mine',
+  Object.keys(vm.main[0]).sort(), ['mine', 'name', 'position']);
+
+group('viewModel: mine and you');
+
+check('exactly one row is flagged mine',
+  [...vm.main, ...vm.subs, ...vm.waitlist].filter(r => r.mine).length, 1);
+check('the flagged row is the first sub', vm.subs[0].mine, true);
+check('the flagged row carries the right name', vm.subs[0].name, 'Player 17');
+check('no main row is flagged mine', vm.main.some(r => r.mine), false);
+check('you reports position 17', vm.you.position, 17);
+check('you reports tier sub', vm.you.tier, 'sub');
+check('positions are global, not per group', vm.waitlist[0].position, 19);
+check('positions run 1..20 across the groups',
+  [...vm.main, ...vm.subs, ...vm.waitlist].map(r => r.position),
+  Array.from({ length: 20 }, (_, i) => i + 1));
+
+const vmNoToken = viewModel({ meta: {}, entries: tokenEntries, now: NOW, myToken: null });
+check('you is null when no token is supplied', vmNoToken.you, null);
+check('no row is flagged mine when no token is supplied',
+  [...vmNoToken.main, ...vmNoToken.subs, ...vmNoToken.waitlist].some(r => r.mine), false);
+
+const vmUnknown = viewModel({ meta: {}, entries: tokenEntries, now: NOW, myToken: 'tok-NOT-MINE' });
+check('you is null for an unknown token', vmUnknown.you, null);
+
+const vmMain = viewModel({ meta: {}, entries: tokenEntries, now: NOW, myToken: tokenEntries[0].token });
+check('you reports position 1 for the first entry', vmMain.you, { position: 1, tier: 'main' });
+
+const vmWait = viewModel({ meta: {}, entries: tokenEntries, now: NOW, myToken: tokenEntries[19].token });
+check('you reports the waitlist tier for position 20', vmWait.you, { position: 20, tier: 'waitlist' });
+
+const vmBoundary = viewModel({ meta: {}, entries: tokenEntries, now: NOW, myToken: tokenEntries[15].token });
+check('you reports main for position 16', vmBoundary.you, { position: 16, tier: 'main' });
+
+group('viewModel: counts, capacity and passthrough');
+
+check('counts.total', vm.counts.total, 20);
+check('counts.main', vm.counts.main, 16);
+check('counts.subs', vm.counts.subs, 2);
+check('counts.waitlist', vm.counts.waitlist, 2);
+check('date passes through', vm.date, '2026-08-13');
+check('label passes through', vm.label, 'Thursday 6:00 to 8:00 PM');
+check('opensAt passes through unchanged', vm.opensAt, '2026-08-12T19:00:00.000Z');
+check('serverTime is the injected clock', vm.serverTime, NOW.toISOString());
+check('capacity falls back to the default', vmNoToken.capacity, DEFAULT_CAPACITY);
+check('a custom capacity is respected', viewModel({
+  meta: { capacity: SMALL }, entries: tokenEntries, now: NOW
+}).counts, { total: 20, main: 8, subs: 1, waitlist: 3, overflow: 8 });
+check('date and label default to null', [vmNoToken.date, vmNoToken.label], [null, null]);
+check('an empty list produces empty groups', viewModel({ entries: [], now: NOW }).counts,
+  { total: 0, main: 0, subs: 0, waitlist: 0, overflow: 0 });
+
+// ── pickCredentials ────────────────────────────────────────────────────────────
+// The Vercel Upstash integration does not use one fixed pair of variable names, so the
+// client resolves them. These cases pin the spellings we know it produces.
+group('pickCredentials: environment variable discovery');
+{
+  const bare = { KV_REST_API_URL: 'u1', KV_REST_API_TOKEN: 't1' };
+  check('bare KV_ pair', pickCredentials(bare).url, 'u1');
+
+  const upstash = { UPSTASH_REDIS_REST_URL: 'u2', UPSTASH_REDIS_REST_TOKEN: 't2' };
+  check('UPSTASH_ spelling', pickCredentials(upstash).token, 't2');
+
+  // A store named "signups" produces prefixed names
+  const prefixed = { SIGNUPS_KV_REST_API_URL: 'u3', SIGNUPS_KV_REST_API_TOKEN: 't3' };
+  check('store-prefixed pair is found', pickCredentials(prefixed).url, 'u3');
+  check('store-prefixed token is found', pickCredentials(prefixed).token, 't3');
+
+  const prefixedUpstash = { SIGNUPS_UPSTASH_REDIS_REST_URL: 'u4', SIGNUPS_UPSTASH_REDIS_REST_TOKEN: 't4' };
+  check('prefixed UPSTASH_ spelling', pickCredentials(prefixedUpstash).url, 'u4');
+
+  check('nothing configured yields nulls', pickCredentials({}).url, null);
+  truthy('a URL with no matching token is not used', pickCredentials({ FOO_REST_API_URL: 'u' }).url === null);
+
+  const both = { KV_REST_API_URL: 'bare', KV_REST_API_TOKEN: 't',
+                 SIGNUPS_KV_REST_API_URL: 'prefixed', SIGNUPS_KV_REST_API_TOKEN: 't' };
+  check('the bare pair wins when both exist', pickCredentials(both).url, 'bare');
+
+  const names = describeCredentialEnv({ SIGNUPS_KV_REST_API_URL: 'x', PATH: '/bin', HOME: '/root' });
+  check('describeCredentialEnv lists only related names', names, ['SIGNUPS_KV_REST_API_URL']);
+  truthy('describeCredentialEnv never returns values',
+    !JSON.stringify(names).includes('x') || names.every(n => typeof n === 'string' && n.includes('_')));
+}
+
+// Overflow entries sit past the last slot. They are reported in their own group and count
+// rather than being dropped, so a total that disagrees with the rows on screen is visible.
+const vmOver = viewModel({ meta: {}, entries: Array.from({ length: 30 }, (_, i) => ({
+  name: `P${i + 1}`, token: `t${i}` })), now: NOW });
+check('overflow entries are not published in any group',
+  vmOver.main.length + vmOver.subs.length + vmOver.waitlist.length, 28);
+check('counts.total still includes the overflow', vmOver.counts.total, 30);
+
+group('viewModel: state gating');
+
+const gate = (state, opensAt, now) =>
+  viewModel({ meta: { state, opensAt }, entries: [], now }).state;
+
+check('open with opensAt in the future reports pending',
+  gate('open', '2026-08-12T20:00:00.000Z', new Date('2026-08-12T19:59:59.000Z')), 'pending');
+check('open one hour before opening reports pending',
+  gate('open', '2026-08-12T20:00:00.000Z', new Date('2026-08-12T19:00:00.000Z')), 'pending');
+check('open exactly at opensAt reports open',
+  gate('open', '2026-08-12T20:00:00.000Z', new Date('2026-08-12T20:00:00.000Z')), 'open');
+check('open after opensAt reports open',
+  gate('open', '2026-08-12T20:00:00.000Z', new Date('2026-08-12T20:00:01.000Z')), 'open');
+check('open with no opensAt reports open', gate('open', null, NOW), 'open');
+check('a missing state defaults to pending', viewModel({ meta: {}, entries: [], now: NOW }).state, 'pending');
+check('pending stays pending even after opensAt has passed',
+  gate('pending', '2026-08-12T20:00:00.000Z', new Date('2026-08-13T09:00:00.000Z')), 'pending');
+check('closed is not re-opened by the clock',
+  gate('closed', '2026-08-12T20:00:00.000Z', new Date('2026-08-13T09:00:00.000Z')), 'closed');
+
+/* ---------------------------------------------------------------------------
+   Simulated atomic join. See the note on joinAtomicSim above: this mirrors the
+   Lua in api/_lib/redis.js, it does not run it.
+--------------------------------------------------------------------------- */
+group('Atomic join (simulated Lua, see comment in source)');
+
+const LIMIT = totalSlots();                     // 28
+const AT = '2026-08-12T20:00:00.000Z';
+
+// 30 people, all called "John Smith", all racing for 28 places.
+const queue = [];
+const outcomes = [];
+for (let i = 1; i <= 30; i++) {
+  outcomes.push(joinAtomicSim(queue, {
+    token: `tok-${i}`,
+    displayBase: shortenName('John Smith'),
+    limit: LIMIT,
+    at: AT
+  }));
+}
+const seated = outcomes.filter(o => o.position);
+const rejected = outcomes.filter(o => o.error === 'full');
+
+check('28 of 30 are seated', seated.length, 28);
+check('2 of 30 are told the list is full', rejected.length, 2);
+check('the rejections are the last two', outcomes.slice(28).map(o => o.error), ['full', 'full']);
+check('the queue holds 28 entries', queue.length, 28);
+check('positions run 1..28 with no gaps',
+  seated.map(o => o.position), Array.from({ length: 28 }, (_, i) => i + 1));
+check('no position is issued twice', new Set(seated.map(o => o.position)).size, 28);
+check('every stored name is unique', new Set(queue.map(e => e.name.toLowerCase())).size, 28);
+check('the first John keeps the plain name', queue[0].name, 'John S.');
+check('the second John becomes "John S.2"', queue[1].name, 'John S.2');
+check('the third John becomes "John S.3"', queue[2].name, 'John S.3');
+check('the last seated John becomes "John S.28"', queue[27].name, 'John S.28');
+check('stored names follow the expected sequence',
+  queue.map(e => e.name),
+  ['John S.', ...Array.from({ length: 27 }, (_, i) => `John S.${i + 2}`)]);
+check('every stored entry keeps its token', queue.every(e => typeof e.token === 'string'), true);
+check('every stored entry keeps its timestamp', queue.every(e => e.at === AT), true);
+check('tier of the last seated place is waitlist', tierFor(queue.length), 'waitlist');
+
+// already_in beats both the full check and the name allocation.
+const q2 = [];
+const first = joinAtomicSim(q2, { token: 'tok-a', displayBase: 'Ed', limit: 28, at: AT });
+const repeat = joinAtomicSim(q2, { token: 'tok-a', displayBase: 'Ed', limit: 28, at: AT });
+check('a first join reports position 1', first, { position: 1, name: 'Ed' });
+check('the same token joining twice is rejected', repeat, { error: 'already_in' });
+check('a rejected repeat does not grow the queue', q2.length, 1);
+
+const fullQ = Array.from({ length: 28 }, (_, i) => ({ name: `P${i + 1}`, token: `t${i + 1}` }));
+check('a new token on a full list is rejected',
+  joinAtomicSim(fullQ, { token: 'tok-new', displayBase: 'Ed', limit: 28, at: AT }), { error: 'full' });
+check('an existing token on a full list gets already_in, not full',
+  joinAtomicSim(fullQ, { token: 't1', displayBase: 'Ed', limit: 28, at: AT }), { error: 'already_in' });
+check('a full list is not grown by a rejection', fullQ.length, 28);
+
+const mixed = [{ name: 'John S.', token: 'x1' }, { name: 'Anne M.', token: 'x2' }];
+check('a clashing name is disambiguated against the live list',
+  joinAtomicSim(mixed, { token: 'x3', displayBase: 'John S.', limit: 28, at: AT }),
+  { position: 3, name: 'John S.2' });
+check('a non-clashing name is stored as-is',
+  joinAtomicSim(mixed, { token: 'x4', displayBase: 'Bob T.', limit: 28, at: AT }),
+  { position: 4, name: 'Bob T.' });
+check('the simulation agrees with disambiguate()',
+  joinAtomicSim([{ name: 'Ed', token: 'y1' }, { name: 'Ed2', token: 'y2' }],
+    { token: 'y3', displayBase: 'Ed', limit: 28, at: AT }).name,
+  disambiguate('Ed', ['Ed', 'Ed2']));
+
+/* ---------------------------------------------------------------------------
+   Render
+--------------------------------------------------------------------------- */
+const out = document.getElementById('out');
+const summary = document.getElementById('summary');
+
+let total = 0, passed = 0;
+const frag = document.createDocumentFragment();
+
+for (const g of groups) {
+  const fails = g.rows.filter(r => !r.pass).length;
+  total += g.rows.length;
+  passed += g.rows.length - fails;
+
+  const section = document.createElement('section');
+  section.className = 'group' + (fails ? ' has-fail' : '');
+
+  const h2 = document.createElement('h2');
+  const title = document.createElement('span');
+  title.textContent = g.title;
+  const count = document.createElement('span');
+  count.className = 'count';
+  count.textContent = fails ? `${fails} of ${g.rows.length} failed` : `${g.rows.length} passed`;
+  h2.append(title, count);
+
+  const list = document.createElement('ol');
+  list.className = 'rows';
+  for (const r of g.rows) {
+    const li = document.createElement('li');
+    li.className = r.pass ? 'pass' : 'fail';
+
+    const mark = document.createElement('span');
+    mark.className = 'mark';
+    mark.textContent = r.pass ? '✓' : '✗';
+    mark.setAttribute('aria-label', r.pass ? 'Passed' : 'Failed');
+
+    const body = document.createElement('div');
+    body.className = 'body';
+    const label = document.createElement('span');
+    label.className = 'label';
+    label.textContent = r.label;
+    body.append(label);
+
+    if (!r.pass) {
+      const diff = document.createElement('div');
+      diff.className = 'diff';
+      diff.innerHTML = '';
+      const exp = document.createElement('div');
+      exp.innerHTML = '<b>Expected</b>';
+      exp.append(document.createTextNode(r.expected));
+      const act = document.createElement('div');
+      act.innerHTML = '<b>Actual</b>';
+      act.append(document.createTextNode(r.actual));
+      diff.append(exp, act);
+      body.append(diff);
+    }
+
+    li.append(mark, body);
+    list.append(li);
+  }
+
+  section.append(h2, list);
+  frag.append(section);
+}
+
+out.append(frag);
+
+const allPass = passed === total;
+summary.className = 'summary ' + (allPass ? 'pass' : 'fail');
+summary.innerHTML = '';
+const tally = document.createElement('span');
+tally.className = 'tally';
+tally.textContent = `${passed} / ${total}`;
+const verdict = document.createElement('span');
+verdict.className = 'verdict';
+verdict.textContent = allPass ? 'All assertions pass' : `${total - passed} failing`;
+const detail = document.createElement('span');
+detail.className = 'detail';
+detail.textContent = `${total} assertions across ${groups.length} groups`;
+summary.append(tally, verdict, detail);
+document.title = `${allPass ? 'PASS' : 'FAIL'} ${passed}/${total} | Sign-up logic tests`;
+</script>
+
+<script>
+// If the module fails to load or throws, say so rather than leaving "Running" on screen.
+function crash(message) {
+  const summary = document.getElementById('summary');
+  summary.className = 'summary fail';
+  summary.innerHTML = '';
+  const tally = document.createElement('span');
+  tally.className = 'tally';
+  tally.textContent = 'Error';
+  const verdict = document.createElement('span');
+  verdict.className = 'verdict';
+  verdict.textContent = 'The test module did not run';
+  summary.append(tally, verdict);
+  const box = document.createElement('div');
+  box.className = 'crash';
+  box.textContent = message;
+  document.getElementById('out').prepend(box);
+}
+window.addEventListener('error', e => crash(String(e.message || e.error)));
+window.addEventListener('unhandledrejection', e => crash(String(e.reason)));
+</script>
+
+</body>
+</html>
