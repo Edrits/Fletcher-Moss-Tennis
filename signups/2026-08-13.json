@@ -1,0 +1,142 @@
+{
+  "date": "2026-08-13",
+  "label": "Club session",
+  "capacity": {
+    "main": 16,
+    "subs": 2,
+    "waitlist": 10
+  },
+  "archivedAt": "2026-08-11T18:27:33.747Z",
+  "players": [
+    {
+      "position": 1,
+      "name": "Ed R.",
+      "at": "2026-08-11T14:12:27.307Z"
+    },
+    {
+      "position": 2,
+      "name": "Art W.",
+      "at": "2026-08-11T14:12:52.956Z"
+    },
+    {
+      "position": 3,
+      "name": "Omar Y.",
+      "at": "2026-08-11T14:14:47.079Z"
+    },
+    {
+      "position": 4,
+      "name": "Priya N.",
+      "at": "2026-08-11T14:14:47.129Z"
+    },
+    {
+      "position": 5,
+      "name": "Katie M.",
+      "at": "2026-08-11T14:14:47.458Z"
+    },
+    {
+      "position": 6,
+      "name": "Aoife O.",
+      "at": "2026-08-11T14:14:47.484Z"
+    },
+    {
+      "position": 7,
+      "name": "Grace L.",
+      "at": "2026-08-11T14:14:47.484Z"
+    },
+    {
+      "position": 8,
+      "name": "Sam O.",
+      "at": "2026-08-11T14:14:47.488Z"
+    },
+    {
+      "position": 9,
+      "name": "Anna P.",
+      "at": "2026-08-11T14:14:47.496Z"
+    },
+    {
+      "position": 10,
+      "name": "Tom B.",
+      "at": "2026-08-11T14:14:47.492Z"
+    },
+    {
+      "position": 11,
+      "name": "Marcus W.",
+      "at": "2026-08-11T14:14:47.508Z"
+    },
+    {
+      "position": 12,
+      "name": "Hannah C.",
+      "at": "2026-08-11T14:14:47.498Z"
+    },
+    {
+      "position": 13,
+      "name": "Beth C.",
+      "at": "2026-08-11T14:14:47.513Z"
+    },
+    {
+      "position": 14,
+      "name": "Sarah J.",
+      "at": "2026-08-11T14:14:47.521Z"
+    },
+    {
+      "position": 15,
+      "name": "Zoe K.",
+      "at": "2026-08-11T14:14:47.487Z"
+    },
+    {
+      "position": 16,
+      "name": "Rav S.",
+      "at": "2026-08-11T14:14:47.507Z"
+    },
+    {
+      "position": 17,
+      "name": "James H.",
+      "at": "2026-08-11T14:14:47.516Z"
+    },
+    {
+      "position": 18,
+      "name": "Nina F.",
+      "at": "2026-08-11T14:14:47.534Z"
+    },
+    {
+      "position": 19,
+      "name": "Sarah J.2",
+      "at": "2026-08-11T14:14:47.526Z"
+    },
+    {
+      "position": 20,
+      "name": "Chris A.",
+      "at": "2026-08-11T14:14:47.540Z"
+    },
+    {
+      "position": 21,
+      "name": "Ellie F.",
+      "at": "2026-08-11T14:14:47.533Z"
+    },
+    {
+      "position": 22,
+      "name": "Dev P.",
+      "at": "2026-08-11T14:14:47.588Z"
+    },
+    {
+      "position": 23,
+      "name": "Bridget",
+      "at": "2026-08-11T14:40:41.156Z"
+    },
+    {
+      "position": 24,
+      "name": "Ed R.2",
+      "at": "2026-08-11T17:27:35.592Z"
+    },
+    {
+      "position": 25,
+      "name": "Sarah J.3",
+      "at": "2026-08-11T17:27:36.361Z"
+    },
+    {
+      "position": 26,
+      "name": "John",
+      "at": "2026-08-11T18:26:12.302Z"
+    }
+  ]
+}
