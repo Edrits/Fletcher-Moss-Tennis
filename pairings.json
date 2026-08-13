@@ -65,63 +65,58 @@
       "sub": false
     },
     {
-      "name": "Emma ",
-      "sub": true
-    },
-    {
       "name": "Louis ",
       "sub": true
     }
   ],
   "numCourts": 4,
   "numGames": 4,
-  "seed": 183930,
+  "seed": 20998,
   "generatedGames": [
     {
       "game": 1,
       "sitters": [
-        "Emma",
         "Louis"
       ],
       "courts": [
         [
           [
-            "Ayesa",
-            "Ali"
+            "Luke",
+            "Shyam"
           ],
           [
-            "Shyam",
-            "Lucy"
+            "Rod",
+            "Zak"
           ]
         ],
         [
           [
-            "Adam",
+            "Ali",
+            "Sam"
+          ],
+          [
+            "Ed",
+            "Jack"
+          ]
+        ],
+        [
+          [
+            "Patrick",
             "Will"
           ],
           [
-            "Jack",
+            "Richard",
             "Evie"
           ]
         ],
         [
           [
-            "Rod",
-            "Ed"
+            "Yaqub",
+            "Ayesa"
           ],
           [
-            "Richard",
-            "Yaqub"
-          ]
-        ],
-        [
-          [
-            "Zak",
-            "Luke"
-          ],
-          [
-            "Patrick",
-            "Sam"
+            "Adam",
+            "Lucy"
           ]
         ]
       ]
@@ -129,48 +124,47 @@
     {
       "game": 2,
       "sitters": [
-        "Richard",
         "Patrick"
       ],
       "courts": [
         [
           [
-            "Sam",
-            "Lucy"
+            "Ayesa",
+            "Adam"
           ],
           [
-            "Jack",
-            "Emma"
-          ]
-        ],
-        [
-          [
-            "Ali",
-            "Louis"
-          ],
-          [
-            "Will",
+            "Richard",
             "Luke"
           ]
         ],
         [
           [
-            "Adam",
-            "Yaqub"
+            "Ed",
+            "Lucy"
           ],
           [
-            "Ayesa",
-            "Shyam"
+            "Louis",
+            "Jack"
           ]
         ],
         [
           [
-            "Zak",
-            "Rod"
+            "Will",
+            "Zak"
           ],
           [
-            "Evie",
-            "Ed"
+            "Ali",
+            "Rod"
+          ]
+        ],
+        [
+          [
+            "Shyam",
+            "Evie"
+          ],
+          [
+            "Sam",
+            "Yaqub"
           ]
         ]
       ]
@@ -178,48 +172,47 @@
     {
       "game": 3,
       "sitters": [
-        "Rod",
-        "Ali"
+        "Richard"
       ],
       "courts": [
         [
           [
-            "Richard",
-            "Luke"
+            "Jack",
+            "Evie"
           ],
           [
-            "Evie",
-            "Adam"
+            "Adam",
+            "Zak"
           ]
         ],
         [
           [
             "Louis",
-            "Sam"
+            "Shyam"
           ],
           [
-            "Zak",
+            "Will",
+            "Luke"
+          ]
+        ],
+        [
+          [
+            "Patrick",
+            "Ed"
+          ],
+          [
+            "Ayesa",
             "Lucy"
           ]
         ],
         [
           [
-            "Emma",
-            "Patrick"
+            "Sam",
+            "Rod"
           ],
           [
-            "Ayesa",
-            "Yaqub"
-          ]
-        ],
-        [
-          [
-            "Jack",
-            "Ed"
-          ],
-          [
-            "Will",
-            "Shyam"
+            "Yaqub",
+            "Ali"
           ]
         ]
       ]
@@ -227,24 +220,23 @@
     {
       "game": 4,
       "sitters": [
-        "Yaqub",
-        "Will"
+        "Ali"
       ],
       "courts": [
         [
           [
-            "Sam",
-            "Ed"
+            "Louis",
+            "Will"
           ],
           [
-            "Louis",
-            "Adam"
+            "Sam",
+            "Zak"
           ]
         ],
         [
           [
-            "Jack",
-            "Ali"
+            "Lucy",
+            "Evie"
           ],
           [
             "Richard",
@@ -253,27 +245,27 @@
         ],
         [
           [
-            "Emma",
-            "Ayesa"
+            "Adam",
+            "Ed"
           ],
           [
-            "Zak",
-            "Evie"
+            "Patrick",
+            "Luke"
           ]
         ],
         [
           [
-            "Shyam",
-            "Luke"
+            "Jack",
+            "Ayesa"
           ],
           [
-            "Lucy",
-            "Patrick"
+            "Shyam",
+            "Yaqub"
           ]
         ]
       ]
     }
   ],
-  "activeGame": 2,
-  "updated": "2026-08-13T15:10:08.148Z"
+  "activeGame": 0,
+  "updated": "2026-08-13T16:49:51.654Z"
 }
