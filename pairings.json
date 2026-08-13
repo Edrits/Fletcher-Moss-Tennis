@@ -195,7 +195,7 @@
         [
           [
             "Louis",
-            "Patrick"
+            "Sam"
           ],
           [
             "Zak",
@@ -205,7 +205,7 @@
         [
           [
             "Emma",
-            "Sam"
+            "Patrick"
           ],
           [
             "Ayesa",
@@ -274,6 +274,6 @@
       ]
     }
   ],
-  "activeGame": 1,
-  "updated": "2026-08-13T15:08:43.766Z"
+  "activeGame": 2,
+  "updated": "2026-08-13T15:09:54.875Z"
 }
