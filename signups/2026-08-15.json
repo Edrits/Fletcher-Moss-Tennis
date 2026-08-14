@@ -1,0 +1,17 @@
+{
+  "date": "2026-08-15",
+  "label": "Club session",
+  "capacity": {
+    "main": 16,
+    "subs": 2,
+    "waitlist": 10
+  },
+  "archivedAt": "2026-08-14T19:09:02.693Z",
+  "players": [
+    {
+      "position": 1,
+      "name": "Ed",
+      "at": "2026-08-14T07:11:26.809Z"
+    }
+  ]
+}
