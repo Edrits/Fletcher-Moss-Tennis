@@ -216,6 +216,20 @@ export async function hitRateLimit(bucket, id, limit, windowSeconds) {
   return { allowed: count <= limit, count };
 }
 
+// Read the counter WITHOUT spending an attempt.
+//
+// The admin throttle used to call hitRateLimit on every request, which counted the
+// organiser's successful actions as though they were failed guesses: unlock, open the
+// session, add a couple of names, take a couple off, and the allowance was gone with the
+// right password in hand. Reading first and only spending on an actual wrong password
+// keeps the brute-force protection and stops it landing on the one person who is
+// entitled to be there.
+export async function peekRateLimit(bucket, id) {
+  const raw = await command(['GET', `fm:rate:${bucket}:${id}`]);
+  const count = Number(raw);
+  return Number.isFinite(count) ? count : 0;
+}
+
 export async function removeByToken(token) {
   const items = await command(['LRANGE', KEYS.queue, 0, -1]);
   if (!Array.isArray(items)) return { error: 'Nothing to cancel.' };

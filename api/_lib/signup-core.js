@@ -20,6 +20,61 @@ export const SCHEDULE = [
 // a public button being used to pile junk into the list.
 export const DEFAULT_CAPACITY = { main: 16, subs: 2, waitlist: 10 };
 
+// ── Club time zone ──────────────────────────────────────────────────────────
+//
+// Every hour in this file is a London wall-clock hour. The club plays at 6:00 PM Didsbury
+// time, not 6:00 PM UTC.
+//
+// This used to be built with `new Date(y, m - 1, d, hour)`, which reads the *host's* zone.
+// Vercel runs functions with TZ unset, so that is UTC, and for the eight months of British
+// Summer Time every session time came out an hour late: a Monday was recorded as ending at
+// 20:00 UTC, which is 9:00 PM in Didsbury. The list went on saying "Open now" and went on
+// taking names for an hour after everyone had gone home.
+//
+// Intl carries the transition dates, so this stays correct across the March and October
+// clock changes without a hand-written BST rule. It is standard in browsers as well as
+// Node, which keeps this module loadable by the test harness.
+export const CLUB_TZ = 'Europe/London';
+
+const LONDON_FORMAT = new Intl.DateTimeFormat('en-GB', {
+  timeZone: CLUB_TZ, hour12: false,
+  year: 'numeric', month: '2-digit', day: '2-digit',
+  hour: '2-digit', minute: '2-digit', second: '2-digit'
+});
+
+// The London calendar fields for an instant.
+export function londonParts(date) {
+  const p = {};
+  for (const { type, value } of LONDON_FORMAT.formatToParts(date)) p[type] = value;
+  // en-GB with hour12:false renders midnight as "24" in some builds. Left alone that
+  // would roll the day forward by one while the date fields still said today.
+  return {
+    year: +p.year, month: +p.month, day: +p.day,
+    hour: +p.hour % 24, minute: +p.minute, second: +p.second
+  };
+}
+
+// How far ahead of UTC London is at a given instant, in milliseconds: 0 in winter,
+// 3600000 through British Summer Time.
+function londonOffsetMs(utcMs) {
+  const whole = Math.floor(utcMs / 1000) * 1000;   // the parts carry no milliseconds
+  const p = londonParts(new Date(whole));
+  return Date.UTC(p.year, p.month - 1, p.day, p.hour, p.minute, p.second) - whole;
+}
+
+// The instant at which a London clock reads the given wall-clock time.
+//
+// Two passes: the first offset is read from an approximate instant, the second confirms it
+// against the corrected one. The two only disagree within an hour either side of a clock
+// change, which is exactly where a single pass lands on the wrong side of the transition.
+export function londonInstant(year, month, day, hour = 0, minute = 0) {
+  const naive = Date.UTC(year, month - 1, day, hour, minute, 0, 0);
+  const firstPass = naive - londonOffsetMs(naive);
+  return new Date(naive - londonOffsetMs(firstPass));
+}
+
+const pad2 = n => String(n).padStart(2, '0');
+
 export const NAME_MAX = 30;
 
 // Letters (including accented ones), spaces, hyphens and apostrophes. No digits and no
@@ -40,10 +95,8 @@ function isNameShaped(name) {
 }
 
 export function isoDate(d) {
-  const y = d.getFullYear();
-  const m = String(d.getMonth() + 1).padStart(2, '0');
-  const day = String(d.getDate()).padStart(2, '0');
-  return `${y}-${m}-${day}`;
+  const p = londonParts(d);
+  return `${p.year}-${pad2(p.month)}-${pad2(p.day)}`;
 }
 
 // When a given session finishes, so a played session can stop advertising itself as open.
@@ -51,23 +104,27 @@ export function isoDate(d) {
 export function sessionEndsAt(dateStr) {
   const [y, m, d] = String(dateStr || '').split('-').map(Number);
   if (!y || !m || !d) return null;
-  const day = new Date(y, m - 1, d);
-  const slot = SCHEDULE.find(s => s.day === day.getDay());
-  return new Date(y, m - 1, d, slot ? slot.endHour : 23, slot ? 0 : 59, 0, 0);
+  // Which weekday that calendar date falls on. Read in UTC purely as date arithmetic:
+  // a date has the same weekday in every zone, so no conversion is involved.
+  const weekday = new Date(Date.UTC(y, m - 1, d)).getUTCDay();
+  const slot = SCHEDULE.find(s => s.day === weekday);
+  return slot ? londonInstant(y, m, d, slot.endHour, 0) : londonInstant(y, m, d, 23, 59);
 }
 
 // The next session that has not yet finished. A session stays current until it ends, so
 // the page does not drop tonight's game at midday.
 export function nextSession(now) {
+  const today = londonParts(now);
   for (let offset = 0; offset < 14; offset++) {
-    const d = new Date(now.getFullYear(), now.getMonth(), now.getDate() + offset);
-    const slot = SCHEDULE.find(s => s.day === d.getDay());
+    // Step through calendar days with UTC arithmetic, which normalises a day number past
+    // the end of the month. These are date fields, not an instant, so no zone is implied.
+    const stamp = new Date(Date.UTC(today.year, today.month - 1, today.day + offset));
+    const y = stamp.getUTCFullYear(), m = stamp.getUTCMonth() + 1, d = stamp.getUTCDate();
+    const slot = SCHEDULE.find(s => s.day === stamp.getUTCDay());
     if (!slot) continue;
-    if (offset === 0) {
-      const endsAt = new Date(d.getFullYear(), d.getMonth(), d.getDate(), slot.endHour);
-      if (now >= endsAt) continue;
-    }
-    return { date: isoDate(d), label: slot.label };
+    // Today only counts while it is still running, judged on the London clock.
+    if (offset === 0 && now >= londonInstant(y, m, d, slot.endHour, 0)) continue;
+    return { date: `${y}-${pad2(m)}-${pad2(d)}`, label: slot.label };
   }
   return null;
 }
@@ -76,7 +133,9 @@ export function nextSession(now) {
 // store it as an ISO string; an admin may override it per session.
 export function defaultOpensAt(sessionDate) {
   const [y, m, d] = sessionDate.split('-').map(Number);
-  return new Date(y, m - 1, d - 1, 20, 0, 0, 0);
+  // Day 0 rolls back into the previous month, and Date.UTC handles the year boundary
+  // and leap days with it.
+  return londonInstant(y, m, d - 1, 20, 0);
 }
 
 export function normaliseName(raw) {

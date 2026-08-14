@@ -205,6 +205,22 @@
         .status-chip.is-pending { background: var(--color-sub-bg); border-color: var(--gold-300); color: var(--color-sub); }
         .status-chip.is-closed { background: var(--paper-100); border-color: var(--border-strong); color: var(--ink-500); }
 
+        /* Beta marker. The tool works but is still being shaped around how the club
+           actually uses it, so say so plainly rather than letting members find out. */
+        .beta-chip {
+            display: inline-block; vertical-align: middle;
+            border-radius: 999px; padding: 3px 10px; font-size: 10px; font-weight: 800;
+            letter-spacing: 1.4px; text-transform: uppercase; white-space: nowrap;
+            background: var(--color-sub-bg); color: var(--color-sub); border: 1px solid var(--gold-300);
+        }
+        .top-title .beta-chip { margin-left: 6px; padding: 2px 8px; font-size: 9px; }
+        .section-heading h2 .beta-chip { margin-left: 10px; transform: translateY(-3px); }
+        .beta-note {
+            max-width: 620px; margin: 0 auto 20px; padding: 12px 16px;
+            background: var(--color-sub-bg); border-radius: var(--radius-md);
+            font-size: var(--text-sm); color: var(--ink-700); text-align: center;
+        }
+
         /* ── Countdown ── */
         .countdown-box {
             margin-top: 18px; padding: 20px 16px; text-align: center;
@@ -412,7 +428,7 @@
                     <a href="index.html" style="text-decoration: none; color: inherit;">
                         <h1>Fletcher Moss Social Tennis Club</h1>
                     </a>
-                    <p>Session Sign-Up</p>
+                    <p>Session Sign-Up <span class="beta-chip">Beta</span></p>
                 </div>
             </div>
             <nav class="nav-links">
@@ -434,7 +450,7 @@
             <a href="index.html#location" onclick="closeMobileNav()">Location</a>
             <a href="box-league.html" onclick="closeMobileNav()">FMST Singles League</a>
             <a href="pairings.html" onclick="closeMobileNav()">Court Pairings</a>
-            <a href="signup.html" onclick="closeMobileNav()">Session Sign-Up</a>
+            <a href="signup.html" onclick="closeMobileNav()">Session Sign-Up (beta)</a>
         </nav>
     </header>
 
@@ -442,9 +458,11 @@
 
         <div class="section-heading">
             <span class="kicker">Session tool</span>
-            <h2>Session Sign-Up</h2>
+            <h2>Session Sign-Up <span class="beta-chip">Beta</span></h2>
             <p class="lede">Places are given out in the order people tap the button. If someone drops out, everyone below moves up.</p>
         </div>
+
+        <p class="beta-note">This tool is still in testing. It should work, but do not rely on it as the only record of who is playing. If something looks wrong, say so in the WhatsApp group.</p>
 
         <!-- First paint. Replaced as soon as the first GET lands, or turned into a
              plain error with a retry button if it does not. -->
@@ -483,7 +501,9 @@
 
                 <div class="join-box" id="join-box" style="display:none;">
                     <label class="field-label" for="name-input">Your name</label>
-                    <input class="text-input" id="name-input" type="text" maxlength="40"
+                    <!-- 30 matches NAME_MAX in api/_lib/signup-core.js. At 40 the box let
+                         members type a name the server was always going to refuse. -->
+                    <input class="text-input" id="name-input" type="text" maxlength="30"
                            autocomplete="name" enterkeyhint="done" placeholder="e.g. Ed R.">
                     <p class="field-hint">First name and last initial is plenty. It shows on the list below.</p>
                     <button class="big-btn" id="join-btn" onclick="join()">I'm in</button>
@@ -536,7 +556,7 @@
                     <input class="text-input" id="adm-opens" type="datetime-local" style="min-width:190px;">
                 </div>
                 <input class="text-input" id="adm-label" type="text" maxlength="60" placeholder="Thursday 6:00 to 8:00 PM">
-                <input class="text-input" id="adm-organiser" type="text" maxlength="40" placeholder="Who is running it" style="margin-top:8px;">
+                <input class="text-input" id="adm-organiser" type="text" maxlength="30" placeholder="Who is running it" style="margin-top:8px;">
                 <p class="admin-note">The date is the session itself. The second box is when the button goes live, usually 7:00 PM the night before. Whoever is running it takes place 1 automatically.</p>
                 <button class="edit-btn primary" style="margin-top:10px;" onclick="adminOpen()">Open sign-up</button>
             </div>
@@ -546,7 +566,7 @@
             <div class="admin-block">
                 <label for="adm-seed">Add a name yourself</label>
                 <div class="admin-row">
-                    <input class="text-input" id="adm-seed" type="text" maxlength="40" placeholder="Name">
+                    <input class="text-input" id="adm-seed" type="text" maxlength="30" placeholder="Name">
                     <button class="edit-btn" onclick="adminSeed()">Add to list</button>
                 </div>
                 <p class="admin-note">For anyone who cannot use the site. They go on the end, so nobody who has already tapped gets jumped.</p>
@@ -558,9 +578,9 @@
             </div>
 
             <div class="admin-block">
-                <label>Start again</label>
-                <button class="edit-btn danger" onclick="adminReset()">Clear the whole list</button>
-                <p class="admin-note">Wipes every name and closes sign-up. There is no undo.</p>
+                <label>Cancel this session</label>
+                <button class="edit-btn danger" onclick="adminReset()">Cancel and clear the list</button>
+                <p class="admin-note">For a rained-off session. The list is archived first, then everyone comes off and sign-up closes. To run the same session again afterwards, set it up above and press Open sign-up.</p>
             </div>
 
             <p class="msg" id="admin-msg" role="status" aria-live="polite"></p>
@@ -1058,7 +1078,14 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ action: 'verify', password: pw })
                 });
-                if (res.status === 401) { alert('Incorrect password.'); return; }
+                let data = {};
+                try { data = await res.json(); } catch (err) { /* empty or non-JSON body */ }
+                // 429 means this connection has spent its wrong-password attempts. Saying
+                // "try again" here was actively harmful: it invited the retry that keeps
+                // the lockout in place, and never mentioned the fifteen minute wait, so a
+                // correct password looked like a broken page.
+                if (res.status === 429) { alert(data.error || 'Too many incorrect passwords. Wait fifteen minutes and try again.'); return; }
+                if (res.status === 401) { alert(data.error || 'Incorrect password.'); return; }
                 if (!res.ok) { alert('Could not verify right now, please try again.'); return; }
             } catch (err) {
                 console.error('Verify failed:', err);
@@ -1143,13 +1170,41 @@
                 return;
             }
             const organiser = document.getElementById('adm-organiser').value.trim();
-            const res = await adminPost({
+            const body = {
                 action: 'open',
                 date: date,
                 label: label || 'Club session',
                 opensAt: opensAt.toISOString(),
                 organiser: organiser
-            });
+            };
+            let res = await adminPost(body);
+
+            // The server refuses to wipe a session that is already live and running on the
+            // same date, because the date box is pre-filled with it and a typo would take
+            // everyone off. It edits the details instead and says so. That left no way to
+            // genuinely start the session again, so offer it here, explicitly.
+            if (res && res.edited) {
+                const wipe = confirm(
+                    'That session is already open with ' + ((res.counts && res.counts.total) || 0) +
+                    ' name(s) on it, so only the details were updated.\n\n' +
+                    'Do you want to cancel it and build it again from scratch? ' +
+                    'The current list is archived first, then everyone is taken off.'
+                );
+                if (wipe) {
+                    res = await adminPost(Object.assign({ force: true }, body));
+                    if (res) {
+                        showMsg('admin-msg', 'The old list was archived and the session rebuilt. '
+                            + 'The button goes live at ' + formatTime(opensAt) + '.'
+                            + (organiser ? ' ' + organiser + ' is place 1.' : ''), 'good');
+                        await refresh();
+                    }
+                    return;
+                }
+                showMsg('admin-msg', res.message, 'info');
+                await refresh();
+                return;
+            }
+
             if (res) {
                 showMsg('admin-msg', 'Sign-up is set. The button goes live at ' + formatTime(opensAt) + '.'
                     + (organiser ? ' ' + organiser + ' is place 1.' : ''), 'good');
@@ -1175,10 +1230,10 @@
         // could take off the wrong person.
 
         async function adminReset() {
-            if (!confirm('Clear the whole list? Every name goes and sign-up closes. There is no undo.')) return;
+            if (!confirm('Cancel this session? The list is archived, every name comes off and sign-up closes. There is no undo.')) return;
             const res = await adminPost({ action: 'reset' });
             if (res) {
-                showMsg('admin-msg', 'The list has been cleared.', 'good');
+                showMsg('admin-msg', 'The session was cancelled and the list cleared. It has been archived. Set a date above and press Open sign-up to run one again.', 'good');
                 await refresh();
             }
         }

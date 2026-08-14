@@ -187,7 +187,9 @@
             to   { opacity: 1; transform: translateY(0) scale(1); }
         }
 
-        .nav-links { display: flex; gap: 22px; align-items: center; flex-shrink: 0; }
+        /* 16px rather than 22px: the bar carries nine links now that the sign-up tool is
+           in it, and the full set has to sit inside the 1500px inner width. */
+        .nav-links { display: flex; gap: 16px; align-items: center; flex-shrink: 0; }
         .nav-links a {
             position: relative; padding-bottom: 5px;
             color: rgba(244,242,234,.9); text-decoration: none; font-size: var(--text-sm);
@@ -202,6 +204,21 @@
         }
         .nav-links a:hover, .nav-links a.active { color: #fff; }
         .nav-links a:hover::after, .nav-links a.active::after { transform: scaleX(1); }
+
+        /* Beta marker for the sign-up tool. It works, but it is still being shaped around
+           how the club actually uses it, so members should know before they rely on it.
+           Two contexts: the dark green header bar, and the pale page body below. */
+        .beta-chip {
+            display: inline-block; vertical-align: middle;
+            border-radius: 999px; padding: 2px 8px; font-size: 9.5px; font-weight: 800;
+            letter-spacing: 1.3px; text-transform: uppercase; white-space: nowrap;
+            background: var(--gold-100); color: var(--gold-accent);
+            border: 1px solid var(--gold-300);
+        }
+        .nav-links .beta-chip {
+            background: rgba(231,183,104,.16); color: var(--gold-300);
+            border-color: rgba(231,183,104,.45); margin-left: 5px;
+        }
 
         @media (prefers-reduced-motion: reduce) {
             .ripple-text span { animation: none; }
@@ -537,7 +554,10 @@
         /* ============================================================
            Responsive
            ============================================================ */
-        @media (max-width: 1560px) {
+        /* The bar carries nine links now that the sign-up tool is in it, and the full set
+           needs about 1700px before it starts pushing the logo. Below that the hamburger
+           takes over, and its menu carries every link including sign-up. */
+        @media (max-width: 1720px) {
             .nav-links { display: none; }
             .hamburger { display: flex; flex-shrink: 0; }
         }
@@ -593,6 +613,7 @@
                 <a href="#location">Location</a>
                 <a href="box-league.html">FMST Singles League</a>
                 <a href="pairings.html">Pairings</a>
+                <a href="signup.html">Sign-up <span class="beta-chip">Beta</span></a>
             </nav>
             <button class="hamburger" id="hamburger" aria-label="Open menu" onclick="toggleMobileNav()">
                 <span></span><span></span><span></span>
@@ -607,7 +628,7 @@
             <a href="#location" onclick="closeMobileNav()">Location</a>
             <a href="box-league.html" onclick="closeMobileNav()">FMST Singles League</a>
             <a href="pairings.html" onclick="closeMobileNav()">Pairings</a>
-            <a href="signup.html" onclick="closeMobileNav()">Session sign-up</a>
+            <a href="signup.html" onclick="closeMobileNav()">Session sign-up (beta)</a>
         </nav>
     </header>
 
@@ -625,6 +646,9 @@
             <div class="hero-actions">
                 <a href="#about" class="btn btn-inverse btn-lg">Learn more</a>
                 <a href="#join" class="btn btn-lg">Join now</a>
+                <!-- The desktop nav only appears on very wide screens, so the sign-up tool
+                     needs a way in from the top of the page at every width. -->
+                <a href="signup.html" class="btn btn-inverse btn-lg">Session sign-up <span class="beta-chip">Beta</span></a>
             </div>
         </div>
     </div>
@@ -692,7 +716,7 @@
             </div>
             <div class="fade-in" style="text-align:center; margin-top:32px;">
                 <a href="signup.html" class="btn btn-lg">Sign up for the next session</a>
-                <p style="margin-top:12px; color:var(--text-muted); font-size:var(--text-sm);">Places open at 8:00 PM the night before.</p>
+                <p style="margin-top:12px; color:var(--text-muted); font-size:var(--text-sm);">Places open at 8:00 PM the night before. <span class="beta-chip">Beta</span> The sign-up tool is still in testing.</p>
             </div>
         </section>
 

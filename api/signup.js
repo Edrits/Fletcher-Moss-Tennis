@@ -16,7 +16,7 @@
 // to the repo once, on reset.
 import {
   KEYS, isConfigured, describeCredentialEnv, hgetall, hset, lrangeJSON, del,
-  joinAtomic, removeByNames, removeByToken, hitRateLimit
+  joinAtomic, removeByNames, removeByToken, hitRateLimit, peekRateLimit
 } from './_lib/redis.js';
 import { randomUUID } from 'node:crypto';
 import { archiveSession } from './_lib/archive.js';
@@ -24,6 +24,10 @@ import {
   DEFAULT_CAPACITY, nextSession, defaultOpensAt, sessionEndsAt,
   validateName, shortenName, totalSlots, tierFor, viewModel
 } from './_lib/signup-core.js';
+
+// Wrong-password guesses allowed per connection per fifteen minutes. Successful admin
+// actions do not count against it, so this only ever has to be large enough for typos.
+const ADMIN_ATTEMPT_LIMIT = 10;
 
 const JOIN_ERRORS = {
   already_in: 'You already have a place for this session.',
@@ -55,15 +59,22 @@ export default async function handler(req, res) {
 
   try {
     if (req.method === 'GET') {
-      // Every GET costs two Redis commands, and the page polls while it is open. Thirty
-      // members watching the list around opening time is thousands of commands in half an
-      // hour, which is enough to run into the Upstash daily allowance and take the list
-      // down for everyone. A few seconds of caching removes almost all of it, and the
-      // list simply cannot move faster than people can read it anyway.
+      // Only the anonymous view is cacheable. A response carrying somebody's own `mine`
+      // flags must never be handed to the next caller.
       //
-      // Only cache the anonymous view. A response carrying somebody's own `mine` flags
-      // must never be handed to the next caller.
+      // Vary is what makes that hold. Without it the CDN keys purely on the URL, so an
+      // anonymous response cached from any caller was served straight back to a member
+      // who HAD sent a token: their `you` block and `mine` flags vanished, their place
+      // disappeared from the page and the "Can't make it" button went with it, for as
+      // long as the entry lived. Confirmed against production, not theoretical.
+      //
+      // Note this does not reduce load the way the previous comment here claimed. The
+      // page always sends a token, so in practice every real poll is a miss and costs its
+      // two Redis commands. The cache only ever helps anonymous callers. Cutting the real
+      // per-member cost needs the personalisation moved off the response so every caller
+      // can share one cached body, which is a change to the API shape, not a header.
       const myToken = req.headers['x-signup-token'] || null;
+      res.setHeader('Vary', 'X-Signup-Token');
       if (!myToken) res.setHeader('Cache-Control', 'public, max-age=5, s-maxage=5');
       else res.setHeader('Cache-Control', 'private, no-store');
       return res.status(200).json(await readState(now, myToken));
@@ -73,7 +84,7 @@ export default async function handler(req, res) {
       return res.status(405).json({ error: 'Method not allowed' });
     }
 
-    const { action, name, names, token, password, date, label, opensAt, capacity, organiser } = req.body || {};
+    const { action, name, names, token, password, date, label, opensAt, capacity, organiser, force } = req.body || {};
 
     // ── Member actions, no password ──────────────────────────────────────────────
     if (action === 'join') {
@@ -128,12 +139,28 @@ export default async function handler(req, res) {
     }
     // One shared, human-chosen password with an unlimited-rate check is a dictionary
     // attack waiting to happen, and CORS is open so it can be driven from any page.
-    const pwTries = await hitRateLimit('admin', clientId(req), 10, 900);
-    if (!pwTries.allowed) {
-      return res.status(429).json({ error: 'Too many attempts. Wait fifteen minutes and try again.' });
+    //
+    // Only a WRONG password spends an attempt. This used to increment on every admin
+    // request, so an organiser running a session normally (unlock, open, add a couple of
+    // names, take a couple off) spent the whole allowance while holding the correct
+    // password, and was then locked out for fifteen minutes mid-session. Reading the
+    // counter before checking, and spending only on a failure, keeps a guesser capped at
+    // ADMIN_ATTEMPT_LIMIT wrong guesses per window while leaving legitimate work
+    // completely unthrottled.
+    const spent = await peekRateLimit('admin', clientId(req));
+    if (spent >= ADMIN_ATTEMPT_LIMIT) {
+      return res.status(429).json({
+        error: 'Too many incorrect passwords from this connection. Wait fifteen minutes and try again.'
+      });
     }
     if (password !== ADMIN_PASSWORD) {
-      return res.status(401).json({ error: 'Incorrect password' });
+      const used = await hitRateLimit('admin', clientId(req), ADMIN_ATTEMPT_LIMIT, 900);
+      const left = Math.max(0, ADMIN_ATTEMPT_LIMIT - used.count);
+      return res.status(401).json({
+        error: left
+          ? `Incorrect password. ${left} ${left === 1 ? 'try' : 'tries'} left before this connection is locked out for fifteen minutes.`
+          : 'Incorrect password. This connection is now locked out for fifteen minutes.'
+      });
     }
 
     if (action === 'verify') {
@@ -168,7 +195,13 @@ export default async function handler(req, res) {
       // Re-opening the session that is already live would archive and delete everyone who
       // has already tapped, and the date box is pre-filled with that very date, so an
       // admin correcting a typo could wipe the list. Treat it as an edit instead.
-      if (previous.date && previous.date === useDate && previousEntries.length) {
+      //
+      // `force` is the deliberate way past this. Without it there was no way at all to
+      // cancel a session and build it again from scratch: the only control that cleared
+      // the list also closed sign-up, and pressing Open on the same date silently kept
+      // the old names. The page asks for confirmation before it sends force, so the
+      // typo-protection above still holds for the accidental case.
+      if (previous.date && previous.date === useDate && previousEntries.length && !force) {
         await hset(KEYS.meta, {
           label: useLabel, opensAt: useOpensAt, state: 'open',
           endsAt: endsAtFor(useDate)

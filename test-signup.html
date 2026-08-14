@@ -157,7 +157,7 @@ footer.foot{
 <script type="module">
 import {
   SCHEDULE, DEFAULT_CAPACITY, NAME_MAX, sessionEndsAt,
-  isoDate, nextSession, defaultOpensAt,
+  isoDate, nextSession, defaultOpensAt, londonInstant, londonParts, CLUB_TZ,
   normaliseName, validateName, shortenName, disambiguate,
   totalSlots, tierFor, splitEntries, viewModel
 } from './api/_lib/signup-core.js';
@@ -199,8 +199,16 @@ function truthy(label, condition, detail) {
   });
 }
 
-// A Date built from local parts, so it matches how signup-core builds its own dates.
-const at = (y, m, d, h = 0, min = 0) => new Date(y, m - 1, d, h, min, 0, 0);
+// A Date built from LONDON wall-clock parts, matching how signup-core builds its own.
+// This used to use `new Date(y, m - 1, d, ...)`, which reads whichever zone the browser
+// happens to be in, so the whole date suite silently asserted something different
+// depending on where it was opened, and passed on a London laptop while the same logic
+// was an hour out on the UTC server it actually runs on.
+const at = (y, m, d, h = 0, min = 0) => londonInstant(y, m, d, h, min);
+
+// The London wall-clock hour of an instant, for assertions that care about what the
+// clock in Didsbury reads rather than what the host's clock reads.
+const londonHour = date => londonParts(date).hour;
 
 /* ---------------------------------------------------------------------------
    Simulation of the Lua JOIN_SCRIPT
@@ -312,9 +320,9 @@ group('defaultOpensAt');
 
 const opensThu = defaultOpensAt('2026-08-13');
 check('opens the night before', isoDate(opensThu), '2026-08-12');
-check('opens at 8:00 PM', opensThu.getHours(), 20);
-check('minutes are zeroed', opensThu.getMinutes(), 0);
-check('seconds are zeroed', opensThu.getSeconds(), 0);
+check('opens at 8:00 PM London time', londonHour(opensThu), 20);
+check('minutes are zeroed', londonParts(opensThu).minute, 0);
+check('seconds are zeroed', londonParts(opensThu).second, 0);
 check('milliseconds are zeroed', opensThu.getMilliseconds(), 0);
 check('handles the first of the month', isoDate(defaultOpensAt('2026-09-01')), '2026-08-31');
 check('handles the first of January', isoDate(defaultOpensAt('2026-01-01')), '2025-12-31');
@@ -322,6 +330,60 @@ check('handles the first of March in a leap year', isoDate(defaultOpensAt('2028-
 truthy('returns a Date', defaultOpensAt('2026-08-13') instanceof Date);
 truthy('opens before the session it belongs to',
   defaultOpensAt('2026-08-13') < at(2026, 8, 13, 18, 0));
+
+/* ---------------------------------------------------------------------------
+   Time zone
+   ---------------------------------------------------------------------------
+   The club plays on the Didsbury clock, but Vercel runs functions with TZ unset,
+   which is UTC. These assert the resulting INSTANT in UTC, so they mean the same
+   thing wherever the harness is opened, and they fail if the zone handling
+   regresses to host-local time.
+--------------------------------------------------------------------------- */
+group('Club time zone (Europe/London, not the host clock)');
+
+check('the club runs on London time', CLUB_TZ, 'Europe/London');
+
+// Through British Summer Time a London hour is one hour ahead of UTC.
+check('a summer Monday ends at 8:00 PM BST, which is 19:00 UTC',
+  sessionEndsAt('2026-08-17').toISOString(), '2026-08-17T19:00:00.000Z');
+check('a summer Saturday ends at 2:00 PM BST, which is 13:00 UTC',
+  sessionEndsAt('2026-08-15').toISOString(), '2026-08-15T13:00:00.000Z');
+// In winter London is UTC, so the two agree.
+check('a winter Monday ends at 8:00 PM GMT, which is 20:00 UTC',
+  sessionEndsAt('2026-01-05').toISOString(), '2026-01-05T20:00:00.000Z');
+check('a winter Thursday ends at 8:00 PM GMT, which is 20:00 UTC',
+  sessionEndsAt('2026-01-08').toISOString(), '2026-01-08T20:00:00.000Z');
+
+check('summer sign-up opens 8:00 PM BST the night before, which is 19:00 UTC',
+  defaultOpensAt('2026-08-17').toISOString(), '2026-08-16T19:00:00.000Z');
+check('winter sign-up opens 8:00 PM GMT the night before, which is 20:00 UTC',
+  defaultOpensAt('2026-01-05').toISOString(), '2026-01-04T20:00:00.000Z');
+
+// The 2026 changes: forward on 29 March, back on 25 October.
+check('the day the clocks go forward is still an 8:00 PM local finish',
+  sessionEndsAt('2026-03-30').toISOString(), '2026-03-30T19:00:00.000Z');
+check('the day the clocks go back is still an 8:00 PM local finish',
+  sessionEndsAt('2026-10-26').toISOString(), '2026-10-26T20:00:00.000Z');
+truthy('the offset actually changes across the March transition',
+  sessionEndsAt('2026-03-23').toISOString() === '2026-03-23T20:00:00.000Z' &&
+  sessionEndsAt('2026-03-30').toISOString() === '2026-03-30T19:00:00.000Z');
+
+// The bug this fixes: a summer session must stop being "next" at 8:00 PM Didsbury time,
+// not at 9:00 PM. 19:00 UTC is 8:00 PM BST.
+check('a summer Monday is still current one minute before the local finish',
+  nextSession(new Date('2026-08-17T18:59:00.000Z')),
+  { date: '2026-08-17', label: 'Monday 6:00 to 8:00 PM' });
+check('a summer Monday is done exactly at the local finish, not an hour later',
+  nextSession(new Date('2026-08-17T19:00:00.000Z')),
+  { date: '2026-08-20', label: 'Thursday 6:00 to 8:00 PM' });
+
+// Just after midnight in London during BST it is still the previous day in UTC. Reading
+// the date off the host clock there picks yesterday.
+check('half past midnight BST reads as the London date, not the UTC one',
+  isoDate(new Date('2026-08-16T23:30:00.000Z')), '2026-08-17');
+check('and nextSession agrees, finding that same Monday',
+  nextSession(new Date('2026-08-16T23:30:00.000Z')),
+  { date: '2026-08-17', label: 'Monday 6:00 to 8:00 PM' });
 
 /* ---------------------------------------------------------------------------
    normaliseName
@@ -559,8 +621,8 @@ const NOW = new Date('2026-08-13T09:00:00.000Z');
 
 group('Session end and closing');
 // A played session must stop advertising itself as open.
-check('sessionEndsAt uses the Thursday end hour', sessionEndsAt('2026-08-13').getHours(), 20);
-check('sessionEndsAt uses the Saturday end hour', sessionEndsAt('2026-08-15').getHours(), 14);
+check('sessionEndsAt uses the Thursday end hour', londonHour(sessionEndsAt('2026-08-13')), 20);
+check('sessionEndsAt uses the Saturday end hour', londonHour(sessionEndsAt('2026-08-15')), 14);
 truthy('a finished session reads as closed',
   viewModel({ meta: { state: 'open', opensAt: '2020-01-01T00:00:00Z', endsAt: '2020-01-02T00:00:00Z' },
               entries: [], now: NOW }).state === 'closed');

@@ -1,0 +1,13 @@
+# Kept in the repo, deliberately not deployed.
+#
+# test-signup.html is the sign-up logic test harness: a development tool, not a page of
+# the club site, and it was reachable at /test-signup.html on the live domain. It stays in
+# git so the assertions travel with the code, and is run locally against a static server
+# as described in CLAUDE.md.
+test-signup.html
+
+# Internal working notes. Nothing on the site links to them and they are not for members.
+PM-REPORTS/
+
+# The brand kit is a reference export, not wired into any page. Nothing links to it.
+design-system/
