@@ -207,6 +207,12 @@
           "points": 4
         },
         {
+          "name": "Sully",
+          "played": 2,
+          "won": 1,
+          "points": 4
+        },
+        {
           "name": "Sofia",
           "played": 2,
           "won": 0,
@@ -214,18 +220,12 @@
         },
         {
           "name": "Alan Russell",
-          "played": 1,
+          "played": 2,
           "won": 0,
-          "points": 1
+          "points": 2
         },
         {
           "name": "Ben",
-          "played": 1,
-          "won": 0,
-          "points": 1
-        },
-        {
-          "name": "Sully",
           "played": 1,
           "won": 0,
           "points": 1
@@ -286,6 +286,13 @@
           "winner": "Michael",
           "noShow": null,
           "date": "2026-08-08T16:59:15.950Z"
+        },
+        {
+          "player1": "Sully",
+          "player2": "Alan Russell",
+          "winner": "Sully",
+          "noShow": null,
+          "date": "2026-08-14T07:27:18.689Z"
         }
       ]
     },
