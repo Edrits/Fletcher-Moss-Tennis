@@ -215,6 +215,23 @@
             background: var(--gold-100); color: var(--gold-accent);
             border: 1px solid var(--gold-300);
         }
+        /* Always-visible header button for the sign-up tool. */
+        .top-cta {
+            display: inline-flex; align-items: center; gap: 7px; flex-shrink: 0;
+            padding: 9px 16px; border-radius: 999px;
+            background: rgba(244,242,234,.95); color: var(--green-800);
+            font-size: var(--text-sm); font-weight: 700; text-decoration: none;
+            white-space: nowrap; transition: background .2s, transform .2s;
+            box-shadow: var(--shadow-sm);
+        }
+        .top-cta:hover { background: #fff; transform: translateY(-1px); }
+        .top-cta .beta-chip {
+            background: var(--gold-100); color: var(--gold-accent); border-color: var(--gold-300);
+        }
+        /* The full club name needs about 294px and a 375px phone offers roughly 119px once
+           the badge, the sign-up button and the hamburger have taken theirs, so it was being
+           cut mid-word. Below 560px the bar carries the short form instead of a stump. */
+
         .nav-links .beta-chip {
             background: rgba(231,183,104,.16); color: var(--gold-300);
             border-color: rgba(231,183,104,.45); margin-left: 5px;
@@ -585,6 +602,23 @@
             .feature-band { min-height: clamp(340px, 60vh, 480px); margin-bottom: 56px; }
             .feature-band h2 { font-size: var(--text-2xl); }
         }
+
+        /* The header sign-up button exists to cover 561px to 1720px, where .nav-links is
+           hidden but the bar has room to spare. That band is most laptops, and it is where
+           the tool was reachable only from inside the hamburger.
+
+           Below 561px it is hidden again, deliberately. A 375px bar offers about 345px and
+           the club name alone wants 290 of it, so name plus button plus hamburger cannot
+           all fit: something has to be cut, and cutting the club's own name off its header
+           is the wrong trade. Phones are not left without a route in, they get the large
+           "Session sign-up" button in the hero and the link in the hamburger menu.
+
+           Shrinking the name to fit was tried and does not work either: rippleTitle()
+           rebuilds the name as one span per character with non-breaking spaces, so it wraps
+           mid-word ("Fletcher Moss Soc / ial Tennis Club") rather than between words. */
+        @media (max-width: 560px) {
+            .top-cta { display: none; }
+        }
     </style>
 </head>
 <body>
@@ -615,6 +649,10 @@
                 <a href="pairings.html">Pairings</a>
                 <a href="signup.html">Sign-up <span class="beta-chip">Beta</span></a>
             </nav>
+            <!-- Deliberately outside .nav-links. Those are hidden below 1720px, which is
+                 most laptops and every phone, and the sign-up tool was reachable only from
+                 inside the hamburger as a result. This stays in the bar at every width. -->
+            <a href="signup.html" class="top-cta">Sign-up<span class="beta-chip">Beta</span></a>
             <button class="hamburger" id="hamburger" aria-label="Open menu" onclick="toggleMobileNav()">
                 <span></span><span></span><span></span>
             </button>

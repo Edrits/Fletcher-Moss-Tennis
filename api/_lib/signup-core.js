@@ -138,6 +138,88 @@ export function defaultOpensAt(sessionDate) {
   return londonInstant(y, m, d - 1, 20, 0);
 }
 
+// ── Session code ────────────────────────────────────────────────────────────
+//
+// The sign-up endpoint is public and CORS is open, so without this anyone who finds the
+// URL can take a place. The code is the door: the organiser posts it in the WhatsApp
+// group when sign-up opens, and only people who are in the group can join.
+//
+// Four digits, because it has to be typed on a phone by thirty people at once and a
+// longer string costs more in mistyped codes than it buys in strength. It is not a
+// password and is not protecting anything valuable. The brake on guessing is the join
+// rate limit, which is eight attempts per connection per hour: at that rate the ten
+// thousand possibilities take over fifty days, and the code is rotated every session.
+export const PIN_LENGTH = 4;
+
+const PIN_SHAPE = /^\d{4}$/;
+
+export function normalisePin(raw) {
+  return String(raw ?? '').trim();
+}
+
+export function validatePin(raw) {
+  return PIN_SHAPE.test(normalisePin(raw));
+}
+
+// ── The WhatsApp message ────────────────────────────────────────────────────
+//
+// Built here rather than in the page so there is exactly one copy of the wording, and so
+// it can be tested against a fixed clock. The page cannot import this module: Vercel
+// serves api/ as functions, not as static assets, so an import would work locally and
+// 404 in production. The server therefore hands the finished text to the page.
+export const SIGNUP_URL = 'https://www.fletchermoss-socialtennisclub.co.uk/signup.html';
+
+const LONDON_TIME = new Intl.DateTimeFormat('en-GB', {
+  timeZone: CLUB_TZ, hour: 'numeric', minute: '2-digit', hour12: true
+});
+const LONDON_DAY = new Intl.DateTimeFormat('en-GB', {
+  timeZone: CLUB_TZ, weekday: 'long', day: 'numeric', month: 'long'
+});
+
+// "7:00 PM". en-GB renders a lower-case "pm", and newer ICU separates it with a narrow
+// no-break space rather than an ordinary one, which \s does match.
+export function londonTime(date) {
+  return LONDON_TIME.format(date).replace(/\s*(am|pm)$/i, (m, ap) => ' ' + ap.toUpperCase());
+}
+
+export function londonDay(date) {
+  return LONDON_DAY.format(date);
+}
+
+function whenPhrase(opens, now) {
+  const time = londonTime(opens);
+  if (!now) return `at ${time} on ${londonDay(opens)}`;
+  const opensOn = isoDate(opens);
+  if (opensOn === isoDate(now)) {
+    // Sign-up opens in the evening, but do not promise "tonight" for a morning time.
+    return londonParts(opens).hour >= 17 ? `at ${time} tonight` : `at ${time} today`;
+  }
+  const p = londonParts(now);
+  if (opensOn === isoDate(londonInstant(p.year, p.month, p.day + 1, 12))) {
+    return `at ${time} tomorrow`;
+  }
+  return `at ${time} on ${londonDay(opens)}`;
+}
+
+// The text the organiser copies and pastes into the group. Plain, and short enough to read
+// on a phone without expanding it.
+export function shareMessage({ label, opensAt, pin, now = null, url = SIGNUP_URL } = {}) {
+  const session = label || 'the next session';
+  const opens = opensAt ? new Date(opensAt) : null;
+  const timed = opens && !Number.isNaN(opens.getTime());
+
+  const lines = [
+    timed
+      ? `Sign-up for ${session} opens ${whenPhrase(opens, now)}.`
+      : `Sign-up for ${session} is open.`,
+    '',
+    url
+  ];
+  if (pin) lines.push('', `Code: ${pin}`);
+  lines.push('', 'Places go in the order people tap, and the code is only good for this session.');
+  return lines.join('\n');
+}
+
 export function normaliseName(raw) {
   return String(raw ?? '').trim().replace(/\s+/g, ' ');
 }
@@ -257,6 +339,10 @@ export function viewModel({ meta = {}, entries = [], now, myToken = null }) {
     date: meta.date || null,
     label: meta.label || null,
     opensAt: meta.opensAt || null,
+    // Whether a code is needed, NEVER the code. This response is public and is cached at
+    // the edge, so the value itself must never appear in it. Sessions opened before codes
+    // existed have none and stay joinable without one.
+    pinRequired: Boolean(meta.pin),
     // Whoever is running the session, so the page can mark them at the top of the list.
     organiser: meta.organiser || null,
     serverTime: now.toISOString(),

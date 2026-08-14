@@ -18,11 +18,12 @@ import {
   KEYS, isConfigured, describeCredentialEnv, hgetall, hset, lrangeJSON, del,
   joinAtomic, removeByNames, removeByToken, hitRateLimit, peekRateLimit
 } from './_lib/redis.js';
-import { randomUUID } from 'node:crypto';
+import { randomUUID, randomInt } from 'node:crypto';
 import { archiveSession } from './_lib/archive.js';
 import {
   DEFAULT_CAPACITY, nextSession, defaultOpensAt, sessionEndsAt,
-  validateName, shortenName, totalSlots, tierFor, viewModel
+  validateName, shortenName, totalSlots, tierFor, viewModel,
+  validatePin, normalisePin, shareMessage, PIN_LENGTH
 } from './_lib/signup-core.js';
 
 // Wrong-password guesses allowed per connection per fifteen minutes. Successful admin
@@ -33,6 +34,12 @@ const JOIN_ERRORS = {
   already_in: 'You already have a place for this session.',
   full: 'This session is full, including the waiting list.'
 };
+
+// Drawn with the crypto RNG rather than Math.random: the code is what stands between the
+// public endpoint and the club's places, and Math.random is predictable from prior output.
+function generatePin() {
+  return String(randomInt(0, 10 ** PIN_LENGTH)).padStart(PIN_LENGTH, '0');
+}
 
 export default async function handler(req, res) {
   // Set in the Vercel environment config, never committed to this repo
@@ -84,7 +91,7 @@ export default async function handler(req, res) {
       return res.status(405).json({ error: 'Method not allowed' });
     }
 
-    const { action, name, names, token, password, date, label, opensAt, capacity, organiser, force } = req.body || {};
+    const { action, name, names, token, password, date, label, opensAt, capacity, organiser, force, pin } = req.body || {};
 
     // ── Member actions, no password ──────────────────────────────────────────────
     if (action === 'join') {
@@ -101,6 +108,22 @@ export default async function handler(req, res) {
       const meta = await hgetall(KEYS.meta);
       const gate = openState(meta, now);
       if (!gate.open) return res.status(200).json({ ok: false, error: 'not_open', message: gate.message });
+
+      // The session code, checked before anything is written. A session opened before codes
+      // existed carries no `pin`, and stays joinable without one rather than locking out a
+      // list that is already running.
+      //
+      // A wrong code still costs the caller one of their eight hourly join attempts, which
+      // is what makes a four digit code sufficient: the limit is spent long before the
+      // ten thousand possibilities are.
+      if (meta.pin && normalisePin(pin) !== meta.pin) {
+        return res.status(200).json({
+          ok: false, error: 'bad_pin',
+          message: validatePin(pin)
+            ? 'That code is not right. Check the message in the WhatsApp group.'
+            : `Enter the ${PIN_LENGTH} digit code from the WhatsApp group.`
+        });
+      }
 
       const check = validateName(name);
       if (!check.ok) return res.status(200).json({ ok: false, error: 'invalid_name', message: check.error });
@@ -163,8 +186,12 @@ export default async function handler(req, res) {
       });
     }
 
+    // Unlocking the panel also returns the live session's code and the message to paste
+    // into the group, so an organiser who reloads the page can get at both again. This is
+    // behind the password check above, and the code appears in no public response.
     if (action === 'verify') {
-      return res.status(200).json({ valid: true });
+      const meta = await hgetall(KEYS.meta);
+      return res.status(200).json({ valid: true, ...organiserExtras(meta, now) });
     }
 
 
@@ -206,9 +233,14 @@ export default async function handler(req, res) {
           label: useLabel, opensAt: useOpensAt, state: 'open',
           endsAt: endsAtFor(useDate)
         });
+        // Deliberately does NOT mint a new code. People already hold the old one, and
+        // rotating it here would lock out everyone who had the message but had not yet
+        // tapped, for the sake of an edit to the label or the opening time.
+        const edited = await hgetall(KEYS.meta);
         return res.status(200).json({
           ok: true, edited: true,
           message: 'That session was already open, so the details were updated and the list left alone.',
+          ...organiserExtras(edited, now),
           ...(await readState(now, null))
         });
       }
@@ -226,10 +258,13 @@ export default async function handler(req, res) {
       }
 
       await del(KEYS.queue, KEYS.meta);
+      // A fresh code per session. Last week's, still sitting in the group's history, must
+      // not open this week's list.
+      const sessionPin = generatePin();
       await hset(KEYS.meta, {
         date: useDate, label: useLabel, opensAt: useOpensAt,
         state: 'open', seeds: '0', capacity: JSON.stringify(cap),
-        organiser: '', endsAt: endsAtFor(useDate)
+        organiser: '', endsAt: endsAtFor(useDate), pin: sessionPin
       });
 
       // Whoever is running the session takes position 1. Added here, against an empty
@@ -250,7 +285,11 @@ export default async function handler(req, res) {
         await hset(KEYS.meta, { organiser: seated.error ? '' : seated.name });
       }
 
-      return res.status(200).json({ ok: true, ...(await readState(now, null)) });
+      return res.status(200).json({
+        ok: true,
+        ...organiserExtras({ date: useDate, label: useLabel, opensAt: useOpensAt, pin: sessionPin }, now),
+        ...(await readState(now, null))
+      });
     }
 
     // The organiser can put someone on the list at any point, before or after the button
@@ -317,6 +356,17 @@ export default async function handler(req, res) {
     console.error('signup error:', err);
     return res.status(500).json({ error: err.message || 'Internal server error' });
   }
+}
+
+// The two things only the organiser may see: the session code, and the finished message to
+// paste into the group. Kept in one place so it cannot accidentally be attached to a public
+// response, and returned only from password-checked branches.
+function organiserExtras(meta, now) {
+  if (!meta || !meta.date) return { pin: null, shareText: null };
+  return {
+    pin: meta.pin || null,
+    shareText: shareMessage({ label: meta.label, opensAt: meta.opensAt, pin: meta.pin, now })
+  };
 }
 
 function endsAtFor(dateStr) {

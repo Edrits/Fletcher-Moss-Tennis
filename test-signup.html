@@ -158,6 +158,7 @@ footer.foot{
 import {
   SCHEDULE, DEFAULT_CAPACITY, NAME_MAX, sessionEndsAt,
   isoDate, nextSession, defaultOpensAt, londonInstant, londonParts, CLUB_TZ,
+  PIN_LENGTH, validatePin, normalisePin, shareMessage, SIGNUP_URL,
   normaliseName, validateName, shortenName, disambiguate,
   totalSlots, tierFor, splitEntries, viewModel
 } from './api/_lib/signup-core.js';
@@ -384,6 +385,85 @@ check('half past midnight BST reads as the London date, not the UTC one',
 check('and nextSession agrees, finding that same Monday',
   nextSession(new Date('2026-08-16T23:30:00.000Z')),
   { date: '2026-08-17', label: 'Monday 6:00 to 8:00 PM' });
+
+/* ---------------------------------------------------------------------------
+   Session code and the WhatsApp message
+--------------------------------------------------------------------------- */
+group('Session code');
+
+check('the code is four digits', PIN_LENGTH, 4);
+truthy('accepts four digits', validatePin('4821'));
+truthy('accepts a leading zero, which is a real code', validatePin('0042'));
+truthy('trims what a phone keyboard adds', validatePin('  4821 '));
+truthy('rejects three digits', validatePin('482') === false);
+truthy('rejects five digits', validatePin('48210') === false);
+truthy('rejects letters', validatePin('48a1') === false);
+truthy('rejects an empty code', validatePin('') === false);
+truthy('rejects a missing code', validatePin(undefined) === false);
+check('normalisePin trims', normalisePin('  4821 '), '4821');
+check('normalisePin survives null', normalisePin(null), '');
+
+group('WhatsApp message');
+
+// 2026-08-16 is a Sunday; sign-up for the Monday opens at 7:00 PM that evening.
+const OPENS = londonInstant(2026, 8, 16, 19, 0).toISOString();
+const SUNDAY_NOON = londonInstant(2026, 8, 16, 12, 0);
+
+const msg = shareMessage({
+  label: 'Monday 6:00 to 8:00 PM', opensAt: OPENS, pin: '4821', now: SUNDAY_NOON
+});
+truthy('names the session', msg.includes('Monday 6:00 to 8:00 PM'));
+truthy('gives the opening time in the club house style', msg.includes('7:00 PM'));
+truthy('says tonight when it opens the same evening', msg.includes('tonight'));
+truthy('carries the link', msg.includes(SIGNUP_URL));
+truthy('carries the code', msg.includes('Code: 4821'));
+
+// The day before, the same message should not claim "tonight".
+const early = shareMessage({
+  label: 'Monday 6:00 to 8:00 PM', opensAt: OPENS, pin: '4821',
+  now: londonInstant(2026, 8, 15, 12, 0)
+});
+truthy('says tomorrow the day before', early.includes('tomorrow'));
+truthy('does not claim tonight the day before', early.includes('tonight') === false);
+
+const distant = shareMessage({
+  label: 'Monday 6:00 to 8:00 PM', opensAt: OPENS, pin: '4821',
+  now: londonInstant(2026, 8, 12, 12, 0)
+});
+truthy('names the day when it is further off', distant.includes('Sunday 16 August'));
+
+// A summer opening time must read as the London clock, not UTC. This is the same bug the
+// time zone group covers, reaching the text members actually read.
+check('the message uses London time, not UTC',
+  shareMessage({ label: 'x', opensAt: '2026-08-16T19:00:00.000Z', pin: '1234', now: SUNDAY_NOON })
+    .includes('8:00 PM'), true);
+
+truthy('omits the code line when a session has none',
+  shareMessage({ label: 'x', opensAt: OPENS, now: SUNDAY_NOON }).includes('Code:') === false);
+truthy('still produces a message when there is no opening time',
+  shareMessage({ label: 'Monday 6:00 to 8:00 PM', pin: '4821' }).includes('Monday'));
+
+/* ---------------------------------------------------------------------------
+   The code must never reach a public response
+--------------------------------------------------------------------------- */
+group('viewModel: the session code must never leak');
+
+const vmPin = viewModel({
+  meta: { date: '2026-08-17', label: 'Monday', state: 'open', pin: '4821' },
+  entries: [{ name: 'Ed R.', token: 'tok-1' }],
+  now: londonInstant(2026, 8, 16, 21, 0),
+  myToken: null
+});
+truthy('says a code is required', vmPin.pinRequired === true);
+truthy('but the code itself appears nowhere in the response',
+  JSON.stringify(vmPin).includes('4821') === false);
+truthy('and there is no pin field at all', 'pin' in vmPin === false);
+
+const vmNoPin = viewModel({
+  meta: { date: '2026-08-17', state: 'open' }, entries: [],
+  now: londonInstant(2026, 8, 16, 21, 0), myToken: null
+});
+truthy('a session opened before codes existed needs none', vmNoPin.pinRequired === false);
 
 /* ---------------------------------------------------------------------------
    normaliseName

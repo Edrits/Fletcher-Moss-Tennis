@@ -237,6 +237,12 @@
         }
         .cd-note { display: block; font-size: var(--text-sm); color: var(--text-muted); margin-top: 8px; }
 
+        .share-text {
+            width: 100%; resize: vertical; min-height: 128px;
+            font-family: var(--font-body); font-size: var(--text-sm);
+            line-height: var(--leading-normal, 1.55); white-space: pre-wrap;
+        }
+
         /* ── Join form ── */
         .join-box { margin-top: 18px; }
         .field-label {
@@ -506,6 +512,17 @@
                     <input class="text-input" id="name-input" type="text" maxlength="30"
                            autocomplete="name" enterkeyhint="done" placeholder="e.g. Ed R.">
                     <p class="field-hint">First name and last initial is plenty. It shows on the list below.</p>
+
+                    <!-- Only shown when the live session has a code. Sessions opened before
+                         codes existed carry none, and the server still lets those through. -->
+                    <div id="pin-row" style="display:none;">
+                        <label class="field-label" for="pin-input">Code from the WhatsApp group</label>
+                        <input class="text-input" id="pin-input" type="text" inputmode="numeric"
+                               pattern="[0-9]*" maxlength="4" autocomplete="one-time-code"
+                               enterkeyhint="done" placeholder="4 digits">
+                        <p class="field-hint">The organiser posts this in the group when sign-up opens.</p>
+                    </div>
+
                     <button class="big-btn" id="join-btn" onclick="join()">I'm in</button>
                 </div>
 
@@ -559,6 +576,15 @@
                 <input class="text-input" id="adm-organiser" type="text" maxlength="30" placeholder="Who is running it" style="margin-top:8px;">
                 <p class="admin-note">The date is the session itself. The second box is when the button goes live, usually 7:00 PM the night before. Whoever is running it takes place 1 automatically.</p>
                 <button class="edit-btn primary" style="margin-top:10px;" onclick="adminOpen()">Open sign-up</button>
+            </div>
+
+            <!-- Populated from the password-checked verify/open responses. The code never
+                 appears in the public GET, so this is the only place it can come from. -->
+            <div class="admin-block" id="share-block" style="display:none;">
+                <label for="share-text">Message for the WhatsApp group</label>
+                <textarea class="text-input share-text" id="share-text" rows="7" readonly></textarea>
+                <button class="edit-btn primary" style="margin-top:10px;" onclick="copyShare()">Copy for WhatsApp</button>
+                <p class="admin-note">This carries the code members need in order to sign up, so post it in the group when you open the session. A new code is made each time you open a session, and the old one stops working.</p>
             </div>
 
             <div class="divider">or adjust the list</div>
@@ -689,6 +715,7 @@
             not_open: 'Sign-up is not open yet. The button goes live at the time shown above.',
             full: 'The list is full. Every main place, both subs and the whole waiting list are taken. Keep an eye on it in case someone drops out.',
             invalid_name: 'Please enter your name. First name and last initial is plenty.',
+            bad_pin: 'That code is not right. Check the message in the WhatsApp group.',
             already_in: 'You already have a place on this list. Your number is shown above.',
             duplicate_name: 'Someone is already signed up under that name. Add your last initial so we can tell you apart.',
             bad_password: 'That password was not right.',
@@ -841,6 +868,10 @@
                 const input = document.getElementById('name-input');
                 if (!input.value) input.value = recalledName();
             }
+
+            // The code field follows the server, which is the only thing that knows whether
+            // this session has a code at all.
+            document.getElementById('pin-row').style.display = d.pinRequired ? 'block' : 'none';
 
             // The join button only goes live when the server says the list is open
             const joinBtn = document.getElementById('join-btn');
@@ -1003,10 +1034,19 @@
                 input.focus();
                 return;
             }
+            const pinInput = document.getElementById('pin-input');
+            const pin = pinInput.value.trim();
+            // Caught here as well as on the server, so an empty box does not cost the member
+            // one of their hourly join attempts.
+            if (current && current.pinRequired && !pin) {
+                showMsg('join-msg', 'Enter the code from the WhatsApp group.', 'bad');
+                pinInput.focus();
+                return;
+            }
             setBusy(true, 'Saving your place');
             showMsg('join-msg', '', null);
             try {
-                const res = await apiPost({ action: 'join', name: name, token: token });
+                const res = await apiPost({ action: 'join', name: name, token: token, pin: pin });
                 if (res && res.ok) {
                     rememberName(name);
                     showMsg('join-msg', 'You are in. ' + placeSentence(res.position, res.tier), 'good');
@@ -1054,9 +1094,16 @@
             }
         }
 
-        // Enter key on the name field is the same as tapping the button
-        document.getElementById('name-input').addEventListener('keydown', function (e) {
-            if (e.key === 'Enter') { e.preventDefault(); if (!document.getElementById('join-btn').disabled) join(); }
+        // Enter key on either field is the same as tapping the button
+        ['name-input', 'pin-input'].forEach(function (id) {
+            document.getElementById(id).addEventListener('keydown', function (e) {
+                if (e.key === 'Enter') { e.preventDefault(); if (!document.getElementById('join-btn').disabled) join(); }
+            });
+        });
+
+        // Phone keyboards will happily put spaces and letters in a numeric field.
+        document.getElementById('pin-input').addEventListener('input', function (e) {
+            e.target.value = e.target.value.replace(/\D/g, '').slice(0, 4);
         });
 
         /* ============================================================
@@ -1070,6 +1117,16 @@
         async function unlockAdmin() {
             const pw = prompt('Enter the admin password to manage the sign-up list:');
             if (!pw) return;
+            // The mock has no /api/signup to talk to, so short-circuit the round trip and
+            // let the local harness exercise the same unlock path.
+            if (USE_MOCK) {
+                const mocked = await mockPost({ action: 'verify', password: pw });
+                setShare(mocked.shareText);
+                sessionStorage.setItem('pw', pw);
+                setAdminUI(true);
+                prefillAdmin();
+                return;
+            }
             // Check the password before unlocking, the same way pairings.html does, so a
             // typo is caught here rather than surfacing later as a failed action.
             try {
@@ -1087,6 +1144,9 @@
                 if (res.status === 429) { alert(data.error || 'Too many incorrect passwords. Wait fifteen minutes and try again.'); return; }
                 if (res.status === 401) { alert(data.error || 'Incorrect password.'); return; }
                 if (!res.ok) { alert('Could not verify right now, please try again.'); return; }
+                // Unlocking is also how the organiser gets the session code back after a
+                // reload. It is in no public response, so this is the only source.
+                setShare(data.shareText);
             } catch (err) {
                 console.error('Verify failed:', err);
                 alert('Network error, could not verify the password.');
@@ -1099,7 +1159,36 @@
 
         function lockAdmin() {
             sessionStorage.removeItem('pw');
+            setShare(null);
             setAdminUI(false);
+        }
+
+        // The server builds the message, so the wording lives in one place and the page
+        // never has to know the code in order to display it.
+        function setShare(text) {
+            const block = document.getElementById('share-block');
+            const box = document.getElementById('share-text');
+            box.value = text || '';
+            block.style.display = text ? 'block' : 'none';
+        }
+
+        async function copyShare() {
+            const box = document.getElementById('share-text');
+            if (!box.value) return;
+            try {
+                await navigator.clipboard.writeText(box.value);
+                showMsg('admin-msg', 'Copied. Paste it into the WhatsApp group.', 'good');
+            } catch (err) {
+                // The clipboard API needs a secure context and a recent browser. Falling
+                // back to a selection means the organiser can still copy it by hand rather
+                // than being told it failed.
+                console.error('Clipboard write failed:', err);
+                box.removeAttribute('readonly');
+                box.focus();
+                box.setSelectionRange(0, box.value.length);
+                box.setAttribute('readonly', 'readonly');
+                showMsg('admin-msg', 'Could not copy it automatically. The message is selected, so copy it from there.', 'info');
+            }
         }
 
         function setAdminUI(on) {
@@ -1193,6 +1282,7 @@
                 if (wipe) {
                     res = await adminPost(Object.assign({ force: true }, body));
                     if (res) {
+                        setShare(res.shareText);
                         showMsg('admin-msg', 'The old list was archived and the session rebuilt. '
                             + 'The button goes live at ' + formatTime(opensAt) + '.'
                             + (organiser ? ' ' + organiser + ' is place 1.' : ''), 'good');
@@ -1200,14 +1290,17 @@
                     }
                     return;
                 }
+                setShare(res.shareText);
                 showMsg('admin-msg', res.message, 'info');
                 await refresh();
                 return;
             }
 
             if (res) {
+                setShare(res.shareText);
                 showMsg('admin-msg', 'Sign-up is set. The button goes live at ' + formatTime(opensAt) + '.'
-                    + (organiser ? ' ' + organiser + ' is place 1.' : ''), 'good');
+                    + (organiser ? ' ' + organiser + ' is place 1.' : '')
+                    + (res.pin ? ' The code is ' + res.pin + '. Copy the message below into the group.' : ''), 'good');
                 await refresh();
             }
         }
@@ -1233,6 +1326,7 @@
             if (!confirm('Cancel this session? The list is archived, every name comes off and sign-up closes. There is no undo.')) return;
             const res = await adminPost({ action: 'reset' });
             if (res) {
+                setShare(null);
                 showMsg('admin-msg', 'The session was cancelled and the list cleared. It has been archived. Set a date above and press Open sign-up to run one again.', 'good');
                 await refresh();
             }
@@ -1324,6 +1418,19 @@
             }
             return display + (existing.length + 2);
         }
+        // Stand-in for shareMessage in api/_lib/signup-core.js, for the same reason as
+        // mockShorten: that module cannot be imported here. The real wording is the
+        // server's; this only has to be close enough to lay the panel out against.
+        function mockShareText() {
+            if (!mockStore || !mockStore.date) return null;
+            const opens = new Date(mockStore.opensAt);
+            return 'Sign-up for ' + (mockStore.label || 'the next session') +
+                   ' opens at ' + formatTime(opens) + ' tonight.\n\n' +
+                   'https://www.fletchermoss-socialtennisclub.co.uk/signup.html\n\n' +
+                   'Code: ' + mockStore.pin + '\n\n' +
+                   'Places go in the order people tap, and the code is only good for this session.';
+        }
+
         let mockStore = null;
 
         function mockInit() {
@@ -1346,6 +1453,8 @@
                 label: MOCK_DAYS[session.getDay()],
                 // Default mode counts down 25 seconds so the changeover can be watched
                 opensAt: new Date(mode ? now - 60000 : now + 25000).toISOString(),
+                // Mirrors the server: a session carries a code, and joining needs it.
+                pin: '4821',
                 entries: MOCK_NAMES.slice(0, count).map(function (n) { return { name: n, token: 'mock-' + n }; })
             };
         }
@@ -1367,6 +1476,7 @@
                 date: mockStore.date,
                 label: mockStore.label,
                 opensAt: mockStore.opensAt,
+                pinRequired: Boolean(mockStore.pin),
                 serverTime: new Date().toISOString(),
                 capacity: cap,
                 counts: {
@@ -1398,6 +1508,9 @@
             if (body.action === 'join') {
                 if (mockStore.state === 'pending' && Date.now() >= Date.parse(mockStore.opensAt)) mockStore.state = 'open';
                 if (mockStore.state !== 'open') return { ok: false, error: 'not_open' };
+                if (mockStore.pin && String(body.pin || '').trim() !== mockStore.pin) {
+                    return { ok: false, error: 'bad_pin' };
+                }
                 const name = String(body.name || '').trim();
                 if (name.length < 2) return { ok: false, error: 'invalid_name' };
                 if (mockStore.entries.some(function (e) { return e.token === body.token; })) return { ok: false, error: 'already_in' };
@@ -1420,7 +1533,11 @@
                 mockStore.date = body.date;
                 mockStore.label = body.label;
                 mockStore.opensAt = body.opensAt;
-                return { ok: true };
+                mockStore.pin = String(Math.floor(Math.random() * 10000)).padStart(4, '0');
+                return { ok: true, pin: mockStore.pin, shareText: mockShareText() };
+            }
+            if (body.action === 'verify') {
+                return { valid: true, ok: true, pin: mockStore.pin, shareText: mockShareText() };
             }
             if (body.action === 'seed') {
                 mockStore.entries.push({ name: String(body.name || '').trim(), token: 'seed-' + Date.now() });
@@ -1442,6 +1559,7 @@
             if (body.action === 'reset') {
                 mockStore.entries = [];
                 mockStore.state = 'closed';
+                mockStore.pin = null;
                 return { ok: true };
             }
             return { ok: false, error: 'server_error' };
