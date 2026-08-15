@@ -189,6 +189,12 @@
           "points": 9
         },
         {
+          "name": "Sully",
+          "played": 3,
+          "won": 2,
+          "points": 7
+        },
+        {
           "name": "Sam",
           "played": 2,
           "won": 2,
@@ -207,12 +213,6 @@
           "points": 4
         },
         {
-          "name": "Sully",
-          "played": 2,
-          "won": 1,
-          "points": 4
-        },
-        {
           "name": "Sofia",
           "played": 2,
           "won": 0,
@@ -226,9 +226,9 @@
         },
         {
           "name": "Ben",
-          "played": 1,
+          "played": 2,
           "won": 0,
-          "points": 1
+          "points": 2
         },
         {
           "name": "Ted",
@@ -293,6 +293,13 @@
           "winner": "Sully",
           "noShow": null,
           "date": "2026-08-14T07:27:18.689Z"
+        },
+        {
+          "player1": "Sully",
+          "player2": "Ben",
+          "winner": "Sully",
+          "noShow": null,
+          "date": "2026-08-15T20:25:24.452Z"
         }
       ]
     },
