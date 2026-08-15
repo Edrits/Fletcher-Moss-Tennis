@@ -191,7 +191,7 @@ export default async function handler(req, res) {
     // behind the password check above, and the code appears in no public response.
     if (action === 'verify') {
       const meta = await hgetall(KEYS.meta);
-      return res.status(200).json({ valid: true, ...organiserExtras(meta, now) });
+      return res.status(200).json({ valid: true, ...organiserExtras(meta) });
     }
 
 
@@ -240,7 +240,7 @@ export default async function handler(req, res) {
         return res.status(200).json({
           ok: true, edited: true,
           message: 'That session was already open, so the details were updated and the list left alone.',
-          ...organiserExtras(edited, now),
+          ...organiserExtras(edited),
           ...(await readState(now, null))
         });
       }
@@ -287,7 +287,7 @@ export default async function handler(req, res) {
 
       return res.status(200).json({
         ok: true,
-        ...organiserExtras({ date: useDate, label: useLabel, opensAt: useOpensAt, pin: sessionPin }, now),
+        ...organiserExtras({ date: useDate, label: useLabel, opensAt: useOpensAt, pin: sessionPin }),
         ...(await readState(now, null))
       });
     }
@@ -361,11 +361,11 @@ export default async function handler(req, res) {
 // The two things only the organiser may see: the session code, and the finished message to
 // paste into the group. Kept in one place so it cannot accidentally be attached to a public
 // response, and returned only from password-checked branches.
-function organiserExtras(meta, now) {
+function organiserExtras(meta) {
   if (!meta || !meta.date) return { pin: null, shareText: null };
   return {
     pin: meta.pin || null,
-    shareText: shareMessage({ label: meta.label, opensAt: meta.opensAt, pin: meta.pin, now })
+    shareText: shareMessage({ label: meta.label, pin: meta.pin })
   };
 }
 

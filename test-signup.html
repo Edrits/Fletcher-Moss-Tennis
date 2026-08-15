@@ -405,43 +405,28 @@ check('normalisePin survives null', normalisePin(null), '');
 
 group('WhatsApp message');
 
-// 2026-08-16 is a Sunday; sign-up for the Monday opens at 7:00 PM that evening.
-const OPENS = londonInstant(2026, 8, 16, 19, 0).toISOString();
-const SUNDAY_NOON = londonInstant(2026, 8, 16, 12, 0);
-
-const msg = shareMessage({
-  label: 'Monday 6:00 to 8:00 PM', opensAt: OPENS, pin: '4821', now: SUNDAY_NOON
-});
+const msg = shareMessage({ label: 'Monday 6:00 to 8:00 PM', pin: '4821' });
 truthy('names the session', msg.includes('Monday 6:00 to 8:00 PM'));
-truthy('gives the opening time in the club house style', msg.includes('7:00 PM'));
-truthy('says tonight when it opens the same evening', msg.includes('tonight'));
 truthy('carries the link', msg.includes(SIGNUP_URL));
 truthy('carries the code', msg.includes('Code: 4821'));
 
-// The day before, the same message should not claim "tonight".
-const early = shareMessage({
-  label: 'Monday 6:00 to 8:00 PM', opensAt: OPENS, pin: '4821',
-  now: londonInstant(2026, 8, 15, 12, 0)
-});
-truthy('says tomorrow the day before', early.includes('tomorrow'));
-truthy('does not claim tonight the day before', early.includes('tonight') === false);
+// The whole point of this change: the message must NOT promise when sign-up opens. The
+// club opens it when it suits, so any specific time was as often wrong as right. It states
+// no opening time, no clock, no relative day.
+truthy('states no opening time (no AM)', msg.includes('AM') === false);
+truthy('states no opening time (no PM beyond the session label)',
+  msg.replace('Monday 6:00 to 8:00 PM', '').includes('PM') === false);
+truthy('makes no "opens at" promise', /opens? at/i.test(msg) === false);
+truthy('makes no tonight/tomorrow/today claim', /\b(tonight|tomorrow|today)\b/i.test(msg) === false);
 
-const distant = shareMessage({
-  label: 'Monday 6:00 to 8:00 PM', opensAt: OPENS, pin: '4821',
-  now: londonInstant(2026, 8, 12, 12, 0)
-});
-truthy('names the day when it is further off', distant.includes('Sunday 16 August'));
-
-// A summer opening time must read as the London clock, not UTC. This is the same bug the
-// time zone group covers, reaching the text members actually read.
-check('the message uses London time, not UTC',
-  shareMessage({ label: 'x', opensAt: '2026-08-16T19:00:00.000Z', pin: '1234', now: SUNDAY_NOON })
-    .includes('8:00 PM'), true);
+// The session label is a play time, not a sign-up time, so it is allowed to carry a clock.
+truthy('keeps the session label, which is when the game is played',
+  shareMessage({ label: 'Saturday 11:00 AM to 2:00 PM', pin: '1' }).includes('Saturday 11:00 AM to 2:00 PM'));
 
 truthy('omits the code line when a session has none',
-  shareMessage({ label: 'x', opensAt: OPENS, now: SUNDAY_NOON }).includes('Code:') === false);
-truthy('still produces a message when there is no opening time',
-  shareMessage({ label: 'Monday 6:00 to 8:00 PM', pin: '4821' }).includes('Monday'));
+  shareMessage({ label: 'x' }).includes('Code:') === false);
+truthy('an ignored opensAt does not reintroduce a time',
+  /\d{1,2}:\d{2}/.test(shareMessage({ label: 'Club session', pin: '4821' })) === false);
 
 /* ---------------------------------------------------------------------------
    The code must never reach a public response
