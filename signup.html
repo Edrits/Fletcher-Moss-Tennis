@@ -359,9 +359,21 @@
         .admin-block { margin-bottom: 18px; }
         .admin-block:last-child { margin-bottom: 0; }
         .admin-block label { display: block; font-size: 11px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--text-muted); margin-bottom: 6px; }
-        .admin-row { display: flex; gap: 8px; flex-wrap: wrap; }
+        .admin-row { display: flex; gap: 12px; flex-wrap: wrap; }
         .admin-row .text-input { flex: 1; min-width: 140px; }
         .admin-note { font-size: 11.5px; color: var(--text-muted); margin-top: 8px; }
+        /* Heading for a block that holds several labelled fields, so the block title is not
+           itself mistaken for one field's label. */
+        .admin-subhead { font-size: var(--text-sm); font-weight: 700; color: var(--ink-700); margin-bottom: 14px; }
+        /* Each input carries its own label, and the two date boxes carry a hint apiece:
+           side by side, a bare date picker and a bare date-and-time picker are impossible to
+           tell apart without them. */
+        .admin-field { display: flex; flex-direction: column; margin-bottom: 12px; }
+        .admin-field:last-of-type { margin-bottom: 0; }
+        .admin-row .admin-field { flex: 1; min-width: 150px; margin-bottom: 0; }
+        .admin-field .text-input { width: 100%; }
+        .admin-field-hint { font-size: 11px; line-height: 1.4; color: var(--text-muted); margin-top: 5px; font-weight: 500; }
+        .admin-field label .opt { text-transform: none; letter-spacing: 0; font-weight: 500; opacity: .7; }
         .admin-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; margin-bottom: 14px; }
 
         /* ── Rain alert banner (softened terracotta) ── */
@@ -567,14 +579,28 @@
             </div>
 
             <div class="admin-block">
-                <label for="adm-date">Open the next session</label>
-                <div class="admin-row" style="margin-bottom:8px;">
-                    <input class="text-input" id="adm-date" type="date" style="min-width:150px;">
-                    <input class="text-input" id="adm-opens" type="datetime-local" style="min-width:190px;">
+                <h4 class="admin-subhead">Open the next session</h4>
+                <div class="admin-row">
+                    <div class="admin-field">
+                        <label for="adm-date">Session date</label>
+                        <input class="text-input" id="adm-date" type="date">
+                        <span class="admin-field-hint">The day people are playing.</span>
+                    </div>
+                    <div class="admin-field">
+                        <label for="adm-opens">Sign-up opens</label>
+                        <input class="text-input" id="adm-opens" type="datetime-local">
+                        <span class="admin-field-hint">When the button goes live, usually 7:00 PM the night before.</span>
+                    </div>
                 </div>
-                <input class="text-input" id="adm-label" type="text" maxlength="60" placeholder="Thursday 6:00 to 8:00 PM">
-                <input class="text-input" id="adm-organiser" type="text" maxlength="30" placeholder="Who is running it" style="margin-top:8px;">
-                <p class="admin-note">The date is the session itself. The second box is when the button goes live, usually 7:00 PM the night before. Whoever is running it takes place 1 automatically.</p>
+                <div class="admin-field" style="margin-top:12px;">
+                    <label for="adm-label">Session name <span class="opt">(optional)</span></label>
+                    <input class="text-input" id="adm-label" type="text" maxlength="60" placeholder="Thursday 6:00 to 8:00 PM">
+                </div>
+                <div class="admin-field">
+                    <label for="adm-organiser">Who's running it <span class="opt">(optional)</span></label>
+                    <input class="text-input" id="adm-organiser" type="text" maxlength="30" placeholder="Name">
+                </div>
+                <p class="admin-note">Whoever is running it takes place 1 automatically.</p>
                 <button class="edit-btn primary" style="margin-top:10px;" onclick="adminOpen()">Open sign-up</button>
             </div>
 
