@@ -221,6 +221,22 @@
             font-size: var(--text-sm); color: var(--ink-700); text-align: center;
         }
 
+        /* ── Countdown ── */
+        .countdown-box {
+            margin-top: 18px; padding: 20px 16px; text-align: center;
+            background: var(--green-50); border-radius: var(--radius-md);
+        }
+        .cd-label {
+            display: block; text-transform: uppercase; letter-spacing: var(--tracking-wider);
+            font-size: 10.5px; font-weight: 700; color: var(--green-700); margin-bottom: 6px;
+        }
+        .cd-value {
+            display: block; font-family: var(--font-body); font-weight: 800;
+            font-size: clamp(2rem, 12vw, 2.6rem); line-height: 1.1; color: var(--green-800);
+            font-variant-numeric: tabular-nums; letter-spacing: -0.01em;
+        }
+        .cd-note { display: block; font-size: var(--text-sm); color: var(--text-muted); margin-top: 8px; }
+
         .share-text {
             width: 100%; resize: vertical; min-height: 128px;
             font-family: var(--font-body); font-size: var(--text-sm);
@@ -483,6 +499,13 @@
                         <p class="session-date" id="session-date"></p>
                     </div>
                     <span class="status-chip" id="status-chip">Loading</span>
+                </div>
+
+                <!-- Countdown to opensAt. Driven by the server clock, never the phone's. -->
+                <div class="countdown-box" id="countdown-box" style="display:none;">
+                    <span class="cd-label" id="cd-label">Sign-up opens in</span>
+                    <span class="cd-value" id="cd-value">--</span>
+                    <span class="cd-note" id="cd-note"></span>
                 </div>
 
                 <!-- Shown when this device already holds a place -->
@@ -766,8 +789,26 @@
         // ── Formatting helpers ──
         function pad(n) { return String(n).padStart(2, '0'); }
 
+        // "7:00 PM", matching the club's house style for times
+        function formatTime(date) {
+            return date.toLocaleTimeString('en-GB', { hour: 'numeric', minute: '2-digit', hour12: true })
+                       .replace(/\s*am$/i, ' AM').replace(/\s*pm$/i, ' PM');
+        }
+
         function formatDay(date) {
             return date.toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long' });
+        }
+
+        function formatRemaining(ms) {
+            const total = Math.max(0, Math.round(ms / 1000));
+            const days = Math.floor(total / 86400);
+            const hours = Math.floor((total % 86400) / 3600);
+            const mins = Math.floor((total % 3600) / 60);
+            const secs = total % 60;
+            if (days > 0) return days + 'd ' + hours + 'h ' + pad(mins) + 'm';
+            if (hours > 0) return hours + 'h ' + pad(mins) + 'm ' + pad(secs) + 's';
+            if (mins > 0) return mins + 'm ' + pad(secs) + 's';
+            return secs + 's';
         }
 
         // ── Messages ──
@@ -831,6 +872,11 @@
             const chip = document.getElementById('status-chip');
             chip.className = 'status-chip is-' + (['pending', 'open', 'closed'].indexOf(state) >= 0 ? state : 'closed');
             chip.textContent = state === 'open' ? 'Open now' : state === 'pending' ? 'Not open yet' : 'Closed';
+
+            // Countdown, only meaningful before it opens
+            const cdBox = document.getElementById('countdown-box');
+            cdBox.style.display = (state === 'pending' && d.opensAt) ? 'block' : 'none';
+            tickCountdown();
 
             // Your place
             const you = d.you || null;
@@ -964,20 +1010,34 @@
                 .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
         }
 
-        // ── Opening watcher ──
-        // The page shows no countdown, on purpose: the club opens sign-up when it suits, so
-        // the page must not advertise a time. It still needs to notice the moment the server
-        // flips the session to open, so a member sitting on the page does not stare at a dead
-        // button. Once the configured opening time has passed and the state is still pending,
-        // poll a little harder than the ordinary interval until the server confirms it is open.
-        function checkOpening() {
+        // ── Countdown ticker ──
+        // Runs once a second off the server-corrected clock. When it reaches zero it
+        // does not enable anything itself, it just asks the server whether the list
+        // has actually flipped to open.
+        function tickCountdown() {
             const d = current;
             if (!d || d.state !== 'pending' || !d.opensAt) return;
             const opens = Date.parse(d.opensAt);
             if (isNaN(opens)) return;
-            if (serverNow() >= opens && serverNow() - lastOpeningCheck > OPENING_RETRY_MS) {
-                lastOpeningCheck = serverNow();
-                refresh();
+
+            const remaining = opens - serverNow();
+            const label = document.getElementById('cd-label');
+            const value = document.getElementById('cd-value');
+            const note = document.getElementById('cd-note');
+
+            if (remaining > 0) {
+                label.textContent = 'Sign-up opens in';
+                value.textContent = formatRemaining(remaining);
+                note.textContent = 'That is ' + formatTime(new Date(opens)) + ' on ' + formatDay(new Date(opens)) + '.';
+            } else {
+                label.textContent = 'Sign-up';
+                value.textContent = 'Opening';
+                note.textContent = 'Checking with the server. The button goes live the moment it says yes.';
+                // Poll harder across the changeover so nobody sits watching a dead button
+                if (serverNow() - lastOpeningCheck > OPENING_RETRY_MS) {
+                    lastOpeningCheck = serverNow();
+                    refresh();
+                }
             }
         }
 
@@ -1536,7 +1596,7 @@
             if (sessionStorage.getItem('pw')) prefillAdmin();
         });
         startPolling();
-        setInterval(checkOpening, 3000);
+        setInterval(tickCountdown, 1000);
         getWeather();
         setInterval(getWeather, 600000);
     </script>
