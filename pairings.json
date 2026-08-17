@@ -1,39 +1,11 @@
 {
   "players": [
     {
-      "name": "Evie",
+      "name": "Ting",
       "sub": false
     },
     {
-      "name": "Ed",
-      "sub": false
-    },
-    {
-      "name": "Ayesa",
-      "sub": false
-    },
-    {
-      "name": "Jack",
-      "sub": false
-    },
-    {
-      "name": "Shyam",
-      "sub": false
-    },
-    {
-      "name": "Adam",
-      "sub": false
-    },
-    {
-      "name": "Zak",
-      "sub": false
-    },
-    {
-      "name": "Luke",
-      "sub": false
-    },
-    {
-      "name": "Sam",
+      "name": "Bridget",
       "sub": false
     },
     {
@@ -41,231 +13,183 @@
       "sub": false
     },
     {
-      "name": "Yaqub",
+      "name": "Rebecca",
       "sub": false
     },
     {
-      "name": "Will",
+      "name": "Elle",
       "sub": false
     },
     {
-      "name": "Rod",
+      "name": "Mads",
       "sub": false
     },
     {
-      "name": "Ali",
+      "name": "Anchalika",
       "sub": false
     },
     {
-      "name": "Richard",
+      "name": "Laura",
       "sub": false
     },
     {
-      "name": "Patrick",
+      "name": "Ayesa",
       "sub": false
     },
     {
-      "name": "Louis ",
-      "sub": true
+      "name": "Kaytlin",
+      "sub": false
     }
   ],
-  "numCourts": 4,
+  "numCourts": 3,
   "numGames": 4,
-  "seed": 20998,
+  "seed": 889543,
   "generatedGames": [
     {
       "game": 1,
-      "sitters": [
-        "Louis"
-      ],
+      "sitters": [],
       "courts": [
         [
           [
-            "Luke",
-            "Shyam"
+            "Anchalika",
+            "Bridget"
           ],
           [
-            "Rod",
-            "Zak"
+            "Ting",
+            "Kaytlin"
           ]
         ],
         [
           [
-            "Ali",
-            "Sam"
-          ],
-          [
-            "Ed",
-            "Jack"
-          ]
-        ],
-        [
-          [
-            "Patrick",
-            "Will"
-          ],
-          [
-            "Richard",
-            "Evie"
-          ]
-        ],
-        [
-          [
-            "Yaqub",
-            "Ayesa"
-          ],
-          [
-            "Adam",
+            "",
             "Lucy"
+          ],
+          [
+            "Laura",
+            "Rebecca"
+          ]
+        ],
+        [
+          [
+            "Ayesa",
+            "Elle"
+          ],
+          [
+            "",
+            "Mads"
           ]
         ]
       ]
     },
     {
       "game": 2,
-      "sitters": [
-        "Patrick"
-      ],
+      "sitters": [],
       "courts": [
         [
           [
-            "Ayesa",
-            "Adam"
-          ],
-          [
-            "Richard",
-            "Luke"
-          ]
-        ],
-        [
-          [
-            "Ed",
+            "Ting",
             "Lucy"
           ],
           [
-            "Louis",
-            "Jack"
+            "",
+            "Elle"
           ]
         ],
         [
           [
-            "Will",
-            "Zak"
+            "Anchalika",
+            ""
           ],
           [
-            "Ali",
-            "Rod"
+            "Mads",
+            "Bridget"
           ]
         ],
         [
           [
-            "Shyam",
-            "Evie"
+            "Rebecca",
+            "Ayesa"
           ],
           [
-            "Sam",
-            "Yaqub"
+            "Kaytlin",
+            "Laura"
           ]
         ]
       ]
     },
     {
       "game": 3,
-      "sitters": [
-        "Richard"
-      ],
+      "sitters": [],
       "courts": [
         [
           [
-            "Jack",
-            "Evie"
+            "Anchalika",
+            "Ayesa"
           ],
           [
-            "Adam",
-            "Zak"
+            "Elle",
+            "Rebecca"
           ]
         ],
         [
           [
-            "Louis",
-            "Shyam"
+            "Ting",
+            "Bridget"
           ],
           [
-            "Will",
-            "Luke"
-          ]
-        ],
-        [
-          [
-            "Patrick",
-            "Ed"
-          ],
-          [
-            "Ayesa",
+            "Mads",
             "Lucy"
           ]
         ],
         [
           [
-            "Sam",
-            "Rod"
+            "Kaytlin",
+            ""
           ],
           [
-            "Yaqub",
-            "Ali"
+            "Laura",
+            ""
           ]
         ]
       ]
     },
     {
       "game": 4,
-      "sitters": [
-        "Ali"
-      ],
+      "sitters": [],
       "courts": [
         [
           [
-            "Louis",
-            "Will"
+            "Mads",
+            "Anchalika"
           ],
-          [
-            "Sam",
-            "Zak"
-          ]
-        ],
-        [
           [
             "Lucy",
-            "Evie"
-          ],
-          [
-            "Richard",
-            "Rod"
+            "Laura"
           ]
         ],
         [
           [
-            "Adam",
-            "Ed"
+            "",
+            "Bridget"
           ],
           [
-            "Patrick",
-            "Luke"
-          ]
-        ],
-        [
-          [
-            "Jack",
+            "",
             "Ayesa"
+          ]
+        ],
+        [
+          [
+            "Ting",
+            "Elle"
           ],
           [
-            "Shyam",
-            "Yaqub"
+            "Kaytlin",
+            "Rebecca"
           ]
         ]
       ]
     }
   ],
   "activeGame": 0,
-  "updated": "2026-08-13T16:49:51.654Z"
+  "updated": "2026-08-17T15:45:48.362Z"
 }
