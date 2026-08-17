@@ -25,10 +25,6 @@
       "sub": false
     },
     {
-      "name": "Anchalika",
-      "sub": false
-    },
-    {
       "name": "Laura",
       "sub": false
     },
@@ -43,7 +39,7 @@
   ],
   "numCourts": 3,
   "numGames": 4,
-  "seed": 889543,
+  "seed": 139623,
   "generatedGames": [
     {
       "game": 1,
@@ -51,32 +47,32 @@
       "courts": [
         [
           [
-            "Anchalika",
-            "Bridget"
-          ],
-          [
-            "Ting",
-            "Kaytlin"
-          ]
-        ],
-        [
-          [
-            "Mads",
-            "Lucy"
+            "Ayesa",
+            "Ting"
           ],
           [
             "Laura",
-            "Rebecca"
+            "Lucy"
           ]
         ],
         [
           [
-            "Ayesa",
+            "Bridget",
             ""
           ],
           [
-            "Elle",
+            "",
             ""
+          ]
+        ],
+        [
+          [
+            "Elle",
+            "Rebecca"
+          ],
+          [
+            "Mads",
+            "Kaytlin"
           ]
         ]
       ]
@@ -87,31 +83,31 @@
       "courts": [
         [
           [
-            "Ting",
-            "Lucy"
-          ],
-          [
-            "Laura",
-            "Elle"
-          ]
-        ],
-        [
-          [
-            "Anchalika",
-            "Kaytlin"
+            "Kaytlin",
+            "Bridget"
           ],
           [
             "Mads",
-            "Bridget"
+            "Ayesa"
           ]
         ],
         [
           [
             "Rebecca",
-            "Ayesa"
+            "Laura"
           ],
           [
             "",
+            "Lucy"
+          ]
+        ],
+        [
+          [
+            "",
+            "Ting"
+          ],
+          [
+            "Elle",
             ""
           ]
         ]
@@ -123,32 +119,32 @@
       "courts": [
         [
           [
-            "Anchalika",
-            "Ayesa"
+            "",
+            "Mads"
           ],
           [
-            "Elle",
-            "Rebecca"
-          ]
-        ],
-        [
-          [
-            "Ting",
-            "Bridget"
-          ],
-          [
-            "Mads",
-            "Lucy"
+            "Ayesa",
+            ""
           ]
         ],
         [
           [
             "Kaytlin",
-            ""
+            "Lucy"
           ],
           [
             "Laura",
             ""
+          ]
+        ],
+        [
+          [
+            "Bridget",
+            "Rebecca"
+          ],
+          [
+            "Elle",
+            "Ting"
           ]
         ]
       ]
@@ -159,37 +155,37 @@
       "courts": [
         [
           [
+            "Elle",
+            ""
+          ],
+          [
             "Mads",
-            "Anchalika"
-          ],
-          [
-            "Lucy",
-            "Laura"
+            "Lucy"
           ]
         ],
         [
           [
-            "",
-            "Bridget"
+            "Bridget",
+            "Ting"
           ],
           [
-            "",
-            "Ayesa"
+            "Kaytlin",
+            ""
           ]
         ],
         [
-          [
-            "Ting",
-            "Elle"
-          ],
           [
             "Rebecca",
-            "Kaytlin"
+            ""
+          ],
+          [
+            "Laura",
+            "Ayesa"
           ]
         ]
       ]
     }
   ],
   "activeGame": 0,
-  "updated": "2026-08-17T15:46:39.297Z"
+  "updated": "2026-08-17T17:17:32.971Z"
 }
