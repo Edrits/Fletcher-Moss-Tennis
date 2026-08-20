@@ -227,7 +227,7 @@
     {
       "game": 4,
       "sitters": [
-        "Will",
+        "Sully",
         "Emma"
       ],
       "courts": [
@@ -247,7 +247,7 @@
             "Quazim"
           ],
           [
-            "Sully",
+            "Will",
             "Ewelina"
           ]
         ],
@@ -274,6 +274,6 @@
       ]
     }
   ],
-  "activeGame": 2,
-  "updated": "2026-08-20T13:45:00.149Z"
+  "activeGame": 3,
+  "updated": "2026-08-20T14:18:23.480Z"
 }
