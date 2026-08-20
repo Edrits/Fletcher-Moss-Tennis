@@ -179,7 +179,7 @@
       "game": 3,
       "sitters": [
         "Rebecca",
-        "Sully"
+        "Jihadd"
       ],
       "courts": [
         [
@@ -199,7 +199,7 @@
           ],
           [
             "Josh",
-            "Jihadd"
+            "Sully"
           ]
         ],
         [
@@ -274,6 +274,6 @@
       ]
     }
   ],
-  "activeGame": 3,
-  "updated": "2026-08-20T14:18:23.480Z"
+  "activeGame": 2,
+  "updated": "2026-08-20T14:19:20.400Z"
 }
