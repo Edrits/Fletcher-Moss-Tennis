@@ -178,7 +178,7 @@
     {
       "game": 3,
       "sitters": [
-        "Richard",
+        "Rebecca",
         "Sully"
       ],
       "courts": [
@@ -208,7 +208,7 @@
             "Kevin"
           ],
           [
-            "Rebecca",
+            "Richard",
             "Sam"
           ]
         ],
@@ -274,6 +274,6 @@
       ]
     }
   ],
-  "activeGame": 0,
-  "updated": "2026-08-20T13:44:07.595Z"
+  "activeGame": 2,
+  "updated": "2026-08-20T13:45:00.149Z"
 }
