@@ -117,22 +117,22 @@
           "points": 3
         },
         {
+          "name": "Ryan",
+          "played": 1,
+          "won": 1,
+          "points": 3
+        },
+        {
+          "name": "Ewelina",
+          "played": 2,
+          "won": 0,
+          "points": 2
+        },
+        {
           "name": "Edward",
           "played": 1,
           "won": 0,
           "points": 1
-        },
-        {
-          "name": "Ewelina",
-          "played": 1,
-          "won": 0,
-          "points": 1
-        },
-        {
-          "name": "Ryan",
-          "played": 0,
-          "won": 0,
-          "points": 0
         },
         {
           "name": "Kamal",
@@ -175,6 +175,13 @@
           "winner": "Shyam",
           "noShow": null,
           "date": "2026-08-01T13:58:01.160Z"
+        },
+        {
+          "player1": "Ryan",
+          "player2": "Ewelina",
+          "winner": "Ryan",
+          "noShow": null,
+          "date": "2026-08-22T14:13:06.912Z"
         }
       ]
     },
