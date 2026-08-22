@@ -201,16 +201,22 @@
           "points": 6
         },
         {
+          "name": "Art",
+          "played": 3,
+          "won": 1,
+          "points": 5
+        },
+        {
           "name": "Will",
           "played": 2,
           "won": 1,
           "points": 4
         },
         {
-          "name": "Art",
-          "played": 2,
+          "name": "Ted",
+          "played": 1,
           "won": 1,
-          "points": 4
+          "points": 3
         },
         {
           "name": "Sofia",
@@ -229,12 +235,6 @@
           "played": 2,
           "won": 0,
           "points": 2
-        },
-        {
-          "name": "Ted",
-          "played": 0,
-          "won": 0,
-          "points": 0
         }
       ],
       "matches": [
@@ -300,6 +300,13 @@
           "winner": "Sully",
           "noShow": null,
           "date": "2026-08-15T20:25:24.452Z"
+        },
+        {
+          "player1": "Art",
+          "player2": "Ted",
+          "winner": "Ted",
+          "noShow": null,
+          "date": "2026-08-22T13:08:40.752Z"
         }
       ]
     },
