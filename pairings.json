@@ -227,7 +227,7 @@
     {
       "game": 4,
       "sitters": [
-        "Sofia",
+        "Art",
         "Jamie"
       ],
       "courts": [
@@ -268,12 +268,12 @@
           ],
           [
             "Linda",
-            "Art"
+            "Sofia"
           ]
         ]
       ]
     }
   ],
-  "activeGame": 1,
-  "updated": "2026-08-23T17:49:25.596Z"
+  "activeGame": 3,
+  "updated": "2026-08-23T17:49:59.329Z"
 }
