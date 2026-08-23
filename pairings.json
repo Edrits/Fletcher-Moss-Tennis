@@ -130,7 +130,7 @@
       "game": 2,
       "sitters": [
         "Stefanie",
-        "Sam"
+        "Bridget"
       ],
       "courts": [
         [
@@ -170,7 +170,7 @@
           ],
           [
             "Q (sub1)",
-            "Bridget"
+            "Sam"
           ]
         ]
       ]
@@ -274,6 +274,6 @@
       ]
     }
   ],
-  "activeGame": 0,
-  "updated": "2026-08-23T17:48:14.231Z"
+  "activeGame": 1,
+  "updated": "2026-08-23T17:49:00.965Z"
 }
