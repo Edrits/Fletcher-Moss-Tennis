@@ -1,35 +1,19 @@
 {
   "players": [
     {
-      "name": "Rebecca",
+      "name": "Bridget",
       "sub": false
     },
     {
-      "name": "Jihadd",
+      "name": "Art",
       "sub": false
     },
     {
-      "name": "Ewelina",
+      "name": "Jihaad",
       "sub": false
     },
     {
-      "name": "Sope",
-      "sub": false
-    },
-    {
-      "name": "Kevin",
-      "sub": false
-    },
-    {
-      "name": "Sam",
-      "sub": false
-    },
-    {
-      "name": "Hugo",
-      "sub": false
-    },
-    {
-      "name": "Quazim",
+      "name": "Frederica",
       "sub": false
     },
     {
@@ -37,7 +21,11 @@
       "sub": false
     },
     {
-      "name": "Ali",
+      "name": "Linda",
+      "sub": false
+    },
+    {
+      "name": "Hugo",
       "sub": false
     },
     {
@@ -45,83 +33,95 @@
       "sub": false
     },
     {
-      "name": "Emma",
+      "name": "Rhys",
       "sub": false
     },
     {
-      "name": "Richard",
+      "name": "Shyam",
       "sub": false
     },
     {
-      "name": "Sully",
+      "name": "Sofia",
       "sub": false
     },
     {
-      "name": "Oliver",
+      "name": "Jamie",
       "sub": false
     },
     {
-      "name": "Josh",
+      "name": "John G",
       "sub": false
     },
     {
-      "name": "Ben",
-      "sub": true
+      "name": "Sidharth",
+      "sub": false
     },
     {
-      "name": "Jesse",
-      "sub": true
+      "name": "Stefanie",
+      "sub": false
+    },
+    {
+      "name": "Sam",
+      "sub": false
+    },
+    {
+      "name": "Q (sub1)",
+      "sub": false
+    },
+    {
+      "name": "Bailey (sub2)",
+      "sub": false
     }
   ],
   "numCourts": 4,
   "numGames": 4,
-  "seed": 943615,
+  "seed": 771509,
   "generatedGames": [
     {
       "game": 1,
       "sitters": [
-        "Ben",
-        "Jesse"
+        "Q (sub1)",
+        "Bailey (sub2)"
       ],
       "courts": [
         [
           [
-            "Kevin",
-            "Jihadd"
+            "Shyam",
+            "Jamie"
           ],
           [
-            "Richard",
-            "Quazim"
+            "Michael",
+            "Bridget"
           ]
         ],
         [
           [
-            "Hugo",
-            "Rebecca"
+            "Jihaad",
+            "Art"
           ],
           [
-            "Will",
-            "Ewelina"
+            "Frederica",
+            "Stefanie"
           ]
         ],
         [
           [
-            "Ali",
+            "Sofia",
             "Sam"
           ],
           [
-            "Emma",
-            "Sope"
+            "Linda",
+            "Will"
           ]
         ],
         [
           [
-            "Oliver",
-            "Michael"
+            "Sidharth",
+            "Hugo"
           ],
           [
-            "Sully",
-            "Josh"
+            "John G",
+            "Rhys"
           ]
         ]
       ]
@@ -129,48 +129,48 @@
     {
       "game": 2,
       "sitters": [
-        "Oliver",
-        "Josh"
+        "Stefanie",
+        "Sam"
       ],
       "courts": [
         [
           [
-            "Will",
-            "Quazim"
+            "Jamie",
+            "John G"
           ],
           [
-            "Emma",
-            "Jesse"
+            "Rhys",
+            "Frederica"
           ]
         ],
         [
           [
-            "Sam",
-            "Kevin"
-          ],
-          [
-            "Ewelina",
+            "Shyam",
             "Michael"
+          ],
+          [
+            "Art",
+            "Will"
           ]
         ],
         [
           [
-            "Sope",
-            "Ben"
+            "Jihaad",
+            "Sidharth"
           ],
           [
-            "Richard",
-            "Sully"
+            "Linda",
+            "Hugo"
           ]
         ],
         [
           [
-            "Rebecca",
-            "Ali"
+            "Bailey (sub2)",
+            "Sofia"
           ],
           [
-            "Hugo",
-            "Jihadd"
+            "Q (sub1)",
+            "Bridget"
           ]
         ]
       ]
@@ -178,48 +178,48 @@
     {
       "game": 3,
       "sitters": [
-        "Rebecca",
-        "Jihadd"
+        "John G",
+        "Sidharth"
       ],
       "courts": [
         [
           [
-            "Quazim",
-            "Emma"
+            "Jamie",
+            "Rhys"
           ],
           [
-            "Ben",
-            "Oliver"
+            "Will",
+            "Q (sub1)"
+          ]
+        ],
+        [
+          [
+            "Art",
+            "Michael"
+          ],
+          [
+            "Jihaad",
+            "Sofia"
+          ]
+        ],
+        [
+          [
+            "Bailey (sub2)",
+            "Bridget"
+          ],
+          [
+            "Linda",
+            "Frederica"
           ]
         ],
         [
           [
             "Hugo",
-            "Ewelina"
+            "Shyam"
           ],
           [
-            "Josh",
-            "Sully"
-          ]
-        ],
-        [
-          [
-            "Jesse",
-            "Kevin"
-          ],
-          [
-            "Richard",
-            "Sam"
-          ]
-        ],
-        [
-          [
-            "Ali",
-            "Sope"
-          ],
-          [
-            "Michael",
-            "Will"
+            "Sam",
+            "Stefanie"
           ]
         ]
       ]
@@ -227,53 +227,53 @@
     {
       "game": 4,
       "sitters": [
-        "Sully",
-        "Emma"
+        "Sofia",
+        "Jamie"
       ],
       "courts": [
         [
           [
-            "Richard",
-            "Michael"
+            "Frederica",
+            "Jihaad"
           ],
           [
-            "Rebecca",
-            "Oliver"
+            "Sam",
+            "Shyam"
           ]
         ],
         [
           [
-            "Ali",
-            "Quazim"
+            "Bailey (sub2)",
+            "Q (sub1)"
           ],
           [
-            "Will",
-            "Ewelina"
+            "Michael",
+            "John G"
           ]
         ],
         [
           [
-            "Ben",
-            "Josh"
+            "Sidharth",
+            "Will"
           ],
           [
-            "Jihadd",
-            "Sam"
+            "Stefanie",
+            "Bridget"
           ]
         ],
         [
           [
-            "Jesse",
-            "Hugo"
+            "Hugo",
+            "Rhys"
           ],
           [
-            "Sope",
-            "Kevin"
+            "Linda",
+            "Art"
           ]
         ]
       ]
     }
   ],
-  "activeGame": 2,
-  "updated": "2026-08-20T14:19:20.400Z"
+  "activeGame": 0,
+  "updated": "2026-08-23T17:48:14.231Z"
 }
