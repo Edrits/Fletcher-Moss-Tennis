@@ -129,7 +129,7 @@
     {
       "game": 2,
       "sitters": [
-        "Stefanie",
+        "Frederica",
         "Bridget"
       ],
       "courts": [
@@ -140,7 +140,7 @@
           ],
           [
             "Rhys",
-            "Frederica"
+            "Stefanie"
           ]
         ],
         [
@@ -275,5 +275,5 @@
     }
   ],
   "activeGame": 1,
-  "updated": "2026-08-23T17:49:00.965Z"
+  "updated": "2026-08-23T17:49:25.596Z"
 }
