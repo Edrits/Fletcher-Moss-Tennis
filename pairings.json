@@ -5,7 +5,7 @@
       "sub": false
     },
     {
-      "name": "Art",
+      "name": "Art/Chris",
       "sub": false
     },
     {
@@ -75,7 +75,7 @@
   ],
   "numCourts": 4,
   "numGames": 4,
-  "seed": 198557,
+  "seed": 645890,
   "generatedGames": [
     {
       "game": 1,
@@ -86,42 +86,42 @@
       "courts": [
         [
           [
-            "Sofia",
-            "Stefanie"
+            "John G",
+            "Will"
           ],
           [
+            "Hugo",
+            "Stefanie"
+          ]
+        ],
+        [
+          [
+            "Jihaad",
+            "Q"
+          ],
+          [
+            "Sam",
+            "Rhys"
+          ]
+        ],
+        [
+          [
             "Frederica",
-            "Art"
+            "Jamie"
+          ],
+          [
+            "Sofia",
+            "Bridget"
           ]
         ],
         [
           [
             "Shyam",
-            "Hugo"
-          ],
-          [
-            "Q",
-            "Will"
-          ]
-        ],
-        [
-          [
-            "Bridget",
-            "Jihaad"
-          ],
-          [
-            "Michael",
-            "Sam"
-          ]
-        ],
-        [
-          [
-            "Rhys",
-            "Jamie"
+            "Michael"
           ],
           [
             "Sidharth",
-            "John G"
+            "Art/Chris"
           ]
         ]
       ]
@@ -135,42 +135,42 @@
       "courts": [
         [
           [
-            "Hugo",
-            "Q"
-          ],
-          [
-            "John G",
-            "Bailey (sub1)"
-          ]
-        ],
-        [
-          [
-            "Frederica",
+            "Art/Chris",
             "Will"
           ],
           [
-            "Art",
+            "Frederica",
             "Ali (sub2)"
           ]
         ],
         [
           [
-            "Rhys",
-            "Sofia"
+            "Michael",
+            "Jamie"
           ],
           [
-            "Jamie",
-            "Michael"
+            "Jihaad",
+            "Hugo"
           ]
         ],
         [
           [
-            "Shyam",
-            "Jihaad"
+            "John G",
+            "Bailey (sub1)"
           ],
           [
-            "Bridget",
+            "Rhys",
             "Sidharth"
+          ]
+        ],
+        [
+          [
+            "Bridget",
+            "Q"
+          ],
+          [
+            "Sofia",
+            "Shyam"
           ]
         ]
       ]
@@ -184,42 +184,42 @@
       "courts": [
         [
           [
-            "Hugo",
-            "Michael"
-          ],
-          [
-            "Art",
-            "Shyam"
-          ]
-        ],
-        [
-          [
             "Ali (sub2)",
-            "Jihaad"
-          ],
-          [
-            "Bailey (sub1)",
             "Rhys"
-          ]
-        ],
-        [
-          [
-            "Will",
-            "Sam"
           ],
           [
-            "Sofia",
-            "Frederica"
+            "Frederica",
+            "Hugo"
           ]
         ],
         [
           [
-            "Q",
+            "Michael",
             "Stefanie"
           ],
           [
-            "Bridget",
+            "Bailey (sub1)",
+            "Sofia"
+          ]
+        ],
+        [
+          [
+            "Art/Chris",
             "Jamie"
+          ],
+          [
+            "Sam",
+            "Q"
+          ]
+        ],
+        [
+          [
+            "Bridget",
+            "Shyam"
+          ],
+          [
+            "Jihaad",
+            "Will"
           ]
         ]
       ]
@@ -233,47 +233,47 @@
       "courts": [
         [
           [
-            "Bridget",
-            "Michael"
+            "Art/Chris",
+            "John G"
           ],
           [
-            "Bailey (sub1)",
-            "Will"
+            "Bridget",
+            "Bailey (sub1)"
           ]
         ],
         [
           [
             "Frederica",
+            "Sam"
+          ],
+          [
+            "Hugo",
+            "Michael"
+          ]
+        ],
+        [
+          [
+            "Will",
+            "Sidharth"
+          ],
+          [
+            "Jihaad",
+            "Rhys"
+          ]
+        ],
+        [
+          [
+            "Q",
             "Shyam"
           ],
           [
-            "Rhys",
-            "John G"
-          ]
-        ],
-        [
-          [
-            "Hugo",
-            "Art"
-          ],
-          [
-            "Sidharth",
-            "Sam"
-          ]
-        ],
-        [
-          [
-            "Jihaad",
+            "Ali (sub2)",
             "Stefanie"
-          ],
-          [
-            "Q",
-            "Ali (sub2)"
           ]
         ]
       ]
     }
   ],
   "activeGame": 0,
-  "updated": "2026-08-23T18:45:38.958Z"
+  "updated": "2026-08-24T11:53:40.553Z"
 }
