@@ -5,7 +5,7 @@
       "sub": false
     },
     {
-      "name": "Art/Chris",
+      "name": "Art",
       "sub": false
     },
     {
@@ -21,7 +21,7 @@
       "sub": false
     },
     {
-      "name": "Q",
+      "name": "Ali",
       "sub": false
     },
     {
@@ -53,7 +53,7 @@
       "sub": false
     },
     {
-      "name": "Sidharth",
+      "name": "Bailey",
       "sub": false
     },
     {
@@ -65,63 +65,63 @@
       "sub": false
     },
     {
-      "name": "Bailey (sub1)",
+      "name": "Meg",
       "sub": false
     },
     {
-      "name": "Ali (sub2)",
+      "name": "Oliver",
       "sub": false
     }
   ],
   "numCourts": 4,
   "numGames": 4,
-  "seed": 645890,
+  "seed": 885579,
   "generatedGames": [
     {
       "game": 1,
       "sitters": [
-        "Bailey (sub1)",
-        "Ali (sub2)"
+        "Meg",
+        "Oliver"
       ],
       "courts": [
         [
           [
-            "John G",
-            "Will"
+            "Jamie",
+            "Shyam"
           ],
           [
-            "Hugo",
-            "Jamie"
-          ]
-        ],
-        [
-          [
-            "Jihaad",
-            "Q"
-          ],
-          [
-            "Sam",
-            "Rhys"
-          ]
-        ],
-        [
-          [
-            "Frederica",
+            "Will",
             "Stefanie"
-          ],
+          ]
+        ],
+        [
           [
             "Sofia",
             "Bridget"
+          ],
+          [
+            "Rhys",
+            "Bailey"
           ]
         ],
         [
           [
-            "Shyam",
-            "Michael"
+            "Michael",
+            "Jihaad"
           ],
           [
-            "Sidharth",
-            "Art/Chris"
+            "Ali",
+            "John G"
+          ]
+        ],
+        [
+          [
+            "Sam",
+            "Frederica"
+          ],
+          [
+            "Art",
+            "Hugo"
           ]
         ]
       ]
@@ -130,47 +130,47 @@
       "game": 2,
       "sitters": [
         "Stefanie",
-        "Bridget"
+        "Sam"
       ],
       "courts": [
         [
           [
-            "Art/Chris",
-            "Will"
+            "Ali",
+            "Bridget"
           ],
           [
-            "Frederica",
-            "Ali (sub2)"
+            "Hugo",
+            "Shyam"
           ]
         ],
         [
           [
             "Michael",
-            "Jamie"
-          ],
-          [
-            "Jihaad",
-            "Hugo"
-          ]
-        ],
-        [
-          [
-            "John G",
-            "Bailey (sub1)"
+            "Oliver"
           ],
           [
             "Rhys",
-            "Sidharth"
+            "Art"
           ]
         ],
         [
           [
-            "Sam",
-            "Q"
+            "Frederica",
+            "Will"
           ],
           [
             "Sofia",
-            "Shyam"
+            "John G"
+          ]
+        ],
+        [
+          [
+            "Jihaad",
+            "Jamie"
+          ],
+          [
+            "Bailey",
+            "Meg"
           ]
         ]
       ]
@@ -179,47 +179,47 @@
       "game": 3,
       "sitters": [
         "John G",
-        "Sidharth"
+        "Bailey"
       ],
       "courts": [
         [
           [
-            "Ali (sub2)",
-            "Rhys"
+            "Rhys",
+            "Shyam"
           ],
           [
-            "Jihaad",
+            "Meg",
+            "Jamie"
+          ]
+        ],
+        [
+          [
+            "Will",
+            "Oliver"
+          ],
+          [
+            "Frederica",
             "Hugo"
           ]
         ],
         [
           [
-            "Michael",
+            "Sofia",
+            "Jihaad"
+          ],
+          [
+            "Art",
+            "Michael"
+          ]
+        ],
+        [
+          [
+            "Bridget",
+            "Sam"
+          ],
+          [
+            "Ali",
             "Stefanie"
-          ],
-          [
-            "Bailey (sub1)",
-            "Sofia"
-          ]
-        ],
-        [
-          [
-            "Art/Chris",
-            "Jamie"
-          ],
-          [
-            "Sam",
-            "Q"
-          ]
-        ],
-        [
-          [
-            "Frederica",
-            "Shyam"
-          ],
-          [
-            "Will",
-            "Bridget"
           ]
         ]
       ]
@@ -233,47 +233,47 @@
       "courts": [
         [
           [
-            "Art/Chris",
+            "Shyam",
+            "Ali"
+          ],
+          [
+            "Art",
+            "Oliver"
+          ]
+        ],
+        [
+          [
+            "Hugo",
+            "Will"
+          ],
+          [
+            "Michael",
+            "Meg"
+          ]
+        ],
+        [
+          [
+            "Sam",
             "John G"
           ],
           [
-            "Bridget",
-            "Bailey (sub1)"
+            "Bailey",
+            "Bridget"
           ]
         ],
         [
           [
             "Frederica",
-            "Sam"
-          ],
-          [
-            "Hugo",
-            "Michael"
-          ]
-        ],
-        [
-          [
-            "Will",
-            "Sidharth"
-          ],
-          [
-            "Jihaad",
-            "Rhys"
-          ]
-        ],
-        [
-          [
-            "Q",
-            "Shyam"
-          ],
-          [
-            "Ali (sub2)",
             "Stefanie"
+          ],
+          [
+            "Rhys",
+            "Jihaad"
           ]
         ]
       ]
     }
   ],
-  "activeGame": 2,
-  "updated": "2026-08-24T11:57:35.237Z"
+  "activeGame": 0,
+  "updated": "2026-08-24T14:23:22.989Z"
 }
