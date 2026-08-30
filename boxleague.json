@@ -45,12 +45,6 @@
           "played": 1,
           "won": 0,
           "points": 1
-        },
-        {
-          "name": "Robbie",
-          "played": 0,
-          "won": 0,
-          "points": 0
         }
       ],
       "matches": [
@@ -136,18 +130,6 @@
         },
         {
           "name": "Kamal",
-          "played": 0,
-          "won": 0,
-          "points": 0
-        },
-        {
-          "name": "Jesse",
-          "played": 0,
-          "won": 0,
-          "points": 0
-        },
-        {
-          "name": "Will Marriot",
           "played": 0,
           "won": 0,
           "points": 0
