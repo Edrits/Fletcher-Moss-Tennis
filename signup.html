@@ -538,7 +538,7 @@
                     <!-- 30 matches NAME_MAX in api/_lib/signup-core.js. At 40 the box let
                          members type a name the server was always going to refuse. -->
                     <input class="text-input" id="name-input" type="text" maxlength="30"
-                           autocomplete="name" enterkeyhint="done" placeholder="e.g. Ed R.">
+                           autocomplete="name" enterkeyhint="done" placeholder="Type your name, for example Ed R.">
                     <p class="field-hint">First name and last initial is plenty. It shows on the list below.</p>
 
                     <!-- Only shown when the live session has a code. Sessions opened before
@@ -732,14 +732,6 @@
                 return Array.from(bytes, b => b.toString(16).padStart(2, '0')).join('');
             }
             return 'fm' + Math.random().toString(36).slice(2) + Date.now().toString(36);
-        }
-
-        // Remember the last name typed on this device so nobody retypes it every week
-        function rememberName(name) {
-            try { localStorage.setItem('fm_signup_name', name); } catch (err) { /* ignore */ }
-        }
-        function recalledName() {
-            try { return localStorage.getItem('fm_signup_name') || ''; } catch (err) { return ''; }
         }
 
         // ── Server clock ──
@@ -952,8 +944,11 @@
             } else {
                 youBox.style.display = 'none';
                 joinBox.style.display = hasSession ? 'block' : 'none';
-                const input = document.getElementById('name-input');
-                if (!input.value) input.value = recalledName();
+                // Deliberately not pre-filled. A value here renders as ordinary typed text,
+                // so the box looked already answered and a quick tap could sign someone up
+                // under whoever last used the phone. The greyed placeholder prompts
+                // instead, and autocomplete="name" still offers the browser's own saved
+                // name, which is the right place for that memory to live.
             }
 
             // The code field follows the server, which is the only thing that knows whether
@@ -1162,10 +1157,6 @@
             try {
                 const res = await apiPost({ action: 'join', name: name, token: token, pin: pin });
                 if (res && res.ok) {
-                    // Store the name the server actually saved. A clash is resolved to
-                    // "Ed R.2", and remembering what was typed instead would show the
-                    // wrong name back on the next visit.
-                    rememberName(res.name || name);
                     // Take the place from the POST itself rather than waiting for the GET.
                     // The POST already succeeded, so the place box must appear even if the
                     // refresh that follows fails. Without this a member who got place 4 saw
@@ -1174,7 +1165,11 @@
                         current.you = { position: res.position, tier: res.tier };
                         render();
                     }
-                    const savedAs = res.name && res.name !== name ? ' You are on the list as ' + res.name + '.' : '';
+                    // Shortened names already end in a full stop ("Real M."), so adding
+                    // another gave "Real M..".
+                    const savedAs = res.name && res.name !== name
+                        ? ' You are on the list as ' + res.name + (/\.$/.test(res.name) ? '' : '.')
+                        : '';
                     showMsg('join-msg', 'You are in. ' + placeSentence(res.position, res.tier) + savedAs, 'good');
                 } else {
                     showMsg('join-msg', errorCopy(res && res.error, res && res.message), 'bad');
