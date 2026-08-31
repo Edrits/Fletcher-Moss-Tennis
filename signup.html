@@ -32,7 +32,9 @@
             --gold-300:#e7b768; --gold-200:#f4e4c1; --gold-100:#fbf1dc; --gold-accent:#c98a2c;
 
             --color-alert:#a83c2d; --color-whatsapp:#25976a;
-            --color-sub:#b06010; --color-sub-bg:#f6ede0;
+            /* Darkened from #b06010, which was 4.00:1 on --color-sub-bg and failed AA at the
+               11px and 14.5px sizes it is used at. Now 5.6:1. */
+            --color-sub:#8f4d0c; --color-sub-bg:#f6ede0;
 
             --text-heading:var(--green-900); --text-body:var(--ink-900);
             --text-muted:var(--ink-500); --text-link:var(--green-700);
@@ -255,7 +257,8 @@
             font-family: var(--font-body); font-size: 16px; font-weight: 500; color: var(--text-body);
             background: var(--paper-50); transition: border-color .15s;
         }
-        .text-input:focus { outline: none; border-color: var(--green-600); background: var(--paper-0); }
+        .text-input:focus-visible { outline: 3px solid var(--green-600); outline-offset: 2px; }
+        .text-input:focus { border-color: var(--green-600); background: var(--paper-0); }
         .text-input::placeholder { color: var(--ink-300); }
         .field-hint { font-size: 11.5px; color: var(--text-muted); margin-top: 6px; }
 
@@ -446,7 +449,7 @@
 
     <div id="rainAlertBanner">
         <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242"/><path d="M16 14v6"/><path d="M8 14v6"/><path d="M12 16v6"/></svg>
-        High rain risk today in Didsbury. Check the WhatsApp group for session updates.
+        Heavy rain in Didsbury right now. This is the weather today, not a forecast for the session. Check the WhatsApp group for updates.
     </div>
 
     <header class="top-bar" id="topBar">
@@ -668,7 +671,7 @@
                 </div>
                 <div class="footer-col">
                     <h4>Sessions</h4>
-                    <p>Monday 6:00 - 8:00 PM<br>Thursday 6:00 - 8:00 PM<br>Saturday 11:00 AM - 2:00 PM</p>
+                    <p>Monday 6:00 to 8:00 PM<br>Thursday 6:00 to 8:00 PM<br>Saturday 11:00 AM to 2:00 PM</p>
                 </div>
             </div>
             <p style="margin-top: 25px; font-size: 0.9em; opacity: 0.5;">Hope to see you on the court soon.</p>
@@ -753,7 +756,7 @@
         // Every code the endpoint can return, in plain words.
         const ERROR_COPY = {
             not_open: 'Sign-up is not open yet. Keep an eye on the WhatsApp group.',
-            full: 'The list is full. Every main place, both subs and the whole waiting list are taken. Keep an eye on it in case someone drops out.',
+            full: 'The list is full. Every main place, the subs and the whole waiting list are taken. Keep an eye on it in case someone drops out.',
             invalid_name: 'Please enter your name. First name and last initial is plenty.',
             bad_pin: 'That code is not right. Check the message in the WhatsApp group.',
             already_in: 'You already have a place on this list. Your number is shown above.',
@@ -806,6 +809,20 @@
         function formatTime(date) {
             return date.toLocaleTimeString('en-GB', { hour: 'numeric', minute: '2-digit', hour12: true })
                        .replace(/\s*am$/i, ' AM').replace(/\s*pm$/i, ' PM');
+        }
+
+        // opensAt is a UTC instant. These format it in club time so a member abroad, or
+        // with a mis-set phone, is not told an opening time that disagrees with the
+        // countdown ticking beside it. The plain session DATE is not formatted with these:
+        // it is a calendar day, parsed at local midnight, and forcing a zone on it can
+        // shift it to the day before.
+        function formatTimeUK(date) {
+            return date.toLocaleTimeString('en-GB', { timeZone: 'Europe/London', hour: 'numeric', minute: '2-digit', hour12: true })
+                       .replace(/\s*am$/i, ' AM').replace(/\s*pm$/i, ' PM');
+        }
+
+        function formatDayUK(date) {
+            return date.toLocaleDateString('en-GB', { timeZone: 'Europe/London', weekday: 'long', day: 'numeric', month: 'long' });
         }
 
         function formatDay(date) {
@@ -888,7 +905,9 @@
 
         function render() {
             const d = current || {};
-            const cap = d.capacity || { main: 16, subs: 2, waitlist: 10 };
+            // Merged, not just defaulted. A partial object printed "then undefined subs and
+            // a waiting list of undefined", and NaN slices dropped real people off the page.
+            const cap = Object.assign({ main: 16, subs: 2, waitlist: 10 }, d.capacity || {});
             const mainList = Array.isArray(d.main) ? d.main : [];
             const subList = Array.isArray(d.subs) ? d.subs : [];
             const waitList = Array.isArray(d.waitlist) ? d.waitlist : [];
@@ -1022,6 +1041,15 @@
             }).join('');
         }
 
+        // Storage can throw outright where site data is blocked, not merely return null,
+        // so every access goes through a helper rather than being written inline.
+        function rememberAdmin(pw) {
+            try { rememberAdmin(pw); } catch (err) { /* stays in memory only */ }
+        }
+        function forgetAdmin() {
+            try { forgetAdmin(); } catch (err) { /* nothing to clear */ }
+        }
+
         function isAdmin() {
             try { return !!sessionStorage.getItem('pw'); } catch (err) { return false; }
         }
@@ -1070,7 +1098,7 @@
             if (remaining > 0) {
                 label.textContent = 'Sign-up opens in';
                 value.textContent = formatRemaining(remaining);
-                note.textContent = 'That is ' + formatTime(new Date(opens)) + ' on ' + formatDay(new Date(opens)) + '.';
+                note.textContent = 'That is ' + formatTimeUK(new Date(opens)) + ' on ' + formatDayUK(new Date(opens)) + ', UK time.';
             } else {
                 label.textContent = 'Sign-up';
                 value.textContent = 'Opening';
@@ -1222,7 +1250,7 @@
             if (USE_MOCK) {
                 const mocked = await mockPost({ action: 'verify', password: pw });
                 setShare(mocked.shareText);
-                sessionStorage.setItem('pw', pw);
+                rememberAdmin(pw);
                 setAdminUI(true);
                 prefillAdmin();
                 return;
@@ -1252,13 +1280,13 @@
                 alert('Network error, could not verify the password.');
                 return;
             }
-            sessionStorage.setItem('pw', pw);
+            rememberAdmin(pw);
             setAdminUI(true);
             prefillAdmin();
         }
 
         function lockAdmin() {
-            sessionStorage.removeItem('pw');
+            forgetAdmin();
             setShare(null);
             setAdminUI(false);
         }
@@ -1417,13 +1445,14 @@
 
         // Wraps an admin POST: adds the stored password and handles a rejection once
         async function adminPost(body) {
-            const pw = sessionStorage.getItem('pw');
+            let pw = null;
+            try { pw = sessionStorage.getItem('pw'); } catch (err) { pw = null; }
             if (!pw) { showMsg('admin-msg', 'Unlock with the admin password first.', 'bad'); return null; }
             try {
                 const res = await apiPost(Object.assign({ password: pw }, body));
                 if (res && res.ok) return res;
                 if (res && res.error === 'bad_password') {
-                    sessionStorage.removeItem('pw');
+                    forgetAdmin();
                     setAdminUI(false);
                     alert('That password was not right.');
                     return null;
@@ -1529,7 +1558,10 @@
             const res = await adminPost({ action: 'seed', name: name });
             if (res) {
                 input.value = '';
-                showMsg('admin-msg', name + ' added at number ' + res.position + '.', 'good');
+                // The stored name, not the typed one. Typing "John Smith" seats "John S.",
+                // and reporting the typed name sends the organiser looking for a row that
+                // is not there.
+                showMsg('admin-msg', (res.name || name) + ' added at number ' + res.position + '.', 'good');
                 await refresh();
             }
         }
@@ -1783,9 +1815,12 @@
         function mockDelay(ms) { return new Promise(function (r) { setTimeout(r, ms); }); }
 
         // ── Initialise on load ──
-        if (sessionStorage.getItem('pw')) setAdminUI(true);
+        // Via the guarded helper. A bare sessionStorage read throws where site data is
+        // blocked, and being top-level that aborted everything after it: no refresh, no
+        // polling, no countdown. The member was left on "Loading the sign-up list."
+        if (isAdmin()) setAdminUI(true);
         refresh({ showBoot: true }).then(function () {
-            if (sessionStorage.getItem('pw')) prefillAdmin();
+            if (isAdmin()) prefillAdmin();
         });
         startPolling();
         setInterval(tickCountdown, 1000);

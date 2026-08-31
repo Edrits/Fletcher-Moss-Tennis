@@ -199,7 +199,11 @@ export function shareMessage({ label, pin, url = SIGNUP_URL } = {}) {
 }
 
 export function normaliseName(raw) {
-  return String(raw ?? '').trim().replace(/\s+/g, ' ');
+  // NFC first. Copying a name out of Contacts or Notes can yield the decomposed form,
+  // where "Jose\u0301" is an e followed by a combining accent. The name pattern below
+  // matches letters but not combining marks, so a decomposed "Jos\u00e9" was rejected with
+  // "Please use letters only, no numbers or links" for a name that is nothing but letters.
+  return String(raw ?? '').normalize('NFC').trim().replace(/\s+/g, ' ');
 }
 
 export function validateName(raw) {
