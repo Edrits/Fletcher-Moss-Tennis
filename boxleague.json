@@ -172,6 +172,12 @@
       "name": "League 3",
       "players": [
         {
+          "name": "Sully",
+          "played": 5,
+          "won": 3,
+          "points": 11
+        },
+        {
           "name": "Michael",
           "played": 4,
           "won": 3,
@@ -182,12 +188,6 @@
           "played": 3,
           "won": 3,
           "points": 9
-        },
-        {
-          "name": "Sully",
-          "played": 4,
-          "won": 2,
-          "points": 8
         },
         {
           "name": "Will",
@@ -209,9 +209,9 @@
         },
         {
           "name": "Sofia",
-          "played": 2,
+          "played": 3,
           "won": 0,
-          "points": 2
+          "points": 3
         },
         {
           "name": "Alan Russell",
@@ -310,6 +310,13 @@
           "winner": "Sam",
           "noShow": null,
           "date": "2026-08-25T17:25:56.735Z"
+        },
+        {
+          "player1": "Sofia",
+          "player2": "Sully",
+          "winner": "Sully",
+          "noShow": null,
+          "date": "2026-08-31T19:20:10.187Z"
         }
       ]
     },
