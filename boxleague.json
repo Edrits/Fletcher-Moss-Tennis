@@ -173,9 +173,9 @@
       "players": [
         {
           "name": "Sully",
-          "played": 5,
-          "won": 3,
-          "points": 11
+          "played": 6,
+          "won": 4,
+          "points": 14
         },
         {
           "name": "Michael",
@@ -191,9 +191,9 @@
         },
         {
           "name": "Will",
-          "played": 3,
+          "played": 4,
           "won": 2,
-          "points": 7
+          "points": 8
         },
         {
           "name": "Art",
@@ -317,6 +317,13 @@
           "winner": "Sully",
           "noShow": null,
           "date": "2026-08-31T19:20:10.187Z"
+        },
+        {
+          "player1": "Will",
+          "player2": "Sully",
+          "winner": "Sully",
+          "noShow": null,
+          "date": "2026-08-31T19:20:35.398Z"
         }
       ]
     },
