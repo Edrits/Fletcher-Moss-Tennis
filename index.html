@@ -333,6 +333,45 @@
 
         .btn-lg { padding: 15px 32px; font-size: var(--text-md); }
 
+        /* Hero call-to-action buttons.
+           Scoped to .hero-actions so buttons elsewhere on the page keep the plain style.
+           The lead action is a clean solid that invites new players to read up first; the
+           other two are frosted glass so they sit lightly over the photo, matching the
+           weather pill above them, rather than reading as heavy blocks. */
+        .hero-actions .btn {
+            padding: 14px 30px; border-radius: 14px;
+            font-weight: 600; letter-spacing: .015em;
+            border: 1px solid transparent;
+            transition: background var(--duration-base) var(--ease-standard),
+                        border-color var(--duration-base) var(--ease-standard),
+                        transform var(--duration-base) var(--ease-standard),
+                        box-shadow var(--duration-base) var(--ease-standard);
+        }
+        .hero-actions .hero-primary {
+            background: var(--paper-0); color: var(--green-800);
+            box-shadow: var(--shadow-md);
+        }
+        .hero-actions .hero-primary:hover {
+            background: #fff; transform: translateY(-2px); box-shadow: var(--shadow-lg);
+        }
+        .hero-actions .hero-glass {
+            background: rgba(255,255,255,.14); color: #fff;
+            border-color: rgba(255,255,255,.4);
+            -webkit-backdrop-filter: blur(var(--blur-glass));
+            backdrop-filter: blur(var(--blur-glass));
+        }
+        .hero-actions .hero-glass:hover {
+            background: rgba(255,255,255,.24); border-color: rgba(255,255,255,.65);
+            transform: translateY(-2px);
+        }
+        /* WhatsApp keeps a soft green identity inside the glass treatment */
+        .hero-actions .hero-glass-wa {
+            background: rgba(37,151,106,.26); border-color: rgba(130,220,180,.55);
+        }
+        .hero-actions .hero-glass-wa:hover {
+            background: rgba(37,151,106,.42); border-color: rgba(130,220,180,.85);
+        }
+
         .btn-ghost {
             background: none; border: none; color: var(--brown-600); cursor: pointer;
             font-family: var(--font-body); font-size: var(--text-sm); font-weight: 600;
@@ -734,14 +773,16 @@
             <h1>Free social tennis, right in the heart of Didsbury</h1>
             <p class="hero-sub">Community-run, Charity and Member Funded.</p>
             <div class="hero-actions">
-                <a href="https://wa.me/+447821120784?text=Hello!%20Thanks%20for%20reaching%20out.%20We%27re%20The%20Fletcher%20Moss%20Social%20Tennis%20group.%20Tennis%20is%20free%20-%20twice%20a%20week%20Monday%20and%20Thursday%206.00pm%20-8.00pm%20-%20There%20is%20a%20joining%20fee%20of%20%C2%A310%20which%20goes%20towards%20a%20balls%20%20fund%20-%20we%20use%20a%20lot%20of%20balls.%20We%27ll%20send%20a%20link%20to%20join%20the%20group%20and%20you%27ll%20be%20given%20the%20OK%20on%20receipt%20of%20the%20%C2%A310%20-%20a%20payment%20option%20will%20be%20provided." target="_blank" rel="noopener noreferrer" class="btn btn-whatsapp btn-lg">
+                <!-- Lead with "Learn more" so new players read how the club works and who it
+                     suits before they ask to join, rather than jumping straight to WhatsApp. -->
+                <a href="#about" class="btn btn-lg hero-primary">Learn more</a>
+                <a href="https://wa.me/+447821120784?text=Hello!%20Thanks%20for%20reaching%20out.%20We%27re%20The%20Fletcher%20Moss%20Social%20Tennis%20group.%20Tennis%20is%20free%20-%20twice%20a%20week%20Monday%20and%20Thursday%206.00pm%20-8.00pm%20-%20There%20is%20a%20joining%20fee%20of%20%C2%A310%20which%20goes%20towards%20a%20balls%20%20fund%20-%20we%20use%20a%20lot%20of%20balls.%20We%27ll%20send%20a%20link%20to%20join%20the%20group%20and%20you%27ll%20be%20given%20the%20OK%20on%20receipt%20of%20the%20%C2%A310%20-%20a%20payment%20option%20will%20be%20provided." target="_blank" rel="noopener noreferrer" class="btn btn-lg hero-glass hero-glass-wa">
                     <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/></svg>
                     Join WhatsApp Group
                 </a>
-                <a href="#about" class="btn btn-inverse btn-lg">Learn more</a>
                 <!-- The desktop nav only appears on very wide screens, so the sign-up tool
                      needs a way in from the top of the page at every width. -->
-                <a href="signup.html" class="btn btn-inverse btn-lg">Session sign-up <span class="beta-chip">Beta</span></a>
+                <a href="signup.html" class="btn btn-lg hero-glass">Session sign-up <span class="beta-chip">Beta</span></a>
             </div>
         </div>
     </div>
