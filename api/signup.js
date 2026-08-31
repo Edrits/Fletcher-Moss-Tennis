@@ -22,7 +22,7 @@ import { randomUUID, randomInt } from 'node:crypto';
 import { archiveSession } from './_lib/archive.js';
 import {
   DEFAULT_CAPACITY, nextSession, defaultOpensAt, sessionEndsAt,
-  validateName, shortenName, totalSlots, tierFor, viewModel,
+  validateName, shortenName, totalSlots, tierFor, viewModel, labelForDate,
   validatePin, normalisePin, shareMessage, PIN_LENGTH
 } from './_lib/signup-core.js';
 
@@ -204,7 +204,9 @@ export default async function handler(req, res) {
       const slot = nextSession(now);
       const useDate = date || (slot && slot.date);
       if (!useDate) return res.status(400).json({ error: 'No upcoming session found' });
-      const useLabel = label || (slot && slot.label) || '';
+      // Keyed off the date being opened, not off `slot` (which is the next session from
+      // now). Opening Thursday's list on a Monday would otherwise label it Monday.
+      const useLabel = label || labelForDate(useDate) || (slot && slot.label) || '';
       const useOpensAt = opensAt || defaultOpensAt(useDate).toISOString();
       const cap = normaliseCapacity(capacity) || DEFAULT_CAPACITY;
 

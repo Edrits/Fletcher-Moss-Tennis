@@ -160,7 +160,7 @@ import {
   isoDate, nextSession, defaultOpensAt, londonInstant, londonParts, CLUB_TZ,
   PIN_LENGTH, validatePin, normalisePin, shareMessage, SIGNUP_URL,
   normaliseName, validateName, shortenName, disambiguate,
-  totalSlots, tierFor, splitEntries, viewModel
+  totalSlots, tierFor, splitEntries, viewModel, labelForDate
 } from './api/_lib/signup-core.js';
 // redis.js is imported only for its two pure helpers. Everything else in it needs fetch
 // and live credentials, but pickCredentials and describeCredentialEnv are plain functions
@@ -768,6 +768,21 @@ check('a custom capacity is respected', viewModel({
 check('date and label default to null', [vmNoToken.date, vmNoToken.label], [null, null]);
 check('an empty list produces empty groups', viewModel({ entries: [], now: NOW }).counts,
   { total: 0, main: 0, subs: 0, waitlist: 0, overflow: 0 });
+
+group('labelForDate: the name comes from the date, not from "next session"');
+
+check('a Monday date', labelForDate('2026-09-07'), 'Monday 6:00 to 8:00 PM');
+check('a Thursday date', labelForDate('2026-09-03'), 'Thursday 6:00 to 8:00 PM');
+check('a Saturday date', labelForDate('2026-09-05'), 'Saturday 11:00 AM to 2:00 PM');
+// The live bug this guards: opening Thursday's list on a Monday used to take the label
+// from nextSession(now), which is Monday, and print the wrong day at the top of the page.
+check('a Tuesday is not a club night', labelForDate('2026-09-01'), '');
+check('a Sunday is not a club night', labelForDate('2026-09-06'), '');
+check('empty input', labelForDate(''), '');
+check('null input', labelForDate(null), '');
+check('undefined input', labelForDate(undefined), '');
+check('rubbish input', labelForDate('not-a-date'), '');
+check('crosses a year boundary', labelForDate('2027-01-04'), 'Monday 6:00 to 8:00 PM');
 
 // ── pickCredentials ────────────────────────────────────────────────────────────
 // The Vercel Upstash integration does not use one fixed pair of variable names, so the

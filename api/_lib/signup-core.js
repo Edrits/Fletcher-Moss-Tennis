@@ -16,6 +16,18 @@ export const SCHEDULE = [
   { day: 6, label: 'Saturday 11:00 AM to 2:00 PM', endHour: 14 }
 ];
 
+// The label for whichever club night a date falls on. Derived from the date the organiser
+// actually chose, never from "the next session from now": those are different sessions the
+// moment anyone opens a list more than a few days ahead, and getting it wrong prints the
+// wrong day at the top of the page.
+export function labelForDate(dateStr) {
+  if (!dateStr) return '';
+  const [y, m, d] = String(dateStr).split('-').map(Number);
+  if (!y || !m || !d) return '';
+  const slot = SCHEDULE.find(s => s.day === new Date(y, m - 1, d).getDay());
+  return slot ? slot.label : '';
+}
+
 // 4 courts of 4, plus 2 subs, plus a short waiting list. The waitlist cap is what stops
 // a public button being used to pile junk into the list.
 export const DEFAULT_CAPACITY = { main: 16, subs: 2, waitlist: 10 };

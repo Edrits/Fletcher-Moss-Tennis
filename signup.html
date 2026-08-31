@@ -267,7 +267,10 @@
             margin-top: 12px;
         }
         .big-btn:hover:not(:disabled) { background: var(--green-700); transform: translateY(-2px); box-shadow: var(--shadow-md); }
-        .big-btn:disabled { background: var(--ink-150); color: var(--paper-50); cursor: not-allowed; transform: none; box-shadow: none; }
+        /* Readable while disabled. This button carries the line that explains why nothing
+           works yet ("Sign-up not open yet"), and at ink-150 on paper-50 it was about
+           1.5:1 against the background. Flat with no shadow still reads as disabled. */
+        .big-btn:disabled { background: var(--paper-100); color: var(--ink-700); border: 1px solid var(--border-strong); cursor: not-allowed; transform: none; box-shadow: none; }
         .big-btn.danger { background: var(--paper-0); color: var(--color-alert); border: 1.5px solid rgba(168,60,45,.4); font-size: 15px; padding: 13px; }
         .big-btn.danger:hover:not(:disabled) { background: var(--color-alert); color: #fff; border-color: var(--color-alert); }
 
@@ -361,6 +364,16 @@
         .admin-block label { display: block; font-size: 11px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--text-muted); margin-bottom: 6px; }
         .admin-row { display: flex; gap: 12px; flex-wrap: wrap; }
         .admin-row .text-input { flex: 1; min-width: 140px; }
+        /* Reads the two organiser dates back as a sentence, so a mix-up is caught here
+           rather than by thirty members at 8:00 PM. */
+        .plan-summary {
+            margin: 10px 0 4px; padding: 11px 13px;
+            background: var(--green-50); border-left: 3px solid var(--green-600);
+            border-radius: var(--radius-sm);
+            font-size: 13px; line-height: 1.5; color: var(--ink-900);
+        }
+        .plan-summary.bad { background: #f9ece9; border-left-color: var(--color-alert); color: var(--color-alert); }
+
         .admin-note { font-size: 11.5px; color: var(--text-muted); margin-top: 8px; }
         /* Heading for a block that holds several labelled fields, so the block title is not
            itself mistaken for one field's label. */
@@ -583,12 +596,12 @@
                 <div class="admin-row">
                     <div class="admin-field">
                         <label for="adm-date">Session date</label>
-                        <input class="text-input" id="adm-date" type="date">
+                        <input class="text-input" id="adm-date" type="date" onchange="onSessionDateChange()">
                         <span class="admin-field-hint">The day people are playing.</span>
                     </div>
                     <div class="admin-field">
                         <label for="adm-opens">Sign-up opens</label>
-                        <input class="text-input" id="adm-opens" type="datetime-local">
+                        <input class="text-input" id="adm-opens" type="datetime-local" oninput="updatePlanSummary()">
                         <span class="admin-field-hint">When the button goes live for members. Set it to whenever suits.</span>
                     </div>
                 </div>
@@ -600,6 +613,7 @@
                     <label for="adm-organiser">Who's running it <span class="opt">(optional)</span></label>
                     <input class="text-input" id="adm-organiser" type="text" maxlength="30" placeholder="Name">
                 </div>
+                <p class="plan-summary" id="plan-summary">Fill in both boxes and this will read back what you are about to set.</p>
                 <p class="admin-note">Whoever is running it takes place 1 automatically.</p>
                 <button class="edit-btn primary" style="margin-top:10px;" onclick="adminOpen()">Open sign-up</button>
             </div>
@@ -743,7 +757,6 @@
             invalid_name: 'Please enter your name. First name and last initial is plenty.',
             bad_pin: 'That code is not right. Check the message in the WhatsApp group.',
             already_in: 'You already have a place on this list. Your number is shown above.',
-            duplicate_name: 'Someone is already signed up under that name. Add your last initial so we can tell you apart.',
             bad_password: 'That password was not right.',
             server_error: 'The sign-up list could not be reached. Please try again in a moment.'
         };
@@ -821,6 +834,14 @@
         }
 
         // ── Load and render ──
+        // Responses are numbered so a slow one cannot overwrite a newer answer. At the
+        // opening moment the 3-second retry and the 25-second poll overlap, and a stale
+        // "not open yet" landing last would disable the button during the only seconds
+        // that matter.
+        let refreshSeq = 0;
+        let lastAppliedSeq = 0;
+        let lastRefreshFailed = false;
+
         async function refresh(opts) {
             opts = opts || {};
             if (opts.showBoot) {
@@ -828,19 +849,34 @@
                 document.getElementById('boot-msg').textContent = 'Loading the sign-up list.';
                 document.getElementById('boot-retry').style.display = 'none';
             }
+            const seq = ++refreshSeq;
             try {
                 const data = await apiGet();
+                if (seq <= lastAppliedSeq) return true;   // a newer response already rendered
+                lastAppliedSeq = seq;
                 if (data && data.serverTime) syncClock(data.serverTime);
                 current = data;
                 document.getElementById('boot-card').style.display = 'none';
                 document.getElementById('signup-area').style.display = 'block';
                 render();
+                // Clear the "may be out of date" notice once the list is flowing again,
+                // but never wipe a message an action has just put up.
+                if (lastRefreshFailed) {
+                    lastRefreshFailed = false;
+                    if (!actionMessageIsFresh()) showMsg('join-msg', '', null);
+                }
                 return true;
             } catch (err) {
                 console.error('Could not load the sign-up list:', err);
                 // Keep whatever was already on screen rather than blanking it, and say so.
                 if (current) {
-                    showMsg('join-msg', 'The list could not be refreshed just now. What you see may be a few seconds out of date.', 'info');
+                    lastRefreshFailed = true;
+                    // A confirmation the member has just been given outranks this notice.
+                    // Overwriting "You are in, you are number 4" with "may be out of date"
+                    // is how someone ends up unsure whether they got a place at all.
+                    if (!actionMessageIsFresh()) {
+                        showMsg('join-msg', 'The list could not be refreshed just now. What you see may be a few seconds out of date.', 'info');
+                    }
                 } else {
                     document.getElementById('boot-card').style.display = 'block';
                     document.getElementById('boot-msg').textContent = 'The sign-up list could not be loaded. Check your connection and try again.';
@@ -864,7 +900,13 @@
             const dateEl = document.getElementById('session-date');
             if (d.date) {
                 const day = new Date(d.date + 'T00:00:00');
-                dateEl.textContent = isNaN(day.getTime()) ? d.date : formatDay(day);
+                // Show the time too. The only clock time on the card used to be the
+                // countdown's "opens 6:00 PM Wednesday", which a hurried member reads as
+                // the session itself.
+                const slot = slotForDate(d.date);
+                const dayText = isNaN(day.getTime()) ? d.date : formatDay(day);
+                const times = slot ? slot.label.replace(/^\w+\s+/, '') : '';
+                dateEl.textContent = times ? dayText + ', ' + times : dayText;
             } else {
                 dateEl.textContent = 'No session set up yet.';
             }
@@ -973,7 +1015,7 @@
                 return '<div class="entry' + cls + (r.mine ? ' mine' : '') + '">' +
                        '<span class="pos-badge">' + escapeHtml(r.position) + '</span>' +
                        '<span class="entry-name">' + escapeHtml(r.name) + '</span>' +
-                       (isOrganiser ? '<span class="entry-tag organiser">Running today</span>' : '') +
+                       (isOrganiser ? '<span class="entry-tag organiser">Session organiser</span>' : '') +
                        (r.mine ? '<span class="entry-tag">You</span>' : '') +
                        x +
                        '</div>';
@@ -1048,8 +1090,26 @@
             const leaveBtn = document.getElementById('leave-btn');
             joinBtn.disabled = on || !current || current.state !== 'open';
             leaveBtn.disabled = on;
+            // Restoring on the way out matters: render() used to be the only thing that put
+            // the label back, so a failed refresh left an enabled button still reading
+            // "Saving your place", which reads as a hang and gets tapped again.
             if (on && label) joinBtn.textContent = label;
+            if (!on) restoreJoinLabel();
         }
+
+        function restoreJoinLabel() {
+            const joinBtn = document.getElementById('join-btn');
+            const state = (current && current.state) || 'pending';
+            joinBtn.textContent = state === 'open' ? "I'm in"
+                : state === 'pending' ? 'Sign-up not open yet'
+                : 'Sign-up has closed';
+        }
+
+        // An action's own confirmation or error stays put for a few seconds rather than
+        // being replaced by a background poll's notice.
+        let actionMessageAt = 0;
+        function markActionMessage() { actionMessageAt = Date.now(); }
+        function actionMessageIsFresh() { return Date.now() - actionMessageAt < 8000; }
 
         async function join() {
             if (busy) return;
@@ -1074,8 +1134,20 @@
             try {
                 const res = await apiPost({ action: 'join', name: name, token: token, pin: pin });
                 if (res && res.ok) {
-                    rememberName(name);
-                    showMsg('join-msg', 'You are in. ' + placeSentence(res.position, res.tier), 'good');
+                    // Store the name the server actually saved. A clash is resolved to
+                    // "Ed R.2", and remembering what was typed instead would show the
+                    // wrong name back on the next visit.
+                    rememberName(res.name || name);
+                    // Take the place from the POST itself rather than waiting for the GET.
+                    // The POST already succeeded, so the place box must appear even if the
+                    // refresh that follows fails. Without this a member who got place 4 saw
+                    // their confirmation vanish with no place box and no way to cancel.
+                    if (current) {
+                        current.you = { position: res.position, tier: res.tier };
+                        render();
+                    }
+                    const savedAs = res.name && res.name !== name ? ' You are on the list as ' + res.name + '.' : '';
+                    showMsg('join-msg', 'You are in. ' + placeSentence(res.position, res.tier) + savedAs, 'good');
                 } else {
                     showMsg('join-msg', errorCopy(res && res.error, res && res.message), 'bad');
                 }
@@ -1083,6 +1155,7 @@
                 console.error('Join failed:', err);
                 showMsg('join-msg', 'No connection, so your place was not saved. Please try again.', 'bad');
             } finally {
+                markActionMessage();
                 setBusy(false);
                 // Either way the list has probably moved, so take a fresh copy
                 await refresh();
@@ -1114,6 +1187,7 @@
                 console.error('Leave failed:', err);
                 showMsg('join-msg', 'No connection, so nothing was changed. Please try again.', 'bad');
             } finally {
+                markActionMessage();
                 setBusy(false);
                 leaveBtn.textContent = "Can't make it";
                 await refresh();
@@ -1235,16 +1309,110 @@
             if (current && current.date && !dateEl.value) dateEl.value = current.date;
             if (current && current.label && !labelEl.value) labelEl.value = current.label;
 
+            // Default to the next actual club night, not simply tomorrow. Tomorrow is a
+            // Tuesday five days in seven, and the old default paired it with 7:00 PM
+            // TODAY, so accepting both on a Monday opened Thursday's list three days
+            // early. If the organiser was setting up after 7:00 PM it opened instantly,
+            // before the code had been posted to the group.
             if (!dateEl.value) {
-                const tomorrow = new Date(serverNow() + 86400000);
-                dateEl.value = tomorrow.getFullYear() + '-' + pad(tomorrow.getMonth() + 1) + '-' + pad(tomorrow.getDate());
+                const next = nextClubNight();
+                if (next) dateEl.value = isoLocal(next);
             }
-            if (!opensEl.value) {
-                const tonight = new Date(serverNow());
-                tonight.setHours(19, 0, 0, 0);
-                opensEl.value = tonight.getFullYear() + '-' + pad(tonight.getMonth() + 1) + '-' + pad(tonight.getDate()) +
-                                'T' + pad(tonight.getHours()) + ':' + pad(tonight.getMinutes());
+            if (!opensEl.value && dateEl.value) opensEl.value = defaultOpensLocal(dateEl.value);
+            updatePlanSummary();
+        }
+
+        // The club's fixed nights. Mirrors SCHEDULE in api/_lib/signup-core.js, which this
+        // page cannot import: Vercel serves api/ as functions rather than static files, so
+        // the import would work locally and 404 in production. Keep the two in step.
+        const SESSION_DAYS = [
+            { day: 1, label: 'Monday 6:00 to 8:00 PM',       endHour: 20 },
+            { day: 4, label: 'Thursday 6:00 to 8:00 PM',     endHour: 20 },
+            { day: 6, label: 'Saturday 11:00 AM to 2:00 PM', endHour: 14 }
+        ];
+
+        function isoLocal(d) { return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()); }
+
+        function slotForDate(value) {
+            if (!value) return null;
+            const parts = String(value).split('-').map(Number);
+            if (parts.length !== 3 || !parts[0]) return null;
+            const day = new Date(parts[0], parts[1] - 1, parts[2]).getDay();
+            return SESSION_DAYS.find(function (sd) { return sd.day === day; }) || null;
+        }
+
+        // The soonest club night that has not already finished.
+        function nextClubNight() {
+            const from = new Date(serverNow());
+            for (let offset = 0; offset < 14; offset++) {
+                const d = new Date(from.getFullYear(), from.getMonth(), from.getDate() + offset);
+                const slot = SESSION_DAYS.find(function (sd) { return sd.day === d.getDay(); });
+                if (!slot) continue;
+                if (offset === 0 && from >= new Date(d.getFullYear(), d.getMonth(), d.getDate(), slot.endHour)) continue;
+                return d;
             }
+            return null;
+        }
+
+        // 8:00 PM the night before, matching defaultOpensAt() on the server.
+        function defaultOpensLocal(dateValue) {
+            const parts = String(dateValue).split('-').map(Number);
+            if (parts.length !== 3 || !parts[0]) return '';
+            const eve = new Date(parts[0], parts[1] - 1, parts[2] - 1, 20, 0, 0, 0);
+            return isoLocal(eve) + 'T' + pad(eve.getHours()) + ':' + pad(eve.getMinutes());
+        }
+
+        // Changing the session date re-derives the opening time and the name, so the two
+        // cannot drift apart. The old panel only ever filled blank boxes, so last week's
+        // Monday label happily rode along on a Thursday date.
+        function onSessionDateChange() {
+            const dateEl = document.getElementById('adm-date');
+            const opensEl = document.getElementById('adm-opens');
+            const labelEl = document.getElementById('adm-label');
+            if (dateEl.value) {
+                opensEl.value = defaultOpensLocal(dateEl.value);
+                const slot = slotForDate(dateEl.value);
+                if (slot) labelEl.value = slot.label;
+            }
+            updatePlanSummary();
+        }
+
+        // Reads both dates back as one sentence. The pair is the easiest thing on this
+        // panel to get the wrong way round, and a sentence makes a mix-up visible before
+        // anything is saved.
+        function updatePlanSummary() {
+            const el = document.getElementById('plan-summary');
+            if (!el) return;
+            const dateValue = document.getElementById('adm-date').value;
+            const opensValue = document.getElementById('adm-opens').value;
+            if (!dateValue || !opensValue) {
+                el.className = 'plan-summary';
+                el.textContent = 'Fill in both boxes and this will read back what you are about to set.';
+                return;
+            }
+            const session = new Date(dateValue + 'T00:00:00');
+            const opens = new Date(opensValue);
+            if (isNaN(session.getTime()) || isNaN(opens.getTime())) {
+                el.className = 'plan-summary bad';
+                el.textContent = 'One of those dates could not be read. Please set them again.';
+                return;
+            }
+            const slot = slotForDate(dateValue);
+            const dayEnd = new Date(session.getFullYear(), session.getMonth(), session.getDate() + 1);
+            if (session < new Date(new Date(serverNow()).toDateString())) {
+                el.className = 'plan-summary bad';
+                el.textContent = 'That session date has already passed, so the list would open closed. Pick a future date.';
+                return;
+            }
+            if (opens >= dayEnd) {
+                el.className = 'plan-summary bad';
+                el.textContent = 'Sign-up would open after the session is over. Check which box is which: the first is the day people play, the second is when the button goes live.';
+                return;
+            }
+            el.className = 'plan-summary';
+            el.textContent = 'Members can sign up from ' + formatTime(opens) + ' on ' + formatDay(opens) +
+                             ', for the session on ' + formatDay(session) + '.' +
+                             (slot ? '' : ' Note that is not one of the club\u2019s usual nights.');
         }
 
         // Wraps an admin POST: adds the stored password and handles a rejection once
@@ -1277,6 +1445,15 @@
                 showMsg('admin-msg', 'Please set both the session date and the time the button goes live.', 'bad');
                 return;
             }
+            // A past date is accepted by the server, which then renders "Closed" to every
+            // member while the organiser gets a green success message. Stop it here.
+            const sessionDay = new Date(date + 'T00:00:00');
+            const todayStart = new Date(new Date(serverNow()).toDateString());
+            if (isNaN(sessionDay.getTime()) || sessionDay < todayStart) {
+                showMsg('admin-msg', 'That session date has already passed. Pick today or a future date.', 'bad');
+                return;
+            }
+
             // A datetime-local value has no time zone, so this reads as the organiser's
             // own clock and is sent to the server as UTC.
             const opensAt = new Date(opensLocal);
@@ -1288,10 +1465,25 @@
             const body = {
                 action: 'open',
                 date: date,
-                label: label || 'Club session',
+                // Sent only when the organiser typed one. Left out, the server names the
+                // session from the club timetable for that date, which beats a generic
+                // fallback that says nothing about when to turn up.
+                ...(label ? { label: label } : {}),
                 opensAt: opensAt.toISOString(),
                 organiser: organiser
             };
+            // The server refuses to wipe a live list only when the date matches. The
+            // dangerous case is the opposite: opening a different date while tonight's
+            // list holds real names wipes them with no prompt at all.
+            const liveCount = (current && current.counts && current.counts.total) || 0;
+            if (liveCount > 0 && current.date && current.date !== date) {
+                if (!confirm('This closes "' + (current.label || 'the current session') + '" on ' +
+                             current.date + ', which has ' + liveCount + (liveCount === 1 ? ' name' : ' names') +
+                             ' on it. The list is filed away and everyone is taken off. There is no undo.\n\nCarry on?')) {
+                    return;
+                }
+            }
+
             let res = await adminPost(body);
 
             // The server refuses to wipe a session that is already live and running on the
@@ -1358,7 +1550,7 @@
         }
 
         // ── Polling ──
-        // Ten seconds while the page is on screen, nothing at all when it is not.
+        // Every POLL_MS while the page is on screen, nothing at all when it is not.
         function startPolling() {
             stopPolling();
             pollTimer = setInterval(function () {
