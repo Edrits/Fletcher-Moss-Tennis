@@ -179,9 +179,9 @@
         },
         {
           "name": "Sam",
-          "played": 4,
+          "played": 5,
           "won": 4,
-          "points": 12
+          "points": 13
         },
         {
           "name": "Michael",
@@ -202,16 +202,16 @@
           "points": 8
         },
         {
+          "name": "Ted",
+          "played": 2,
+          "won": 2,
+          "points": 6
+        },
+        {
           "name": "Sofia",
           "played": 4,
           "won": 0,
           "points": 4
-        },
-        {
-          "name": "Ted",
-          "played": 1,
-          "won": 1,
-          "points": 3
         },
         {
           "name": "Alan Russell",
@@ -338,6 +338,13 @@
           "winner": "Sam",
           "noShow": null,
           "date": "2026-08-31T20:16:34.982Z"
+        },
+        {
+          "player1": "Sam",
+          "player2": "Ted",
+          "winner": "Ted",
+          "noShow": null,
+          "date": "2026-08-31T20:45:25.807Z"
         }
       ]
     },
