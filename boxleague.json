@@ -184,6 +184,12 @@
           "points": 13
         },
         {
+          "name": "Will",
+          "played": 5,
+          "won": 3,
+          "points": 11
+        },
+        {
           "name": "Michael",
           "played": 4,
           "won": 3,
@@ -196,16 +202,10 @@
           "points": 9
         },
         {
-          "name": "Will",
-          "played": 4,
-          "won": 2,
-          "points": 8
-        },
-        {
           "name": "Ted",
-          "played": 2,
+          "played": 3,
           "won": 2,
-          "points": 6
+          "points": 7
         },
         {
           "name": "Sofia",
@@ -345,6 +345,13 @@
           "winner": "Ted",
           "noShow": null,
           "date": "2026-08-31T20:45:25.807Z"
+        },
+        {
+          "player1": "Ted",
+          "player2": "Will",
+          "winner": "Will",
+          "noShow": null,
+          "date": "2026-08-31T21:05:42.737Z"
         }
       ]
     },
