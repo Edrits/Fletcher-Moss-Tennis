@@ -1,17 +1,17 @@
 {
   "date": "2026-08-17",
-  "label": "Club session",
+  "label": "Club session Monday",
   "capacity": {
     "main": 16,
     "subs": 2,
     "waitlist": 10
   },
-  "archivedAt": "2026-08-14T22:59:09.852Z",
+  "archivedAt": "2026-08-31T11:35:21.393Z",
   "players": [
     {
       "position": 1,
       "name": "Ed",
-      "at": "2026-08-14T19:55:21.807Z"
+      "at": "2026-08-15T22:08:19.064Z"
     }
   ]
 }
