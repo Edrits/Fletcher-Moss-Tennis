@@ -159,8 +159,8 @@ export function defaultOpensAt(sessionDate) {
 // Four digits, because it has to be typed on a phone by thirty people at once and a
 // longer string costs more in mistyped codes than it buys in strength. It is not a
 // password and is not protecting anything valuable. The brake on guessing is the join
-// rate limit, which is eight attempts per connection per hour: at that rate the ten
-// thousand possibilities take over fifty days, and the code is rotated every session.
+// rate limit, which is fifteen attempts per connection per hour: at that rate the ten
+// thousand possibilities take about a month, and the code is rotated every session.
 export const PIN_LENGTH = 4;
 
 const PIN_SHAPE = /^\d{4}$/;
