@@ -1039,10 +1039,10 @@
         // Storage can throw outright where site data is blocked, not merely return null,
         // so every access goes through a helper rather than being written inline.
         function rememberAdmin(pw) {
-            try { rememberAdmin(pw); } catch (err) { /* stays in memory only */ }
+            try { sessionStorage.setItem('pw', pw); } catch (err) { /* stays in memory only */ }
         }
         function forgetAdmin() {
-            try { forgetAdmin(); } catch (err) { /* nothing to clear */ }
+            try { sessionStorage.removeItem('pw'); } catch (err) { /* nothing to clear */ }
         }
 
         function isAdmin() {
