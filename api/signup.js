@@ -97,7 +97,14 @@ export default async function handler(req, res) {
     if (action === 'join') {
       // Loose enough for a few people on the same wifi, tight enough that a script
       // cannot swallow the list. Genuine members join once.
-      const gateCheck = await hitRateLimit('join', clientId(req), 8, 3600);
+      //
+      // This runs BEFORE the not-open gate and the code check, so an innocent tap before
+      // sign-up opens, or a fat-fingered code, spends an attempt too. At 8 that meant a
+      // member who fumbled the four-digit code a few times, or a couple sharing a home or
+      // carrier-NAT IP, could be told "too many attempts" while holding the right code.
+      // 15 gives honest fumbling real headroom and still bounds guessing the code hard:
+      // 15 wrong guesses an hour against 10,000 combinations is about a month.
+      const gateCheck = await hitRateLimit('join', clientId(req), 15, 3600);
       if (!gateCheck.allowed) {
         return res.status(429).json({
           ok: false, error: 'too_many',
@@ -113,7 +120,7 @@ export default async function handler(req, res) {
       // existed carries no `pin`, and stays joinable without one rather than locking out a
       // list that is already running.
       //
-      // A wrong code still costs the caller one of their eight hourly join attempts, which
+      // A wrong code still costs the caller one of their fifteen hourly join attempts, which
       // is what makes a four digit code sufficient: the limit is spent long before the
       // ten thousand possibilities are.
       if (meta.pin && normalisePin(pin) !== meta.pin) {
