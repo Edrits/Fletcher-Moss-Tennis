@@ -633,6 +633,12 @@
             <div class="divider">or adjust the list</div>
 
             <div class="admin-block">
+                <label>Send to court pairings</label>
+                <button class="edit-btn primary" onclick="sendToPairings()">Send the list to court pairings</button>
+                <p class="admin-note">Opens the pairings tool with today's main players and subs already filled in. Anyone on the waiting list is left out, same as loading it there by hand.</p>
+            </div>
+
+            <div class="admin-block">
                 <label for="adm-seed">Add a name yourself</label>
                 <div class="admin-row">
                     <input class="text-input" id="adm-seed" type="text" maxlength="30" placeholder="Name">
@@ -1544,6 +1550,13 @@
                     + (res.pin ? ' The code is ' + res.pin + '. Copy the message below into the group.' : ''), 'good');
                 await refresh();
             }
+        }
+
+        // Hands off to pairings.html, which fills its player list from the same
+        // /api/signup data this page reads. The admin password is shared and lives in
+        // sessionStorage for the whole site, so the organiser lands there still unlocked.
+        function sendToPairings() {
+            window.location.href = 'pairings.html?loadSignup=1';
         }
 
         async function adminSeed() {

@@ -1271,6 +1271,22 @@
             // Unlocked earlier this browser session? Stay in edit mode; otherwise view-only.
             editMode = !!sessionStorage.getItem('pw');
 
+            // Arrived from the "Send to court pairings" button on the sign-up page. Jump
+            // straight to the setup screen and pull the list, rather than making the
+            // organiser click "Fill the list from today's sign-up" a second time. Strip the
+            // flag from the URL so refreshing the page does not repeat it.
+            const wantsSignupLoad = new URLSearchParams(location.search).get('loadSignup') === '1';
+            if (wantsSignupLoad) history.replaceState(null, '', location.pathname);
+            if (wantsSignupLoad && editMode) {
+                document.getElementById('setup-screen').style.display = 'block';
+                document.getElementById('game-screen').style.display = 'none';
+                document.getElementById('locked-empty').style.display = 'none';
+                renderPlayerInputs();
+                updateModeUI();
+                await loadFromSignup();
+                return;
+            }
+
             if (generatedGames.length) {
                 const named = players.filter(p => p.name.trim());
                 document.getElementById('setup-screen').style.display = 'none';
