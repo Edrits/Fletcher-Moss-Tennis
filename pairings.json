@@ -63,19 +63,30 @@
     {
       "name": "Michael",
       "sub": false
+    },
+    {
+      "name": "Adam B.",
+      "sub": true
+    },
+    {
+      "name": "Tessa",
+      "sub": true
     }
   ],
   "numCourts": 4,
   "numGames": 4,
-  "seed": 506234,
+  "seed": 972784,
   "generatedGames": [
     {
       "game": 1,
-      "sitters": [],
+      "sitters": [
+        "Adam B.",
+        "Tessa"
+      ],
       "courts": [
         [
           [
-            "Laura B.",
+            "Oliver C.",
             "Carson"
           ],
           [
@@ -85,77 +96,80 @@
         ],
         [
           [
-            "Mani",
-            "Ting"
+            "Reagan D.",
+            "Michael"
           ],
           [
-            "Oliver C.",
+            "Mani",
             "Ali"
           ]
         ],
         [
           [
-            "Chris T.",
-            "Will H."
+            "Will H.",
+            "Chris T."
           ],
           [
-            "Reagan D.",
+            "Ting",
             "Emma B."
           ]
         ],
         [
           [
-            "Meg B.",
-            "Michael"
+            "Laura B.",
+            "Ash H."
           ],
           [
             "Ed",
-            "Ash H."
+            "Meg B."
           ]
         ]
       ]
     },
     {
       "game": 2,
-      "sitters": [],
+      "sitters": [
+        "Mani",
+        "Michael"
+      ],
       "courts": [
         [
           [
-            "Laura B.",
+            "Tessa",
             "Ed"
           ],
           [
             "Ting",
-            "Chris T."
+            "Will R."
           ]
         ],
         [
           [
-            "Michael",
+            "Carson",
             "Emma B."
           ],
           [
-            "Carson",
-            "Ali"
-          ]
-        ],
-        [
-          [
-            "Ash H.",
-            "Rhys"
-          ],
-          [
-            "Will H.",
-            "Mani"
+            "Laura B.",
+            "Reagan D."
           ]
         ],
         [
           [
             "Meg B.",
-            "Will R."
+            "Will H."
           ],
           [
-            "Reagan D.",
+            "Adam B.",
+            "Rhys"
+          ]
+        ],
+        [
+          [
+            "Ash H.",
+            "Ali"
+          ],
+          [
+            "Chris T.",
             "Oliver C."
           ]
         ]
@@ -163,97 +177,103 @@
     },
     {
       "game": 3,
-      "sitters": [],
+      "sitters": [
+        "Emma B.",
+        "Meg B."
+      ],
       "courts": [
         [
           [
-            "Oliver C.",
-            "Will R."
+            "Ting",
+            "Reagan D."
           ],
           [
-            "Emma B.",
+            "Will R.",
+            "Michael"
+          ]
+        ],
+        [
+          [
+            "Adam B.",
             "Chris T."
+          ],
+          [
+            "Carson",
+            "Rhys"
           ]
         ],
         [
           [
             "Ed",
-            "Rhys"
+            "Laura B."
           ],
           [
-            "Reagan D.",
-            "Ash H."
+            "Tessa",
+            "Oliver C."
           ]
         ],
         [
           [
-            "Mani",
+            "Will H.",
             "Ali"
           ],
           [
-            "Meg B.",
-            "Will H."
-          ]
-        ],
-        [
-          [
-            "Laura B.",
-            "Ting"
-          ],
-          [
-            "Michael",
-            "Carson"
+            "Mani",
+            "Ash H."
           ]
         ]
       ]
     },
     {
       "game": 4,
-      "sitters": [],
+      "sitters": [
+        "Will R.",
+        "Rhys"
+      ],
       "courts": [
         [
           [
-            "Will H.",
-            "Will R."
+            "Ting",
+            "Will H."
           ],
           [
-            "Ed",
-            "Mani"
+            "Laura B.",
+            "Ali"
           ]
         ],
         [
           [
-            "Reagan D.",
-            "Laura B."
+            "Chris T.",
+            "Carson"
           ],
           [
-            "Ash H.",
-            "Oliver C."
+            "Ed",
+            "Michael"
+          ]
+        ],
+        [
+          [
+            "Oliver C.",
+            "Mani"
+          ],
+          [
+            "Adam B.",
+            "Emma B."
           ]
         ],
         [
           [
             "Meg B.",
-            "Ali"
+            "Ash H."
           ],
           [
-            "Carson",
-            "Chris T."
-          ]
-        ],
-        [
-          [
-            "Rhys",
-            "Emma B."
-          ],
-          [
-            "Ting",
-            "Michael"
+            "Tessa",
+            "Reagan D."
           ]
         ]
       ]
     }
   ],
   "activeGame": 0,
-  "updated": "2026-09-02T17:20:16.228Z"
+  "updated": "2026-09-02T17:53:56.248Z"
 }
