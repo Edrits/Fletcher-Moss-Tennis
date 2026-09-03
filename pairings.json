@@ -81,7 +81,7 @@
       "game": 1,
       "sitters": [
         "Ash H.",
-        "Federica"
+        "Ting"
       ],
       "courts": [
         [
@@ -111,7 +111,7 @@
           ],
           [
             "Meg B.",
-            "Ting"
+            "Federica"
           ]
         ],
         [
@@ -275,5 +275,5 @@
     }
   ],
   "activeGame": 0,
-  "updated": "2026-09-03T16:31:37.926Z"
+  "updated": "2026-09-03T16:31:50.605Z"
 }
