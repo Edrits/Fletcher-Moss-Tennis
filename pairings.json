@@ -178,7 +178,7 @@
     {
       "game": 3,
       "sitters": [
-        "Emma B.",
+        "Federica",
         "Meg B."
       ],
       "courts": [
@@ -198,7 +198,7 @@
             "Oliver C."
           ],
           [
-            "Federica",
+            "Emma B.",
             "Laura B."
           ]
         ],
@@ -275,5 +275,5 @@
     }
   ],
   "activeGame": 2,
-  "updated": "2026-09-03T18:06:28.235Z"
+  "updated": "2026-09-03T18:07:07.429Z"
 }
