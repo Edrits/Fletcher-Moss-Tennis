@@ -80,7 +80,7 @@
     {
       "game": 1,
       "sitters": [
-        "Rod",
+        "Ash H.",
         "Federica"
       ],
       "courts": [
@@ -120,7 +120,7 @@
             "Emma B."
           ],
           [
-            "Ash H.",
+            "Rod",
             "Reagan D."
           ]
         ]
@@ -275,5 +275,5 @@
     }
   ],
   "activeGame": 0,
-  "updated": "2026-09-03T16:31:27.870Z"
+  "updated": "2026-09-03T16:31:37.926Z"
 }
