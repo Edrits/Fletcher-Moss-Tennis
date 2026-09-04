@@ -1,0 +1,102 @@
+{
+  "date": "2026-09-03",
+  "label": "Club session",
+  "capacity": {
+    "main": 16,
+    "subs": 2,
+    "waitlist": 10
+  },
+  "archivedAt": "2026-09-04T08:32:38.859Z",
+  "players": [
+    {
+      "position": 1,
+      "name": "Ed",
+      "at": "2026-08-31T11:35:21.153Z"
+    },
+    {
+      "position": 2,
+      "name": "Carson",
+      "at": "2026-09-01T15:29:48.658Z"
+    },
+    {
+      "position": 3,
+      "name": "Ting",
+      "at": "2026-09-02T17:00:01.921Z"
+    },
+    {
+      "position": 4,
+      "name": "Will H.",
+      "at": "2026-09-02T17:00:02.734Z"
+    },
+    {
+      "position": 5,
+      "name": "Ali",
+      "at": "2026-09-02T17:00:04.205Z"
+    },
+    {
+      "position": 6,
+      "name": "Laura B.",
+      "at": "2026-09-02T17:00:04.936Z"
+    },
+    {
+      "position": 7,
+      "name": "Oliver C.",
+      "at": "2026-09-02T17:00:07.753Z"
+    },
+    {
+      "position": 8,
+      "name": "Chris T.",
+      "at": "2026-09-02T17:00:12.903Z"
+    },
+    {
+      "position": 9,
+      "name": "Ash H.",
+      "at": "2026-09-02T17:00:44.579Z"
+    },
+    {
+      "position": 10,
+      "name": "Reagan D.",
+      "at": "2026-09-02T17:01:46.134Z"
+    },
+    {
+      "position": 11,
+      "name": "Will R.",
+      "at": "2026-09-02T17:03:30.035Z"
+    },
+    {
+      "position": 12,
+      "name": "Rhys",
+      "at": "2026-09-02T17:05:00.829Z"
+    },
+    {
+      "position": 13,
+      "name": "Emma B.",
+      "at": "2026-09-02T17:05:22.677Z"
+    },
+    {
+      "position": 14,
+      "name": "Meg B.",
+      "at": "2026-09-02T17:08:13.231Z"
+    },
+    {
+      "position": 15,
+      "name": "Adam B.",
+      "at": "2026-09-02T17:27:15.969Z"
+    },
+    {
+      "position": 16,
+      "name": "Tessa",
+      "at": "2026-09-02T17:34:15.751Z"
+    },
+    {
+      "position": 17,
+      "name": "Rod",
+      "at": "2026-09-02T17:43:50.488Z"
+    },
+    {
+      "position": 18,
+      "name": "Federica",
+      "at": "2026-09-02T21:13:05.509Z"
+    }
+  ]
+}
