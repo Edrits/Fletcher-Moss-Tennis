@@ -293,6 +293,18 @@
             font-size: var(--text-4xl); color: #fff; font-weight: 600; line-height: var(--leading-tight);
             max-width: 860px; text-shadow: 0 2px 24px rgba(0,0,0,.55);
         }
+        /* Two short exchanges, then still. The text stays readable throughout. */
+        @media (prefers-reduced-motion: no-preference) {
+            .hero-content h1 { animation: heading-rally 2.2s ease-in-out .2s both; }
+        }
+        @keyframes heading-rally {
+            0%, 100% { transform: translate(0, 0); }
+            20% { transform: translate(12px, -3px); }
+            45% { transform: translate(-10px, 0); }
+            68% { transform: translate(6px, -2px); }
+            84% { transform: translate(-3px, 0); }
+        }
+        .hero-level { display: block; margin-top: 8px; font-size: var(--text-base); font-weight: 600; color: var(--paper-100); }
         .hero-content .hero-sub {
             font-size: var(--text-lg); color: rgba(255,255,255,.94); max-width: 680px;
             font-weight: 500; text-shadow: 0 2px 16px rgba(0,0,0,.6);
@@ -385,7 +397,7 @@
         #about { position: relative; isolation: isolate; }
         #about::before {
             content: ''; position: absolute; z-index: -1; pointer-events: none;
-            width: min(72vw, 620px); height: 280px; right: -20px; top: 12px;
+            width: min(72vw, 620px); height: 280px; left: 50%; top: 12px; transform: translateX(-50%);
             border: 1px solid rgba(45,80,22,.07);
             background: linear-gradient(90deg, transparent 15%, rgba(45,80,22,.07) 15%, rgba(45,80,22,.07) calc(15% + 1px), transparent calc(15% + 1px), transparent 85%, rgba(45,80,22,.07) 85%, rgba(45,80,22,.07) calc(85% + 1px), transparent calc(85% + 1px)),
                         linear-gradient(0deg, transparent 50%, rgba(45,80,22,.07) 50%, rgba(45,80,22,.07) calc(50% + 1px), transparent calc(50% + 1px));
@@ -578,7 +590,6 @@
             .court-finale::after { display: none; }
             .court-finale-copy { position: relative; padding: 32px 24px 40px; text-align: center; background: var(--gradient-band-green); }
             .court-finale p { margin-left: auto; margin-right: auto; }
-            #about::before { right: 0; }
         }
 
         /* ============================================================
@@ -614,14 +625,6 @@
         }
         .scroll-top.visible { opacity: 1; visibility: visible; }
         .scroll-top:hover { transform: translateY(-3px); background: var(--green-700); }
-
-        .whatsapp-float {
-            position: fixed; bottom: 90px; right: 30px; background: var(--color-whatsapp); color: #fff;
-            width: 46px; height: 46px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
-            box-shadow: var(--shadow-md); z-index: 998; transition: transform 0.2s ease, background-color 0.2s ease; text-decoration: none;
-        }
-        .whatsapp-float:hover { transform: translateY(-3px); background: #1f8259; }
-        .whatsapp-icon { width: 22px; height: 22px; fill: currentColor; }
 
         /* ============================================================
            Spinner
@@ -717,6 +720,8 @@
             .top-title .brand-name { font-size: 1.1em; overflow: hidden; text-overflow: ellipsis; }
             .top-title .tagline { overflow: hidden; text-overflow: ellipsis; }
 
+            /* Lift the centred copy slightly clear of the net in the photograph. */
+            .hero-content { padding-bottom: 56px; }
             .hero-content h1 { font-size: var(--text-2xl); }
             .hero-content .hero-sub { font-size: var(--text-md); }
 
@@ -810,7 +815,9 @@
                 <span id="heroTemp">--</span><span id="heroSep"> · </span><span id="heroConditions">Loading…</span>
             </div>
             <h1>Free social tennis, right in the heart of Didsbury</h1>
-            <p class="hero-sub">Community-run, Charity and Member Funded.</p>
+            <p class="hero-sub">Community-run, Charity and Member Funded.
+                <span class="hero-level">For intermediate and advanced players</span>
+            </p>
             <div class="hero-actions">
                 <!-- Deliberately no WhatsApp link here. New players should read what the
                      club is, the skill level it suits and how it works BEFORE asking to
@@ -839,13 +846,13 @@
                 </div>
                 <p>Community-run tennis organised by volunteers who give their time freely, supported by
                     <a href="https://mcractive.com/" target="_blank">McrActive</a>
-                    to provide accessible tennis for Didsbury and South Manchester. An inclusive, friendly environment where fun and social connection are at the heart of every session. As a volunteer group we don't have coaches on hand, so we're best suited to players who are already comfortable with the basics.</p>
+                    to provide accessible tennis for Didsbury and South Manchester. Our sessions are for intermediate and advanced players who enjoy friendly games and meeting new people. We're volunteers, not coaches, so if you're new to tennis, some lessons first will help you feel comfortable serving, rallying and keeping score.</p>
             </div>
             <div class="grid-2">
                 <div class="info-card fade-in stagger-1">
                     <div class="info-icon"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
                     <h4>Sociable &amp; inclusive</h4>
-                    <p>Warm, friendly atmosphere where everyone's welcome. Random partnering keeps things fresh and helps you meet new people.</p>
+                    <p>A warm, friendly atmosphere with a mix of intermediate and advanced players. Random partnering keeps things fresh and helps you meet new people.</p>
                 </div>
                 <div class="info-card fade-in stagger-2">
                     <div class="info-icon"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m17 14 3 3.3a1 1 0 0 1-.7 1.7H4.7a1 1 0 0 1-.7-1.7L7 14h-.3a1 1 0 0 1-.7-1.7L9 9h-.2A1 1 0 0 1 8 7.3L12 3l4 4.3a1 1 0 0 1-.8 1.7H15l3 3.3a1 1 0 0 1-.7 1.7Z"/><path d="M12 22v-3"/></svg></div>
@@ -887,6 +894,11 @@
             </div>
             <div class="fade-in" style="text-align:center; margin-top:32px;">
                 <a href="signup.html" class="btn btn-lg">Sign up for the next session</a>
+            </div>
+            <div class="ds-card fade-in" style="margin-top:32px; text-align:center;">
+                <h3>Fancy a game of singles?</h3>
+                <p>We also run the FMST Singles League alongside our social sessions. Play one-to-one matches, record your results and follow the standings.</p>
+                <a href="box-league.html" class="btn" style="margin-top:20px;">Explore the singles league</a>
             </div>
         </section>
 
@@ -1042,13 +1054,6 @@
 
     <!-- Scroll to top button -->
     <button class="scroll-top" id="scrollTop" onclick="window.scrollTo({top:0,behavior:'smooth'})" aria-label="Back to top">↑</button>
-
-    <!-- Floating WhatsApp Widget -->
-    <a href="https://chat.whatsapp.com/HTYASTUXn6oL8Eix7E8B4P?s=cl&p=i&mlu=4" target="_blank" class="whatsapp-float" aria-label="Join WhatsApp Group" title="Join WhatsApp Group">
-        <svg viewBox="0 0 24 24" class="whatsapp-icon" xmlns="http://www.w3.org/2000/svg">
-            <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946C.06 5.348 5.397.06 11.948.06c3.179.002 6.161 1.24 8.402 3.486 2.24 2.246 3.475 5.23 3.475 8.417-.004 6.597-5.34 11.884-11.892 11.884-.13 0-.26-.003-.39-.01a11.83 11.83 0 0 1-5.69-1.488L0 24zm6.59-4.846c1.1.65 2.185.99 3.307 1.002h.01c5.44 0 9.866-4.372 9.87-9.746.002-2.593-1.002-5.032-2.83-6.862C15.117 1.72 12.673.712 10.08.712c-5.45 0-9.877 4.375-9.88 9.75 0 2.05.535 4.05 1.55 5.8l-.2 1.13-.1 1.07 1.11-.29 1.18-.31c1.7 1.02 3.515 1.57 5.3 1.57zm11.215-4.7c-.1-.17-.3-.27-.6-.42-.3-.15-1.8-.89-2.07-.99-.27-.1-.47-.15-.67.15-.2.3-.77.99-.95 1.19-.18.2-.35.22-.65.07-.3-.15-1.27-.47-2.42-1.51-.9-.8-1.5-1.79-1.68-2.1-.18-.3-.02-.46.13-.61.13-.13.3-.35.45-.52.15-.17.2-.3.3-.5.1-.2.05-.37-.02-.52-.07-.15-.67-1.63-.92-2.23-.24-.6-.49-.52-.67-.52-.17 0-.37-.02-.57-.02-.2 0-.52.07-.8.37-.27.3-1.07 1.05-1.07 2.56 0 1.51 1.1 2.97 1.25 3.17.15.2 2.17 1.66 5.27 2.99.74.31 1.31.5 1.76.65.74.24 1.41.2 1.94.13.59-.08 1.8-.74 2.05-1.46.25-.72.25-1.34.18-1.46z"/>
-        </svg>
-    </a>
 
     <!-- Structured Data for Local Business SEO -->
     <script type="application/ld+json">
