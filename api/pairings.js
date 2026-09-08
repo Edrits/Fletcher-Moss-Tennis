@@ -1,3 +1,5 @@
+import { validatePairings } from './_lib/pairings-core.js';
+
 export default async function handler(req, res) {
   // Set in the Vercel environment config, never committed to this repo
   const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
@@ -50,7 +52,7 @@ export default async function handler(req, res) {
 
     // POST - Save the current pairings session (requires admin password)
     if (req.method === 'POST') {
-      const { action, password, players, numCourts, numGames, seed, generatedGames, activeGame } = req.body;
+      const { action, password, players, numCourts, numGames, seed, generatedGames, activeGame } = req.body || {};
 
       if (!ADMIN_PASSWORD) {
         return res.status(500).json({ error: 'Server is missing ADMIN_PASSWORD configuration' });
@@ -66,6 +68,9 @@ export default async function handler(req, res) {
         return res.status(200).json({ valid: true });
       }
 
+      const invalid = validatePairings({ players, numCourts, numGames, generatedGames, activeGame });
+      if (invalid) return res.status(400).json({ error: invalid });
+
       let sha = null;
       const getResponse = await fetch(githubUrl, {
         headers: {
@@ -77,14 +82,20 @@ export default async function handler(req, res) {
       if (getResponse.ok) {
         const getData = await getResponse.json();
         sha = getData.sha;
+      } else if (getResponse.status !== 404) {
+        throw new Error('Could not read the current board. Nothing was saved.');
       }
 
       const dataToSave = {
-        players: players || [],
+        players: players.map(p => ({ ...p, name: p.name.trim() })),
         numCourts: numCourts || 3,
         numGames: numGames || 6,
         seed: seed ?? null,
-        generatedGames: generatedGames || [],
+        generatedGames: generatedGames.map(game => ({
+          ...game,
+          sitters: game.sitters.map(name => name.trim()),
+          courts: game.courts.map(court => court.map(team => team.map(name => name.trim())))
+        })),
         activeGame: activeGame || 0,
         updated: new Date().toISOString()
       };

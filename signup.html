@@ -787,6 +787,9 @@
 
         // Always resolves to { ok, ... }. Network trouble is the only thing that throws.
         async function apiPost(body) {
+            // Carry the session the member actually saw. Never silently apply a delayed
+            // tap or an old admin screen to the next session.
+            body = Object.assign({ sessionId: current ? current.sessionId : null }, body);
             if (USE_MOCK) return mockPost(body);
             const res = await fetch('/api/signup', {
                 method: 'POST',
@@ -903,6 +906,28 @@
 
         function render() {
             const d = current || {};
+            let transitionNote = document.getElementById('transition-note');
+            if (!transitionNote) {
+                transitionNote = document.createElement('p');
+                transitionNote.id = 'transition-note';
+                transitionNote.setAttribute('role', 'status');
+                document.getElementById('signup-area').prepend(transitionNote);
+            }
+            transitionNote.textContent = d.transitioning ? 'The organiser is updating this session. The list is kept safe; joining and leaving are paused briefly.' : '';
+            let resumeButton = document.getElementById('resume-transition');
+            if (!resumeButton) {
+                resumeButton = document.createElement('button');
+                resumeButton.id = 'resume-transition';
+                resumeButton.className = 'edit-btn';
+                resumeButton.textContent = 'Resume session update';
+                resumeButton.onclick = async function () {
+                    resumeButton.disabled = true;
+                    try { await adminPost({ action: 'resume_transition' }); await refresh(); }
+                    finally { resumeButton.disabled = false; }
+                };
+                document.getElementById('admin-card').prepend(resumeButton);
+            }
+            resumeButton.style.display = d.transitioning ? 'inline-block' : 'none';
             // Merged, not just defaulted. A partial object printed "then undefined subs and
             // a waiting list of undefined", and NaN slices dropped real people off the page.
             const cap = Object.assign({ main: 16, subs: 2, waitlist: 10 }, d.capacity || {});
@@ -1459,10 +1484,12 @@
                     return null;
                 }
                 showMsg('admin-msg', errorCopy(res && res.error, res && res.message), 'bad');
+                if (res && ['transition_paused', 'transitioning', 'stale_session'].includes(res.error)) await refresh();
                 return null;
             } catch (err) {
                 console.error('Admin action failed:', err);
-                showMsg('admin-msg', 'No connection, so nothing was changed. Please try again.', 'bad');
+                showMsg('admin-msg', 'Could not confirm the update. Refresh the list before trying again.', 'bad');
+                await refresh();
                 return null;
             }
         }

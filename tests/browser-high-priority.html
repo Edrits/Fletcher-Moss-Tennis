@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en"><meta charset="utf-8"><title>High-priority browser checks</title>
+<style>body{font:16px system-ui;margin:24px}iframe{width:375px;height:700px}pre{white-space:pre-wrap}</style>
+<h1>Sign-up transition browser check</h1>
+<p>Local source with mocked API responses. No live writes.</p>
+<pre id="results">Running</pre>
+<script>
+window.addEventListener('message', event => {
+  if (event.source === document.querySelector('iframe')?.contentWindow) document.getElementById('results').textContent = JSON.stringify(event.data);
+});
+(async () => {
+  const raw = await (await fetch('../signup.html')).text();
+  const doc = new DOMParser().parseFromString(raw, 'text/html');
+  doc.querySelectorAll('link,img,iframe,script[src]').forEach(n => n.remove());
+  const boot = doc.createElement('script');
+  boot.textContent = `
+    const response = {sessionId:'test-session',transitioning:true,state:'closed',date:'2099-09-10',label:'Thursday tennis',capacity:{main:16,subs:2,waitlist:10},main:[{name:'Alex P.',position:1}],subs:[],waitlist:[],total:1};
+    window.fetch = async () => ({ok:true,json:async()=>response});
+    window.alert = () => {};
+    Object.defineProperty(window,'sessionStorage',{value:{getItem(){return 'fixture-only'},setItem(){},removeItem(){}}});
+    window.addEventListener('error', e=>parent.postMessage({error:e.message},'*'));
+    window.addEventListener('unhandledrejection', e=>parent.postMessage({error:String(e.reason)},'*'));
+  `;
+  doc.head.prepend(boot);
+  const tail = doc.createElement('script');
+  tail.textContent = `setTimeout(()=>{
+    const notice=document.getElementById('transition-note');
+    const resume=document.getElementById('resume-transition');
+    parent.postMessage({notice:notice?.textContent,resumeVisible:!!resume && getComputedStyle(resume).display!=='none',playerRetained:document.body.textContent.includes('Alex P.')},'*');
+  },300);`;
+  doc.body.append(tail);
+  const frame=document.createElement('iframe'); frame.setAttribute('sandbox','allow-scripts');
+  frame.srcdoc=doc.documentElement.outerHTML;document.body.append(frame);
+})();
+</script></html>

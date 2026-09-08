@@ -15,9 +15,9 @@
 // taps at once, which the GitHub Contents API cannot absorb. The finished list is archived
 // to the repo once, on reset.
 import {
-  KEYS, isConfigured, describeCredentialEnv, hgetall, hset, lrangeJSON, del,
-  joinAtomic, removeByNames, removeByToken, hitRateLimit, peekRateLimit
+  KEYS, isConfigured, describeCredentialEnv, hgetall, hitRateLimit, peekRateLimit
 } from './_lib/redis.js';
+import { signupStore, sessionIdentity, admission } from './_lib/signup-store.js';
 import { randomUUID, randomInt } from 'node:crypto';
 import { archiveSession } from './_lib/archive.js';
 import {
@@ -32,7 +32,11 @@ const ADMIN_ATTEMPT_LIMIT = 10;
 
 const JOIN_ERRORS = {
   already_in: 'You already have a place for this session.',
-  full: 'This session is full, including the waiting list.'
+  full: 'This session is full, including the waiting list.',
+  stale_session: 'The session has changed. Refresh the list and try again.',
+  transitioning: 'The organiser is updating the session. The list is safe. Please try again shortly.',
+  not_open: 'Sign-up is not open for this session.',
+  bad_pin: 'That code is not right. Check the message in the WhatsApp group.'
 };
 
 // Drawn with the crypto RNG rather than Math.random: the code is what stands between the
@@ -91,7 +95,7 @@ export default async function handler(req, res) {
       return res.status(405).json({ error: 'Method not allowed' });
     }
 
-    const { action, name, names, token, password, date, label, opensAt, capacity, organiser, force, pin } = req.body || {};
+    const { action, name, names, token, password, date, label, opensAt, capacity, organiser, force, pin, sessionId } = req.body || {};
 
     // ── Member actions, no password ──────────────────────────────────────────────
     if (action === 'join') {
@@ -113,6 +117,7 @@ export default async function handler(req, res) {
       }
 
       const meta = await hgetall(KEYS.meta);
+      if (sessionId !== sessionIdentity(meta)) return storeFailure(res, 'stale_session');
       const gate = openState(meta, now);
       if (!gate.open) return res.status(200).json({ ok: false, error: 'not_open', message: gate.message });
 
@@ -139,12 +144,11 @@ export default async function handler(req, res) {
       const cap = parseCapacity(meta);
       // Only a first name and an initial ever reach the list. The script resolves a clash
       // against the live queue, so two people who shorten the same way both get in.
-      const result = await joinAtomic({
+      const result = await signupStore(admission(meta, {
         token: String(token).slice(0, 64),
-        displayBase: shortenName(check.name),
-        limit: totalSlots(cap),
+        name: shortenName(check.name), pin: normalisePin(pin),
         at: now.toISOString()
-      });
+      }));
 
       if (result.error) {
         return res.status(200).json({
@@ -158,8 +162,9 @@ export default async function handler(req, res) {
 
     if (action === 'leave') {
       if (!token) return res.status(200).json({ ok: false, message: 'Missing sign-up token.' });
-      const out = await removeByToken(String(token).slice(0, 64));
-      if (out.error) return res.status(200).json({ ok: false, message: out.error });
+      const out = await signupStore({ action: 'leave', sessionId, token: String(token).slice(0, 64) });
+      if (out.error) return storeFailure(res, out.error);
+      if (!out.removed.length) return res.status(200).json({ ok: false, message: 'No sign-up found on this device.' });
       return res.status(200).json({ ok: true });
     }
 
@@ -201,12 +206,20 @@ export default async function handler(req, res) {
       return res.status(200).json({ valid: true, ...organiserExtras(meta) });
     }
 
+    if (action === 'resume_transition') {
+      const pending = await signupStore({ action: 'pending' });
+      if (!pending.id) return res.status(200).json({ ok: true, ...(await readState(now, null)) });
+      return completeTransition(res, pending, now);
+    }
+
 
     // Opens the next session. Archives whatever the last one held before clearing, so the
     // record survives even though the live list does not.
     if (action === 'open') {
-      const previous = await hgetall(KEYS.meta);
-      const previousEntries = await lrangeJSON(KEYS.queue);
+      const snapshot = await signupStore({ action: 'read' });
+      const previous = snapshot.meta;
+      if (snapshot.transitioning) return storeFailure(res, 'transitioning');
+      if (sessionId !== sessionIdentity(previous)) return storeFailure(res, 'stale_session');
 
       const slot = nextSession(now);
       const useDate = date || (slot && slot.date);
@@ -216,6 +229,9 @@ export default async function handler(req, res) {
       const useLabel = label || labelForDate(useDate) || (slot && slot.label) || '';
       const useOpensAt = opensAt || defaultOpensAt(useDate).toISOString();
       const cap = normaliseCapacity(capacity) || DEFAULT_CAPACITY;
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(useDate) || !Number.isFinite(Date.parse(useDate)) || !Number.isFinite(Date.parse(useOpensAt))) {
+        return res.status(400).json({ error: 'Please enter a valid session date and opening time.' });
+      }
 
       // Validate BEFORE anything is destroyed. This used to run after the wipe, so a
       // rejected organiser name left the old list archived and gone and the new session
@@ -237,11 +253,12 @@ export default async function handler(req, res) {
       // the list also closed sign-up, and pressing Open on the same date silently kept
       // the old names. The page asks for confirmation before it sends force, so the
       // typo-protection above still holds for the accidental case.
-      if (previous.date && previous.date === useDate && previousEntries.length && !force) {
-        await hset(KEYS.meta, {
+      if (previous.date && previous.date === useDate && !force) {
+        const editedResult = await signupStore({ action: 'edit', sessionId, changes: {
           label: useLabel, opensAt: useOpensAt, state: 'open',
           endsAt: endsAtFor(useDate)
-        });
+        } });
+        if (editedResult.error) return storeFailure(res, editedResult.error);
         // Deliberately does NOT mint a new code. People already hold the old one, and
         // rotating it here would lock out everyone who had the message but had not yet
         // tapped, for the sake of an edit to the label or the opening time.
@@ -254,51 +271,27 @@ export default async function handler(req, res) {
         });
       }
 
-      if (previous.date && previousEntries.length) {
-        const archived = await archiveSession({
-          date: previous.date,
-          label: previous.label,
-          capacity: parseCapacity(previous),
-          entries: previousEntries
-        });
-        // Refuse to wipe a list we could not save. Losing who played is worse than a
-        // failed button press.
-        if (!archived.ok) return res.status(502).json({ error: `Could not archive the last session: ${archived.error}` });
-      }
-
-      await del(KEYS.queue, KEYS.meta);
       // A fresh code per session. Last week's, still sitting in the group's history, must
       // not open this week's list.
       const sessionPin = generatePin();
-      await hset(KEYS.meta, {
+      const nextMeta = {
         date: useDate, label: useLabel, opensAt: useOpensAt,
         state: 'open', seeds: '0', capacity: JSON.stringify(cap),
-        organiser: '', endsAt: endsAtFor(useDate), pin: sessionPin
-      });
+        organiser: organiserDisplay, endsAt: endsAtFor(useDate), pin: sessionPin,
+        generation: randomUUID()
+      };
 
       // Whoever is running the session takes position 1. Added here, against an empty
       // queue, so they are first before anybody can tap. Not protected from removal:
       // if the organiser changes, take them off and add the new one.
-      if (organiserDisplay) {
-        const seated = await joinAtomic({
-          // Must be unguessable. An earlier version used `organiser:<date>`, and the date
-          // is published in every public GET, so anyone could post a leave with that token
-          // and knock whoever was running the session off the list.
-          token: `organiser:${randomUUID()}`,
-          displayBase: organiserDisplay,
-          limit: totalSlots(cap),
-          at: now.toISOString()
-        });
-        // Record the name that actually landed, so the "Running today" tag matches a real
-        // row rather than pointing at nobody.
-        await hset(KEYS.meta, { organiser: seated.error ? '' : seated.name });
-      }
-
-      return res.status(200).json({
-        ok: true,
-        ...organiserExtras({ date: useDate, label: useLabel, opensAt: useOpensAt, pin: sessionPin }),
-        ...(await readState(now, null))
+      if (organiserDisplay && totalSlots(cap) < 1) return res.status(400).json({ error: 'Allow at least one place for the organiser.' });
+      const pending = await signupStore({
+        action: 'freeze', sessionId, id: randomUUID(), nextMeta, archivedAt: now.toISOString(),
+        organiser: organiserDisplay ? { token: `organiser:${randomUUID()}`, name: organiserDisplay,
+          key: organiserDisplay.toLowerCase(), at: now.toISOString() } : null
       });
+      if (pending.error) return storeFailure(res, pending.error);
+      return completeTransition(res, pending, now);
     }
 
     // The organiser can put someone on the list at any point, before or after the button
@@ -307,22 +300,20 @@ export default async function handler(req, res) {
     if (action === 'add' || action === 'seed') {
       const meta = await hgetall(KEYS.meta);
       if (!meta.date) return res.status(400).json({ error: 'Open a session first' });
+      if (sessionId !== sessionIdentity(meta)) return storeFailure(res, 'stale_session');
       const check = validateName(name);
       if (!check.ok) return res.status(400).json({ error: check.error });
 
       const cap = parseCapacity(meta);
-      const used = Number(meta.seeds || 0);
-      const result = await joinAtomic({
-        token: `admin:${used + 1}:${now.getTime()}`,
-        displayBase: shortenName(check.name),
-        limit: totalSlots(cap),
+      const result = await signupStore(admission(meta, {
+        token: `admin:${randomUUID()}`, admin: true,
+        name: shortenName(check.name),
         at: now.toISOString()
-      });
+      }));
       if (result.error) {
         return res.status(400).json({ error: JOIN_ERRORS[result.error] || 'Could not add that person' });
       }
 
-      await hset(KEYS.meta, { seeds: String(used + 1) });
       return res.status(200).json({
         ok: true, position: result.position, name: result.name,
         tier: tierFor(result.position, cap)
@@ -336,7 +327,8 @@ export default async function handler(req, res) {
       const wanted = Array.isArray(names) ? names : (name ? [name] : []);
       if (!wanted.length) return res.status(400).json({ error: 'No names given to remove' });
 
-      const out = await removeByNames(wanted);
+      const out = await signupStore({ action: 'remove', sessionId, names: wanted.map(n => String(n).trim().toLowerCase()) });
+      if (out.error) return storeFailure(res, out.error);
       if (!out.removed.length) {
         return res.status(400).json({
           error: 'Nobody on the list matched those names. The list may have changed, try refreshing.'
@@ -347,16 +339,10 @@ export default async function handler(req, res) {
 
     // Archive and clear without opening the next one.
     if (action === 'reset') {
-      const meta = await hgetall(KEYS.meta);
-      const entries = await lrangeJSON(KEYS.queue);
-      if (meta.date && entries.length) {
-        const archived = await archiveSession({
-          date: meta.date, label: meta.label, capacity: parseCapacity(meta), entries
-        });
-        if (!archived.ok) return res.status(502).json({ error: `Could not archive: ${archived.error}` });
-      }
-      await del(KEYS.queue, KEYS.meta);
-      return res.status(200).json({ ok: true });
+      const pending = await signupStore({ action: 'freeze', sessionId, id: randomUUID(),
+        nextMeta: null, organiser: null, archivedAt: now.toISOString() });
+      if (pending.error) return storeFailure(res, pending.error);
+      return completeTransition(res, pending, now);
     }
 
     return res.status(400).json({ error: 'Unknown action' });
@@ -392,8 +378,30 @@ function clientId(req) {
 }
 
 async function readState(now, myToken) {
-  const [meta, entries] = await Promise.all([hgetall(KEYS.meta), lrangeJSON(KEYS.queue)]);
-  return viewModel({ meta: { ...meta, capacity: parseCapacity(meta) }, entries, now, myToken });
+  const { meta, entries, transitioning } = await signupStore({ action: 'read' });
+  return { ...viewModel({ meta: { ...meta, capacity: parseCapacity(meta), ...(transitioning ? { state: 'closed' } : {}) }, entries, now, myToken }),
+    sessionId: sessionIdentity(meta), transitioning };
+}
+
+function storeFailure(res, code) {
+  return res.status(409).json({ ok: false, error: code, message: JOIN_ERRORS[code] || 'The list changed. Refresh and try again.' });
+}
+
+async function completeTransition(res, pending, now) {
+  try {
+    if (pending.meta.date && pending.entries.length) {
+      const archived = await archiveSession({ date: pending.meta.date, label: pending.meta.label,
+        capacity: parseCapacity(pending.meta), entries: pending.entries, archiveId: pending.id, archivedAt: pending.archivedAt });
+      if (!archived.ok) throw new Error(archived.error);
+    }
+    const finished = await signupStore({ action: 'finish', id: pending.id });
+    if (finished.error) return storeFailure(res, finished.error);
+    return res.status(200).json({ ok: true, ...organiserExtras(pending.nextMeta), ...(await readState(now, null)) });
+  } catch (err) {
+    console.error('Session transition paused:', err);
+    return res.status(502).json({ ok: false, error: 'transition_paused',
+      message: 'The update could not finish. The list is kept safe and paused. Use Resume session update to try again.' });
+  }
 }
 
 // The server decides whether sign-up is open. A browser clock that is a few minutes fast

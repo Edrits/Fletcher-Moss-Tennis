@@ -5,6 +5,7 @@
 # git so the assertions travel with the code, and is run locally against a static server
 # as described in CLAUDE.md.
 test-signup.html
+tests/
 
 # Internal working notes. Nothing on the site links to them and they are not for members.
 PM-REPORTS/

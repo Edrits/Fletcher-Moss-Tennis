@@ -417,6 +417,11 @@
             <h2>Court Pairings</h2>
         </div>
 
+        <div id="load-error" class="card" style="display:none;" role="status">
+            <p>Could not load the pairings. Your saved board has not been changed.</p>
+            <button class="btn-opt" onclick="loadCurrentSession()">Try again</button>
+        </div>
+        <p id="roster-warning" role="status"></p>
         <div id="setup-screen" style="display:none;">
             <div class="card">
                 <h3>Today's players</h3>
@@ -530,6 +535,25 @@
         // ── State ──
         let numCourts = 3, numGames = 6, activeGame = 0, currentSeed = null;
         let editMode = false;   // false = view-only; true = unlocked with admin password
+        let boardLoaded = false;
+        let adminCredential = '';
+        try { adminCredential = sessionStorage.getItem('pw') || ''; } catch (err) { /* page-memory fallback */ }
+        function rememberCredential(pw) {
+            adminCredential = pw;
+            try { sessionStorage.setItem('pw', pw); } catch (err) { /* unlock again after reloading */ }
+        }
+        function forgetCredential() {
+            adminCredential = '';
+            try { sessionStorage.removeItem('pw'); } catch (err) {
+                alert('Locked on this page. Browser storage could not be cleared; close this tab when finished.');
+            }
+        }
+        let pendingSignupLoad = new URLSearchParams(location.search).get('loadSignup') === '1';
+        function rosterError(roster) {
+            if (!Array.isArray(roster) || roster.some(p => !p || typeof p.name !== 'string')) return 'The player list is invalid. Please reload.';
+            const names = roster.map(p => p.name.trim()).filter(Boolean);
+            return new Set(names).size === names.length ? '' : 'Give each player a different name, for example Alex P. and Alex R.';
+        }
 
         // An empty seat (too few players, or a wiped board) is stored as "" and shown as an empty-seat dash
         const BALL = '—';
@@ -567,7 +591,10 @@
                 })
                 .filter(Boolean);
             if (!lines.length) return;
-            players = lines.map(name => ({ name, sub: false }));
+            const candidate = lines.map(name => ({ name, sub: false }));
+            const invalid = rosterError(candidate);
+            if (invalid) { alert(invalid); return; }
+            players = candidate;
             document.getElementById('paste-box').value = '';
             renderPlayerInputs();
         }
@@ -624,7 +651,10 @@
 
                 // The waiting list is deliberately left out. Those people are not expected to
                 // turn up, and adding them would change who sits out.
-                players = [...main, ...subs];
+                const candidate = [...main, ...subs];
+                const invalid = rosterError(candidate);
+                if (invalid) { say(invalid); return; }
+                players = candidate;
                 renderPlayerInputs();
 
                 const waiting = (data.waitlist || []).length;
@@ -698,7 +728,10 @@
 
         // Persist the current session to the backend so every visitor (and future edits) share one source of truth
         async function saveSession(payload) {
-            let pw = sessionStorage.getItem('pw');
+            if (!boardLoaded) { alert('Load the saved board before making changes.'); return false; }
+            const invalid = rosterError(payload.players);
+            if (invalid) { alert(invalid); return false; }
+            let pw = adminCredential;
             if (!pw) {
                 pw = prompt("Enter the admin password to save this for everyone:");
                 if (!pw) return false;
@@ -710,7 +743,9 @@
                     body: JSON.stringify({ password: pw, ...payload })
                 });
                 if (res.status === 401) {
-                    sessionStorage.removeItem('pw');
+                    forgetCredential();
+                    editMode = false;
+                    updateModeUI();
                     alert('Incorrect password.');
                     return false;
                 }
@@ -719,7 +754,7 @@
                     alert('Failed to save: ' + (data.error || 'Unknown error'));
                     return false;
                 }
-                sessionStorage.setItem('pw', pw);
+                rememberCredential(pw);
                 return true;
             } catch (err) {
                 console.error('Save failed:', err);
@@ -730,6 +765,13 @@
 
         // ── Core rotation logic ──
         async function generate() {
+            const invalid = rosterError(players);
+            if (invalid) {
+                const msg = document.getElementById('val-msg');
+                msg.textContent = invalid; msg.style.display = 'block'; return;
+            }
+            document.getElementById('roster-warning').textContent = '';
+            players = players.map(p => ({ ...p, name: p.name.trim() }));
             const named = players.filter(p => p.name.trim());
             const playPerGame = numCourts * 4;
             const msg = document.getElementById('val-msg');
@@ -851,6 +893,10 @@
             const newName = prompt(`Swap "${oldName}" across all rounds with:`, oldName);
             if (!newName || newName.trim() === "" || newName.trim() === oldName) return;
             const cleanNewName = newName.trim();
+            if (rosterError(players) || players.some(p => p.name.trim() === cleanNewName)) {
+                alert('That name is already on the board. Give the players different names in the setup list first.');
+                return;
+            }
 
             const prevPlayers = JSON.parse(JSON.stringify(players));
             const prevGames = JSON.parse(JSON.stringify(generatedGames));
@@ -920,6 +966,7 @@
         }
 
         async function unlockEditing() {
+            if (!boardLoaded) { await loadCurrentSession(); if (!boardLoaded) return; }
             const pw = prompt("Enter the admin password to edit pairings:");
             if (!pw) return;
             try {
@@ -930,7 +977,7 @@
                 });
                 if (res.status === 401) { alert('Incorrect password.'); return; }
                 if (!res.ok) { alert('Could not verify right now, please try again.'); return; }
-                sessionStorage.setItem('pw', pw);
+                rememberCredential(pw);
                 editMode = true;
                 // If nothing has been set up yet, drop straight into the setup screen
                 if (!generatedGames.length) {
@@ -938,6 +985,12 @@
                     backToSetup();
                 }
                 updateModeUI();
+                if (pendingSignupLoad) {
+                    pendingSignupLoad = false;
+                    history.replaceState(null, '', location.pathname);
+                    backToSetup();
+                    await loadFromSignup();
+                }
             } catch (err) {
                 console.error('Verify failed:', err);
                 alert('Network error, could not verify the password.');
@@ -945,7 +998,7 @@
         }
 
         function lockEditing() {
-            sessionStorage.removeItem('pw');
+            forgetCredential();
             editMode = false;
             document.getElementById('setup-screen').style.display = 'none';
             if (generatedGames.length) {
@@ -1254,8 +1307,15 @@
                 currentSeed = data.seed ?? null;
                 generatedGames = Array.isArray(data.generatedGames) ? data.generatedGames : [];
                 activeGame = data.activeGame || 0;
+                const invalid = rosterError(players);
+                document.getElementById('roster-warning').textContent = invalid ? invalid + ' Unlock and correct the setup list, then generate again.' : '';
+                if (invalid) generatedGames = [];
+                boardLoaded = true;
+                document.getElementById('load-error').style.display = 'none';
             } catch (err) {
-                console.error('Failed to load current session, falling back to local defaults:', err);
+                console.error('Failed to load current session:', err);
+                document.getElementById('load-error').style.display = 'block';
+                return;
             }
 
             // Update visual active classes on configuration selectors
@@ -1269,15 +1329,16 @@
             });
 
             // Unlocked earlier this browser session? Stay in edit mode; otherwise view-only.
-            editMode = !!sessionStorage.getItem('pw');
+            editMode = !!adminCredential;
 
             // Arrived from the "Send to court pairings" button on the sign-up page. Jump
             // straight to the setup screen and pull the list, rather than making the
             // organiser click "Fill the list from today's sign-up" a second time. Strip the
             // flag from the URL so refreshing the page does not repeat it.
-            const wantsSignupLoad = new URLSearchParams(location.search).get('loadSignup') === '1';
-            if (wantsSignupLoad) history.replaceState(null, '', location.pathname);
+            const wantsSignupLoad = pendingSignupLoad;
             if (wantsSignupLoad && editMode) {
+                pendingSignupLoad = false;
+                history.replaceState(null, '', location.pathname);
                 document.getElementById('setup-screen').style.display = 'block';
                 document.getElementById('game-screen').style.display = 'none';
                 document.getElementById('locked-empty').style.display = 'none';
