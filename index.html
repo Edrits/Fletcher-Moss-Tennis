@@ -293,17 +293,6 @@
             font-size: var(--text-4xl); color: #fff; font-weight: 600; line-height: var(--leading-tight);
             max-width: 860px; text-shadow: 0 2px 24px rgba(0,0,0,.55);
         }
-        /* Two short exchanges, then still. The text stays readable throughout. */
-        @media (prefers-reduced-motion: no-preference) {
-            .hero-content h1 { animation: heading-rally 2.2s ease-in-out .2s both; }
-        }
-        @keyframes heading-rally {
-            0%, 100% { transform: translate(0, 0); }
-            20% { transform: translate(12px, -3px); }
-            45% { transform: translate(-10px, 0); }
-            68% { transform: translate(6px, -2px); }
-            84% { transform: translate(-3px, 0); }
-        }
         .hero-level { display: block; margin-top: 8px; font-size: var(--text-base); font-weight: 600; color: var(--paper-100); }
         .hero-content .hero-sub {
             font-size: var(--text-lg); color: rgba(255,255,255,.94); max-width: 680px;
