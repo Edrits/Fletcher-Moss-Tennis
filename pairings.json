@@ -93,13 +93,13 @@
             "Mads"
           ],
           [
-            "",
+            "Elle",
             "Bridget"
           ]
         ],
         [
           [
-            "Elle",
+            "",
             "Helen"
           ],
           [
@@ -222,6 +222,6 @@
       ]
     }
   ],
-  "activeGame": 0,
-  "updated": "2026-09-14T15:57:49.727Z"
+  "activeGame": 1,
+  "updated": "2026-09-14T15:58:10.336Z"
 }
