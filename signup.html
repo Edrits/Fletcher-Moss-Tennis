@@ -387,7 +387,14 @@
         .admin-field { display: flex; flex-direction: column; margin-bottom: 12px; }
         .admin-field:last-of-type { margin-bottom: 0; }
         .admin-row .admin-field { flex: 1; min-width: 150px; margin-bottom: 0; }
-        .admin-field .text-input { width: 100%; }
+        .admin-field .text-input { width: 100%; min-width: 0; max-width: 100%; }
+        /* Native Safari date controls must fit the field, not their intrinsic width. */
+        .admin-field input[type="date"],
+        .admin-field input[type="datetime-local"] {
+            display:block; appearance:none; -webkit-appearance:none;
+            min-height:48px; height:48px; flex:none;
+        }
+        .admin-field input::-webkit-date-and-time-value { text-align:left; min-width:0; }
         .admin-field-hint { font-size: 11px; line-height: 1.4; color: var(--text-muted); margin-top: 5px; font-weight: 500; }
         .admin-field label .opt { text-transform: none; letter-spacing: 0; font-weight: 500; opacity: .7; }
         .admin-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; margin-bottom: 14px; }
@@ -455,6 +462,8 @@
             .top-title h1 { font-size: 1.15em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
             .top-title p { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
             .main-container { padding: 22px 12px; margin: 20px 12px 50px 12px; }
+            #session-settings > .admin-row { flex-direction:column; }
+            #session-settings > .admin-row > .admin-field { flex:none; min-width:0; width:100%; }
             .section-heading h2 { font-size: var(--text-xl); }
             .card { padding: 18px 16px; }
             .session-top h3 { font-size: var(--text-md); }
