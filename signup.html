@@ -391,6 +391,23 @@
         .admin-field-hint { font-size: 11px; line-height: 1.4; color: var(--text-muted); margin-top: 5px; font-weight: 500; }
         .admin-field label .opt { text-transform: none; letter-spacing: 0; font-weight: 500; opacity: .7; }
         .admin-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; margin-bottom: 14px; }
+        .admin-actions { display:flex; flex-wrap:wrap; gap:10px; }
+        .admin-details { border-top:1px solid var(--border-subtle); padding-top:16px; margin-top:16px; }
+        .admin-details > summary { cursor:pointer; font-weight:700; color:var(--green-800); padding:8px 0; }
+        .admin-details[open] > summary { margin-bottom:12px; }
+        .edit-btn { min-height:44px; }
+        .entry-x { width:44px; height:44px; }
+        button:focus-visible, summary:focus-visible { outline:3px solid var(--green-600); outline-offset:3px; }
+        .admin-strip { text-align:right; margin:0 0 16px; }
+        #admin-card { margin-top:0 !important; }
+        #admin-msg.show { margin:0 0 16px; }
+        .beta-note { background:none; padding:0; font-size:12px; margin-bottom:16px; }
+        .section-heading { margin-bottom:12px; }
+        .section-heading .kicker { display:none; }
+        .main-container { margin-top:30px; padding:30px; }
+        #pin-row { margin-top:16px; }
+        .capacity-note { font-size:13px; }
+        .whatsapp-float { display:none !important; }
 
         /* ── Rain alert banner (softened terracotta) ── */
         #rainAlertBanner {
@@ -437,7 +454,7 @@
             .top-title { min-width: 0; overflow: hidden; }
             .top-title h1 { font-size: 1.15em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
             .top-title p { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-            .main-container { padding: 34px 18px; margin: 40px 12px 70px 12px; }
+            .main-container { padding: 22px 12px; margin: 20px 12px 50px 12px; }
             .section-heading h2 { font-size: var(--text-xl); }
             .card { padding: 18px 16px; }
             .session-top h3 { font-size: var(--text-md); }
@@ -493,10 +510,11 @@
         <div class="section-heading">
             <span class="kicker">Session tool</span>
             <h2>Session Sign-Up <span class="beta-chip">Beta</span></h2>
-            <p class="lede">Places are given out in the order people tap the button. If someone drops out, everyone below moves up.</p>
+            <p class="lede">Book your place for the next session.</p>
         </div>
 
-        <p class="beta-note">This tool is still in testing. It should work, but do not rely on it as the only record of who is playing. If something looks wrong, say so in the WhatsApp group.</p>
+        <p class="beta-note">Testing: keep a backup list in WhatsApp and report any problems there.</p>
+        <div id="organiser-slot"></div>
 
         <!-- First paint. Replaced as soon as the first GET lands, or turned into a
              plain error with a retry button if it does not. -->
@@ -539,16 +557,15 @@
                          members type a name the server was always going to refuse. -->
                     <input class="text-input" id="name-input" type="text" maxlength="30"
                            autocomplete="name" enterkeyhint="done" placeholder="Type your name, for example Ed R.">
-                    <p class="field-hint">First name and last initial is plenty. It shows on the list below.</p>
+                    <p class="field-hint">Shown publicly as first name and last initial.</p>
 
                     <!-- Only shown when the live session has a code. Sessions opened before
                          codes existed carry none, and the server still lets those through. -->
                     <div id="pin-row" style="display:none;">
-                        <label class="field-label" for="pin-input">Code from the WhatsApp group</label>
+                        <label class="field-label" for="pin-input">WhatsApp code</label>
                         <input class="text-input" id="pin-input" type="text" inputmode="numeric"
                                pattern="[0-9]*" maxlength="4" autocomplete="one-time-code"
                                enterkeyhint="done" placeholder="4 digits">
-                        <p class="field-hint">The organiser posts this in the group when sign-up opens.</p>
                     </div>
 
                     <button class="big-btn" id="join-btn" onclick="join()">I'm in</button>
@@ -585,80 +602,83 @@
         </div>
 
         <div class="admin-strip">
-            <button class="edit-btn" id="btn-unlock" onclick="unlockAdmin()">Unlock to edit</button>
+            <button class="edit-btn" id="btn-unlock" aria-expanded="false" aria-controls="admin-login" onclick="toggleAdminLogin()">Organiser sign in</button>
             <button class="edit-btn" id="btn-lock" style="display:none;" onclick="lockAdmin()">Done editing</button>
+            <form id="admin-login" hidden style="text-align:left; margin-top:12px;" onsubmit="event.preventDefault(); submitAdminLogin()">
+                <label class="field-label" for="admin-password">Organiser password</label>
+                <div class="admin-row">
+                    <input class="text-input" id="admin-password" type="password" autocomplete="current-password" required>
+                    <button class="edit-btn primary" id="admin-login-submit" type="submit">Sign in</button>
+                </div>
+                <p class="msg" id="login-msg" role="status"></p>
+            </form>
         </div>
 
         <div class="card" id="admin-card" style="display:none; margin-top:16px;">
             <div class="admin-head">
                 <h3 style="margin-bottom:0;">Organiser controls</h3>
             </div>
+            <p class="msg" id="admin-msg" role="status" aria-live="polite"></p>
+            <div class="admin-actions">
+                <button class="edit-btn primary" onclick="sendToPairings()">Create court pairings</button>
+                <button class="edit-btn" id="manage-list-btn" aria-pressed="false" onclick="toggleListEditing()">Remove players</button>
+            </div>
+            <p class="admin-note">Pairings include main players and subs.</p>
 
-            <div class="admin-block">
-                <h4 class="admin-subhead">Open the next session</h4>
+            <details class="admin-details" id="session-settings">
+                <summary>Set up or edit a session</summary>
                 <div class="admin-row">
                     <div class="admin-field">
                         <label for="adm-date">Session date</label>
                         <input class="text-input" id="adm-date" type="date" onchange="onSessionDateChange()">
-                        <span class="admin-field-hint">The day people are playing.</span>
                     </div>
                     <div class="admin-field">
                         <label for="adm-opens">Sign-up opens</label>
                         <input class="text-input" id="adm-opens" type="datetime-local" oninput="updatePlanSummary()">
-                        <span class="admin-field-hint">When the button goes live for members. Set it to whenever suits.</span>
+                        <span class="admin-field-hint">Defaults to 8:00 PM the night before.</span>
                     </div>
                 </div>
+                <details class="admin-details">
+                <summary>Custom session name</summary>
                 <div class="admin-field" style="margin-top:12px;">
                     <label for="adm-label">Session name <span class="opt">(optional)</span></label>
                     <input class="text-input" id="adm-label" type="text" maxlength="60" placeholder="Thursday 6:00 to 8:00 PM">
                 </div>
+                </details>
                 <div class="admin-field">
                     <label for="adm-organiser">Who's running it <span class="opt">(optional)</span></label>
                     <input class="text-input" id="adm-organiser" type="text" maxlength="30" placeholder="Name">
                 </div>
                 <p class="plan-summary" id="plan-summary">Fill in both boxes and this will read back what you are about to set.</p>
-                <p class="admin-note">Whoever is running it takes place 1 automatically.</p>
-                <button class="edit-btn primary" style="margin-top:10px;" onclick="adminOpen()">Open sign-up</button>
-            </div>
+                <p class="admin-note">The organiser gets place 1.</p>
+                <button class="edit-btn primary" style="margin-top:10px;" onclick="adminOpen()">Save session</button>
+            </details>
 
             <!-- Populated from the password-checked verify/open responses. The code never
                  appears in the public GET, so this is the only place it can come from. -->
-            <div class="admin-block" id="share-block" style="display:none;">
+            <details class="admin-details" id="share-block" style="display:none;">
+                <summary>Share in WhatsApp</summary>
                 <label for="share-text">Message for the WhatsApp group</label>
                 <textarea class="text-input share-text" id="share-text" rows="7" readonly></textarea>
                 <button class="edit-btn primary" style="margin-top:10px;" onclick="copyShare()">Copy for WhatsApp</button>
-                <p class="admin-note">This carries the code members need in order to sign up, so post it in the group when you open the session. A new code is made each time you open a session, and the old one stops working.</p>
-            </div>
+                <p class="admin-note">Includes the link and this session’s sign-up code.</p>
+            </details>
 
-            <div class="divider">or adjust the list</div>
-
-            <div class="admin-block">
-                <label>Send to court pairings</label>
-                <button class="edit-btn primary" onclick="sendToPairings()">Send the list to court pairings</button>
-                <p class="admin-note">Opens the pairings tool with today's main players and subs already filled in. Anyone on the waiting list is left out, same as loading it there by hand.</p>
-            </div>
-
-            <div class="admin-block">
+            <details class="admin-details">
+                <summary>Add a player</summary>
                 <label for="adm-seed">Add a name yourself</label>
                 <div class="admin-row">
                     <input class="text-input" id="adm-seed" type="text" maxlength="30" placeholder="Name">
                     <button class="edit-btn" onclick="adminSeed()">Add to list</button>
                 </div>
-                <p class="admin-note">For anyone who cannot use the site. They go on the end, so nobody who has already tapped gets jumped.</p>
-            </div>
+                <p class="admin-note">Added to the end of the queue.</p>
+            </details>
 
-            <div class="admin-block">
-                <label>Remove people</label>
-                <p class="admin-note" style="margin-top:0;">While you are unlocked, every name has an <strong>&times;</strong> beside it. Tap it to take that person off. Everyone below moves up straight away, so subs and the waiting list re-shuffle themselves.</p>
-            </div>
-
-            <div class="admin-block">
-                <label>Cancel this session</label>
+            <details class="admin-details">
+                <summary>Cancel session</summary>
                 <button class="edit-btn danger" onclick="adminReset()">Cancel and clear the list</button>
-                <p class="admin-note">For a rained-off session. The list is archived first, then everyone comes off and sign-up closes. To run the same session again afterwards, set it up above and press Open sign-up.</p>
-            </div>
-
-            <p class="msg" id="admin-msg" role="status" aria-live="polite"></p>
+                <p class="admin-note">Archives the list and closes sign-up. Cannot be undone.</p>
+            </details>
         </div>
 
     </div>
@@ -717,6 +737,7 @@
         let pollTimer = null;
         let lastOpeningCheck = 0;
         let busy = false;        // a POST is in flight
+        let editingList = false;
 
         // ── Token ──
         // One random string per device, kept in localStorage. It is the only thing
@@ -969,7 +990,7 @@
             if (you && typeof you.position === 'number') {
                 youBox.style.display = 'block';
                 joinBox.style.display = 'none';
-                document.getElementById('you-number').textContent = 'You are number ' + you.position;
+                document.getElementById('you-number').textContent = 'Place ' + you.position;
                 document.getElementById('you-tier').textContent = tierName(you.tier);
                 document.getElementById('you-sub').textContent = tierExplainer(you, cap);
             } else {
@@ -989,10 +1010,7 @@
             // The join button only goes live when the server says the list is open
             const joinBtn = document.getElementById('join-btn');
             if (!busy) {
-                joinBtn.disabled = state !== 'open';
-                joinBtn.textContent = state === 'open' ? "I'm in"
-                    : state === 'pending' ? 'Sign-up not open yet'
-                    : 'Sign-up has closed';
+                restoreJoinLabel();
             }
 
             // A standing note when there is nothing to sign up for
@@ -1003,9 +1021,8 @@
             }
 
             // Capacity line
-            document.getElementById('capacity-note').textContent =
-                cap.main + ' main places on ' + Math.round(cap.main / 4) + ' courts, then ' + cap.subs +
-                ' subs and a waiting list of ' + cap.waitlist + '. Places are given out in tap order.';
+            document.getElementById('capacity-note').textContent = you ? '' :
+                'First come, first served. You move up when someone leaves.';
 
             // Lists
             renderList('list-main', mainList, 'main', cap);
@@ -1046,7 +1063,7 @@
                 return;
             }
             const cls = tier === 'subs' ? ' is-sub' : tier === 'waitlist' ? ' is-wait' : '';
-            const admin = isAdmin();
+            const admin = isAdmin() && editingList;
             el.innerHTML = rows.map(function (r) {
                 const isOrganiser = current && current.organiser && r.name === current.organiser;
                 // Removal is keyed on the name, never the position. Positions shift the
@@ -1078,6 +1095,15 @@
 
         function isAdmin() {
             try { return !!sessionStorage.getItem('pw'); } catch (err) { return false; }
+        }
+
+        function toggleListEditing() {
+            editingList = !editingList;
+            const button = document.getElementById('manage-list-btn');
+            button.textContent = editingList ? 'Finish removing' : 'Remove players';
+            button.setAttribute('aria-pressed', String(editingList));
+            render();
+            if (editingList) document.getElementById('list-main').scrollIntoView({ behavior:'smooth', block:'center' });
         }
 
         // Names go into an inline onclick, so quotes and backslashes have to be neutralised
@@ -1154,7 +1180,13 @@
         function restoreJoinLabel() {
             const joinBtn = document.getElementById('join-btn');
             const state = (current && current.state) || 'pending';
-            joinBtn.textContent = state === 'open' ? "I'm in"
+            const cap = Object.assign({ main:16, subs:2, waitlist:10 }, current && current.capacity);
+            const total = current ? ['main','subs','waitlist'].reduce(function (n, tier) {
+                return n + (Array.isArray(current[tier]) ? current[tier].length : 0);
+            }, 0) : 0;
+            const full = total >= cap.main + cap.subs + cap.waitlist;
+            joinBtn.disabled = busy || state !== 'open' || full || !!(current && current.transitioning);
+            joinBtn.textContent = state === 'open' ? (full ? 'List full' : total >= cap.main + cap.subs ? 'Join waiting list' : total >= cap.main ? 'Join as a sub' : 'Sign me up')
                 : state === 'pending' ? 'Sign-up not open yet'
                 : 'Sign-up has closed';
         }
@@ -1198,10 +1230,8 @@
                     }
                     // Shortened names already end in a full stop ("Real M."), so adding
                     // another gave "Real M..".
-                    const savedAs = res.name && res.name !== name
-                        ? ' You are on the list as ' + res.name + (/\.$/.test(res.name) ? '' : '.')
-                        : '';
-                    showMsg('join-msg', 'You are in. ' + placeSentence(res.position, res.tier) + savedAs, 'good');
+                    const savedName = res.name || name;
+                    showMsg('join-msg', 'Signed up as ' + savedName + (/\.$/.test(savedName) ? '' : '.'), 'good');
                 } else {
                     showMsg('join-msg', errorCopy(res && res.error, res && res.message), 'bad');
                 }
@@ -1269,7 +1299,7 @@
            first time it is actually used. A rejected password clears itself.
            ============================================================ */
         async function unlockAdmin() {
-            const pw = prompt('Enter the admin password to manage the sign-up list:');
+            const pw = document.getElementById('admin-password').value;
             if (!pw) return;
             // The mock has no /api/signup to talk to, so short-circuit the round trip and
             // let the local harness exercise the same unlock path.
@@ -1295,15 +1325,15 @@
                 // "try again" here was actively harmful: it invited the retry that keeps
                 // the lockout in place, and never mentioned the fifteen minute wait, so a
                 // correct password looked like a broken page.
-                if (res.status === 429) { alert(data.error || 'Too many incorrect passwords. Wait fifteen minutes and try again.'); return; }
-                if (res.status === 401) { alert(data.error || 'Incorrect password.'); return; }
-                if (!res.ok) { alert('Could not verify right now, please try again.'); return; }
+                if (res.status === 429) { showMsg('login-msg', data.error || 'Too many incorrect passwords. Wait fifteen minutes and try again.', 'bad'); return; }
+                if (res.status === 401) { showMsg('login-msg', data.error || 'Incorrect password.', 'bad'); return; }
+                if (!res.ok) { showMsg('login-msg', 'Could not sign in. Please try again.', 'bad'); return; }
                 // Unlocking is also how the organiser gets the session code back after a
                 // reload. It is in no public response, so this is the only source.
                 setShare(data.shareText);
             } catch (err) {
                 console.error('Verify failed:', err);
-                alert('Network error, could not verify the password.');
+                showMsg('login-msg', 'Could not connect. Please try again.', 'bad');
                 return;
             }
             rememberAdmin(pw);
@@ -1315,6 +1345,23 @@
             forgetAdmin();
             setShare(null);
             setAdminUI(false);
+        }
+
+        function toggleAdminLogin() {
+            const form = document.getElementById('admin-login');
+            form.hidden = !form.hidden;
+            document.getElementById('btn-unlock').setAttribute('aria-expanded', String(!form.hidden));
+            if (!form.hidden) document.getElementById('admin-password').focus();
+        }
+
+        async function submitAdminLogin() {
+            const button = document.getElementById('admin-login-submit');
+            if (button.disabled) return;
+            button.disabled = true;
+            button.textContent = 'Signing in…';
+            showMsg('login-msg', '', null);
+            try { await unlockAdmin(); }
+            finally { button.disabled = false; button.textContent = 'Sign in'; }
         }
 
         // The server builds the message, so the wording lives in one place and the page
@@ -1346,10 +1393,20 @@
         }
 
         function setAdminUI(on) {
+            if (on) {
+                document.getElementById('admin-login').hidden = true;
+                document.getElementById('admin-password').value = '';
+                document.getElementById('btn-unlock').setAttribute('aria-expanded', 'false');
+            }
             document.getElementById('admin-card').style.display = on ? 'block' : 'none';
             document.getElementById('btn-unlock').style.display = on ? 'none' : 'inline-block';
             document.getElementById('btn-lock').style.display = on ? 'inline-block' : 'none';
-            if (!on) showMsg('admin-msg', '', null);
+            if (!on) {
+                editingList = false;
+                document.getElementById('manage-list-btn').textContent = 'Remove players';
+                document.getElementById('manage-list-btn').setAttribute('aria-pressed', 'false');
+                showMsg('admin-msg', '', null);
+            }
             // The × beside each name only exists while unlocked, so the lists have to be
             // drawn again whenever admin mode is turned on or off.
             if (current) render();
@@ -1372,7 +1429,14 @@
                 const next = nextClubNight();
                 if (next) dateEl.value = isoLocal(next);
             }
+            if (!opensEl.value && current && current.opensAt) {
+                const opens = new Date(current.opensAt);
+                if (!isNaN(opens.getTime())) opensEl.value = isoLocal(opens) + 'T' + pad(opens.getHours()) + ':' + pad(opens.getMinutes());
+            }
             if (!opensEl.value && dateEl.value) opensEl.value = defaultOpensLocal(dateEl.value);
+            const organiserEl = document.getElementById('adm-organiser');
+            if (!organiserEl.value && current && current.organiser) organiserEl.value = current.organiser;
+            document.getElementById('session-settings').open = !(current && current.date);
             updatePlanSummary();
         }
 
@@ -1543,38 +1607,20 @@
 
             let res = await adminPost(body);
 
-            // The server refuses to wipe a session that is already live and running on the
-            // same date, because the date box is pre-filled with it and a typo would take
-            // everyone off. It edits the details instead and says so. That left no way to
-            // genuinely start the session again, so offer it here, explicitly.
+            // Saving current details keeps the list. Cancellation has its own control.
             if (res && res.edited) {
-                const wipe = confirm(
-                    'That session is already open with ' + ((res.counts && res.counts.total) || 0) +
-                    ' name(s) on it, so only the details were updated.\n\n' +
-                    'Do you want to cancel it and build it again from scratch? ' +
-                    'The current list is archived first, then everyone is taken off.'
-                );
-                if (wipe) {
-                    res = await adminPost(Object.assign({ force: true }, body));
-                    if (res) {
-                        setShare(res.shareText);
-                        showMsg('admin-msg', 'The old list was archived and the session rebuilt.'
-                            + (organiser ? ' ' + organiser + ' is place 1.' : ''), 'good');
-                        await refresh();
-                    }
-                    return;
-                }
                 setShare(res.shareText);
-                showMsg('admin-msg', res.message, 'info');
+                showMsg('admin-msg', 'Session updated. The player list has been kept.', 'good');
+                document.getElementById('session-settings').open = false;
                 await refresh();
                 return;
             }
 
             if (res) {
                 setShare(res.shareText);
-                showMsg('admin-msg', 'Sign-up is set.'
-                    + (organiser ? ' ' + organiser + ' is place 1.' : '')
-                    + (res.pin ? ' The code is ' + res.pin + '. Copy the message below into the group.' : ''), 'good');
+                showMsg('admin-msg', 'Session saved. Share the message in WhatsApp.', 'good');
+                document.getElementById('session-settings').open = false;
+                document.getElementById('share-block').open = true;
                 await refresh();
             }
         }
@@ -1611,7 +1657,7 @@
             const res = await adminPost({ action: 'reset' });
             if (res) {
                 setShare(null);
-                showMsg('admin-msg', 'The session was cancelled and the list cleared. It has been archived. Set a date above and press Open sign-up to run one again.', 'good');
+                showMsg('admin-msg', 'Session cancelled. The list has been archived.', 'good');
                 await refresh();
             }
         }
@@ -1850,6 +1896,8 @@
         function mockDelay(ms) { return new Promise(function (r) { setTimeout(r, ms); }); }
 
         // ── Initialise on load ──
+        const organiserSlot = document.getElementById('organiser-slot');
+        organiserSlot.append(document.querySelector('.admin-strip'), document.getElementById('admin-card'));
         // Via the guarded helper. A bare sessionStorage read throws where site data is
         // blocked, and being top-level that aborted everything after it: no refresh, no
         // polling, no countdown. The member was left on "Loading the sign-up list."
