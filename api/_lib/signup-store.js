@@ -62,6 +62,12 @@ if input.action == 'freeze' then
   return encoded
 end
 if input.action == 'edit' then
+  if input.changes.capacity then
+    local cap = cjson.decode(input.changes.capacity)
+    if redis.call('LLEN',queue) > cap.main + cap.subs + cap.waitlist then
+      return fail('capacity_too_small')
+    end
+  end
   writeMeta(input.changes)
   return reply({ok=true})
 end

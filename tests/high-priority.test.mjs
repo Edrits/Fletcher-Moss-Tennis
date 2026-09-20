@@ -183,10 +183,10 @@ test('pairings loads with denied storage and rejects duplicate generation before
   const html=await readFile(new URL('../pairings.html',import.meta.url),'utf8');
   const source=[...html.matchAll(/<script>([\s\S]*?)<\/script>/g)][0][1].replace(/        loadCurrentSession\(\);\n        getWeather\(\);\n        setInterval\(getWeather, 600000\);/,'');
   const nodes=new Map();const node=id=>{if(!nodes.has(id))nodes.set(id,{style:{},textContent:'',innerHTML:'',classList:{toggle(){},add(){},remove(){}},querySelectorAll(){return []}});return nodes.get(id)};
-  const saved=JSON.parse(await readFile(new URL('../pairings.json',import.meta.url)));let writes=0;
+  const saved=JSON.parse(await readFile(new URL('../pairings.json',import.meta.url)));let writes=0, lastWrite;
   const sandbox={console,URLSearchParams,location:{search:'',pathname:'/pairings.html'},history:{replaceState(){}},setTimeout,clearTimeout,setInterval(){},
     document:{getElementById:node,querySelectorAll:()=>[],querySelector:()=>null,addEventListener(){},body:node('body')},
-    fetch:async(_,o={})=>{if(o.method==='POST')writes++;return {ok:true,json:async()=>saved}},alert(){},prompt:()=>null};
+    fetch:async(_,o={})=>{if(o.method==='POST'){writes++;lastWrite=JSON.parse(o.body);}return {ok:true,json:async()=>saved}},alert(){},prompt:()=>null};
   Object.defineProperty(sandbox,'sessionStorage',{get(){throw new Error('Storage denied')}});
   const ctx=vm.createContext(sandbox);vm.runInContext(source,ctx);
   vm.runInContext('renderGameScreen = function() {};',ctx);
@@ -194,5 +194,27 @@ test('pairings loads with denied storage and rejects duplicate generation before
   await vm.runInContext("players=['Alex','B','C','D','Alex'].map(name=>({name,sub:false}));numCourts=1;numGames=1;generate()",ctx);
   assert.match(node('val-msg').textContent,/different name/);assert.equal(writes,0);
   vm.runInContext("rememberCredential('fake');",ctx);assert.equal(vm.runInContext('adminCredential',ctx),'fake');
+  await vm.runInContext("players=['A','B','C','D','E','F'].map(name=>({name,sub:false}));numCourts=1;numGames=4;generate()",ctx);
+  assert.equal(lastWrite.numCourts,1);
+  assert.equal(validatePairings(lastWrite),null);
+  assert.equal(lastWrite.generatedGames.length,4);
+  assert.ok(lastWrite.generatedGames.every(game=>game.courts.length===1 && game.sitters.length===2));
   vm.runInContext('forgetCredential()',ctx);assert.equal(vm.runInContext('adminCredential',ctx),'');
+});
+
+integration('capacity edits preserve queue order, reject overflow and invalidate old admissions', async () => {
+  const initial = await initialise();
+  for (let i=0;i<6;i++) assert.equal((await request(signup,admin({action:'seed',name:'Player '+String.fromCharCode(65+i)}))).data.ok,true);
+  const before = await signupStore({action:'read'});
+  const stale = admission(initial,{token:'late',name:'Late P.',pin:'1234'});
+  const updated = await request(signup,admin({action:'capacity',capacity:{main:3,subs:1,waitlist:2}}));
+  assert.equal(updated.status,200);
+  assert.deepEqual([updated.data.main.length,updated.data.subs.length,updated.data.waitlist.length],[3,1,2]);
+  assert.deepEqual((await signupStore({action:'read'})).entries,before.entries);
+  assert.equal((await signupStore(stale)).error,'stale_session');
+  const refused = await request(signup,admin({action:'capacity',capacity:{main:2,subs:0,waitlist:0}}));
+  assert.equal(refused.status,409);
+  assert.equal((await signupStore({action:'read'})).meta.capacity,JSON.stringify({main:3,subs:1,waitlist:2}));
+  assert.equal((await request(signup,admin({action:'capacity',capacity:{main:2.5,subs:0,waitlist:0}}))).status,400);
+  assert.equal((await request(signup,{action:'capacity',sessionId:'session-A',capacity:cap})).status,401);
 });

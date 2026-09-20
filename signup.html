@@ -634,6 +634,27 @@
             </div>
             <p class="admin-note">Pairings include main players and subs.</p>
 
+            <details class="admin-details" id="capacity-settings">
+                <summary>Session places</summary>
+                <form onsubmit="event.preventDefault(); saveCapacity()">
+                    <div class="admin-field">
+                        <label for="capacity-main">Main players</label>
+                        <input class="text-input" id="capacity-main" type="number" min="0" max="60" step="1" value="16" required>
+                    </div>
+                    <div class="admin-field">
+                        <label for="capacity-subs">Subs</label>
+                        <input class="text-input" id="capacity-subs" type="number" min="0" max="60" step="1" value="2" required>
+                    </div>
+                    <div class="admin-field">
+                        <label for="capacity-waitlist">Waiting list</label>
+                        <input class="text-input" id="capacity-waitlist" type="number" min="0" max="60" step="1" value="10" required>
+                    </div>
+                    <p class="admin-note">Reducing main places moves players into subs or the waiting list, in queue order. Nobody is removed.</p>
+                    <button class="edit-btn primary" id="capacity-save" type="submit" style="margin-top:12px;">Save places</button>
+                    <p class="msg" id="capacity-msg" role="status"></p>
+                </form>
+            </details>
+
             <details class="admin-details" id="session-settings">
                 <summary>Set up or edit a session</summary>
                 <div class="admin-row">
@@ -1065,8 +1086,9 @@
         function renderList(elId, rows, tier, cap) {
             const el = document.getElementById(elId);
             if (!rows.length) {
-                const empty = tier === 'main' ? 'Nobody has signed up yet.'
-                    : tier === 'subs' ? 'No subs yet. Places ' + (cap.main + 1) + ' and ' + (cap.main + cap.subs) + '.'
+                const empty = cap[tier] === 0 ? 'No ' + (tier === 'main' ? 'main' : tier === 'subs' ? 'sub' : 'waiting-list') + ' places for this session.'
+                    : tier === 'main' ? 'Nobody has signed up yet.'
+                    : tier === 'subs' ? 'No subs yet.'
                     : 'Nobody waiting. The list starts at place ' + (cap.main + cap.subs + 1) + '.';
                 el.innerHTML = '<p class="empty-note">' + empty + '</p>';
                 return;
@@ -1423,6 +1445,8 @@
 
         // Sensible defaults: tomorrow's session, opening at 7:00 PM tonight
         function prefillAdmin() {
+            const cap = Object.assign({ main:16, subs:2, waitlist:10 }, current && current.capacity);
+            ['main','subs','waitlist'].forEach(key => { document.getElementById('capacity-' + key).value = cap[key]; });
             const dateEl = document.getElementById('adm-date');
             const opensEl = document.getElementById('adm-opens');
             const labelEl = document.getElementById('adm-label');
@@ -1447,6 +1471,32 @@
             if (!organiserEl.value && current && current.organiser) organiserEl.value = current.organiser;
             document.getElementById('session-settings').open = !(current && current.date);
             updatePlanSummary();
+        }
+
+        async function saveCapacity() {
+            const capacity = {};
+            for (const key of ['main','subs','waitlist']) {
+                const raw = document.getElementById('capacity-' + key).value;
+                capacity[key] = Number(raw);
+                if (!raw || !Number.isInteger(capacity[key]) || capacity[key] < 0 || capacity[key] > 60) {
+                    showMsg('capacity-msg', 'Use whole numbers from 0 to 60.', 'bad'); return;
+                }
+            }
+            const button = document.getElementById('capacity-save');
+            if (button.disabled) return;
+            button.disabled = true;
+            button.textContent = 'Saving…';
+            showMsg('capacity-msg', '', null);
+            try {
+                const result = await adminPost({ action:'capacity', capacity });
+                if (result) {
+                    await refresh();
+                    showMsg('capacity-msg', 'Places updated. Everyone keeps their queue order.', 'good');
+                } else {
+                    showMsg('capacity-msg', document.getElementById('admin-msg').textContent || 'Places could not be saved.', 'bad');
+                    showMsg('admin-msg', '', null);
+                }
+            } finally { button.disabled = false; button.textContent = 'Save places'; }
         }
 
         // The club's fixed nights. Mirrors SCHEDULE in api/_lib/signup-core.js, which this
@@ -1792,6 +1842,7 @@
                 opensAt: new Date(mode ? now - 60000 : now + 25000).toISOString(),
                 // Mirrors the server: a session carries a code, and joining needs it.
                 pin: '4821',
+                capacity: { ...MOCK_CAPACITY },
                 entries: MOCK_NAMES.slice(0, count).map(function (n) { return { name: n, token: 'mock-' + n }; })
             };
         }
@@ -1803,7 +1854,7 @@
             if (mockStore.state === 'pending' && Date.now() >= Date.parse(mockStore.opensAt)) {
                 mockStore.state = 'open';
             }
-            const cap = MOCK_CAPACITY;
+            const cap = mockStore.capacity;
             const rows = mockStore.entries.map(function (e, i) {
                 return { position: i + 1, name: e.name, mine: e.token === token };
             });
@@ -1830,7 +1881,7 @@
         }
 
         function mockTier(position) {
-            const cap = MOCK_CAPACITY;
+            const cap = mockStore.capacity;
             if (position <= cap.main) return 'main';
             if (position <= cap.main + cap.subs) return 'subs';
             return 'waitlist';
@@ -1839,9 +1890,16 @@
         async function mockPost(body) {
             if (!mockStore) mockInit();
             await mockDelay(320);
-            const cap = MOCK_CAPACITY;
+            const cap = mockStore.capacity;
             const total = cap.main + cap.subs + cap.waitlist;
 
+            if (body.action === 'capacity') {
+                if (mockStore.entries.length > body.capacity.main + body.capacity.subs + body.capacity.waitlist) {
+                    return { ok:false, error:'There are more people on the list than places. Keep enough waiting-list places for everyone, or remove players first.' };
+                }
+                mockStore.capacity = { ...body.capacity };
+                return { ok:true };
+            }
             if (body.action === 'join') {
                 if (mockStore.state === 'pending' && Date.now() >= Date.parse(mockStore.opensAt)) mockStore.state = 'open';
                 if (mockStore.state !== 'open') return { ok: false, error: 'not_open' };

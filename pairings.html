@@ -452,10 +452,13 @@
                 <div class="options-row">
                     <div class="option-group">
                         <label>Courts</label>
-                        <div class="btn-group">
-                            <button class="btn-opt active" onclick="setCourts(3,this)">3 Courts</button>
-                            <button class="btn-opt" onclick="setCourts(4,this)">4 Courts</button>
+                        <div class="btn-group" role="group" aria-label="Number of courts" style="flex-wrap:wrap;">
+                            <button class="btn-opt" aria-pressed="false" onclick="setCourts(1,this)">1 Court</button>
+                            <button class="btn-opt" aria-pressed="false" onclick="setCourts(2,this)">2 Courts</button>
+                            <button class="btn-opt active" aria-pressed="true" onclick="setCourts(3,this)">3 Courts</button>
+                            <button class="btn-opt" aria-pressed="false" onclick="setCourts(4,this)">4 Courts</button>
                         </div>
+                        <p style="font-size:13px; margin-top:8px;">Four places per court. Extra players rotate through sitting out.</p>
                     </div>
                     <div class="option-group">
                         <label>Games</label>
@@ -476,7 +479,7 @@
                 <div style="display: flex; gap: 10px; flex-wrap: wrap;">
                     <button class="edit-btn primary" onclick="copyPageLink()">Copy link</button>
                     <button class="edit-btn" id="btn-unlock" onclick="unlockEditing()">Unlock to edit</button>
-                    <button class="edit-btn" id="btn-edit-players" onclick="backToSetup()">← Edit players</button>
+                    <button class="edit-btn" id="btn-edit-players" onclick="backToSetup()">Edit players or courts</button>
                     <button class="edit-btn danger" id="btn-reset" onclick="resetBoard()">Reset board</button>
                     <button class="edit-btn" id="btn-lock" onclick="lockEditing()">Done editing</button>
                 </div>
@@ -710,8 +713,10 @@
 
         function setCourts(n, btn) {
             numCourts = n;
-            btn.closest('.btn-group').querySelectorAll('.btn-opt').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
+            btn.closest('.btn-group').querySelectorAll('.btn-opt').forEach(b => {
+                b.classList.toggle('active', b === btn);
+                b.setAttribute('aria-pressed', String(b === btn));
+            });
         }
 
         function setGames(n, btn) {
@@ -1322,7 +1327,9 @@
             document.querySelectorAll('.options-row .btn-opt').forEach(btn => {
                 const groupLabel = btn.closest('.option-group').querySelector('label').textContent.toLowerCase();
                 if (groupLabel.includes('courts')) {
-                    btn.classList.toggle('active', btn.textContent.includes(numCourts + ' Court'));
+                    const selected = parseInt(btn.textContent) === numCourts;
+                    btn.classList.toggle('active', selected);
+                    btn.setAttribute('aria-pressed', String(selected));
                 } else if (groupLabel.includes('games')) {
                     btn.classList.toggle('active', parseInt(btn.textContent) === numGames);
                 }

@@ -206,6 +206,15 @@ export default async function handler(req, res) {
       return res.status(200).json({ valid: true, ...organiserExtras(meta) });
     }
 
+    if (action === 'capacity') {
+      const cap = normaliseCapacity(capacity);
+      if (!cap) return res.status(400).json({ error: 'Use whole numbers from 0 to 60 for each group.' });
+      const result = await signupStore({ action: 'edit', sessionId, changes: { capacity: JSON.stringify(cap) } });
+      if (result.error === 'capacity_too_small') return res.status(409).json({ error: 'There are more people on the list than places. Keep enough waiting-list places for everyone, or remove players first.' });
+      if (result.error) return storeFailure(res, result.error);
+      return res.status(200).json({ ok: true, ...(await readState(now, null)) });
+    }
+
     if (action === 'resume_transition') {
       const pending = await signupStore({ action: 'pending' });
       if (!pending.id) return res.status(200).json({ ok: true, ...(await readState(now, null)) });
@@ -228,7 +237,8 @@ export default async function handler(req, res) {
       // now). Opening Thursday's list on a Monday would otherwise label it Monday.
       const useLabel = label || labelForDate(useDate) || (slot && slot.label) || '';
       const useOpensAt = opensAt || defaultOpensAt(useDate).toISOString();
-      const cap = normaliseCapacity(capacity) || DEFAULT_CAPACITY;
+      const cap = capacity === undefined ? parseCapacity(previous) : normaliseCapacity(capacity);
+      if (!cap) return res.status(400).json({ error: 'Use whole numbers from 0 to 60 for each group.' });
       if (!/^\d{4}-\d{2}-\d{2}$/.test(useDate) || !Number.isFinite(Date.parse(useDate)) || !Number.isFinite(Date.parse(useOpensAt))) {
         return res.status(400).json({ error: 'Please enter a valid session date and opening time.' });
       }
@@ -433,14 +443,11 @@ function parseCapacity(meta) {
 }
 
 function normaliseCapacity(cap) {
-  if (!cap || typeof cap !== 'object') return null;
-  const n = (v, fallback) => {
-    const parsed = Number(v);
-    return Number.isInteger(parsed) && parsed >= 0 && parsed <= 60 ? parsed : fallback;
-  };
+  if (!cap || typeof cap !== 'object' || Array.isArray(cap)) return null;
+  if (['main', 'subs', 'waitlist'].some(key => !Number.isInteger(cap[key]) || cap[key] < 0 || cap[key] > 60)) return null;
   return {
-    main: n(cap.main, DEFAULT_CAPACITY.main),
-    subs: n(cap.subs, DEFAULT_CAPACITY.subs),
-    waitlist: n(cap.waitlist, DEFAULT_CAPACITY.waitlist)
+    main: cap.main,
+    subs: cap.subs,
+    waitlist: cap.waitlist
   };
 }
