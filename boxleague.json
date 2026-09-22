@@ -4,20 +4,90 @@
       "id": "league-1",
       "name": "League 1",
       "players": [
-        { "name": "Hannah", "played": 0, "won": 0, "points": 0 },
-        { "name": "Ayesa", "played": 0, "won": 0, "points": 0 },
-        { "name": "Rod", "played": 0, "won": 0, "points": 0 },
-        { "name": "Jesse", "played": 0, "won": 0, "points": 0 },
-        { "name": "Ted", "played": 0, "won": 0, "points": 0 },
-        { "name": "Ben", "played": 0, "won": 0, "points": 0 },
-        { "name": "Jamie Atiyah", "played": 0, "won": 0, "points": 0 },
-        { "name": "Shyam", "played": 0, "won": 0, "points": 0 },
-        { "name": "Adam", "played": 0, "won": 0, "points": 0 },
-        { "name": "Sofia", "played": 0, "won": 0, "points": 0 },
-        { "name": "Federica", "played": 0, "won": 0, "points": 0 },
-        { "name": "Art", "played": 0, "won": 0, "points": 0 },
-        { "name": "Edward", "played": 0, "won": 0, "points": 0 },
-        { "name": "Ather", "played": 0, "won": 0, "points": 0 }
+        {
+          "name": "Hannah",
+          "played": 0,
+          "won": 0,
+          "points": 0
+        },
+        {
+          "name": "Ayesa",
+          "played": 0,
+          "won": 0,
+          "points": 0
+        },
+        {
+          "name": "Rod",
+          "played": 0,
+          "won": 0,
+          "points": 0
+        },
+        {
+          "name": "Ted",
+          "played": 0,
+          "won": 0,
+          "points": 0
+        },
+        {
+          "name": "Ben",
+          "played": 0,
+          "won": 0,
+          "points": 0
+        },
+        {
+          "name": "Jamie Atiyah",
+          "played": 0,
+          "won": 0,
+          "points": 0
+        },
+        {
+          "name": "Shyam",
+          "played": 0,
+          "won": 0,
+          "points": 0
+        },
+        {
+          "name": "Adam",
+          "played": 0,
+          "won": 0,
+          "points": 0
+        },
+        {
+          "name": "Sofia",
+          "played": 0,
+          "won": 0,
+          "points": 0
+        },
+        {
+          "name": "Federica",
+          "played": 0,
+          "won": 0,
+          "points": 0
+        },
+        {
+          "name": "Art",
+          "played": 0,
+          "won": 0,
+          "points": 0
+        },
+        {
+          "name": "Edward",
+          "played": 0,
+          "won": 0,
+          "points": 0
+        },
+        {
+          "name": "Ather",
+          "played": 0,
+          "won": 0,
+          "points": 0
+        },
+        {
+          "name": "Will",
+          "played": 0,
+          "won": 0,
+          "points": 0
+        }
       ],
       "matches": []
     },
@@ -25,20 +95,90 @@
       "id": "league-2",
       "name": "League 2",
       "players": [
-        { "name": "Reagan Duff", "played": 0, "won": 0, "points": 0 },
-        { "name": "Louis 2", "played": 0, "won": 0, "points": 0 },
-        { "name": "Ryan", "played": 0, "won": 0, "points": 0 },
-        { "name": "Chris", "played": 0, "won": 0, "points": 0 },
-        { "name": "Alan Russell", "played": 0, "won": 0, "points": 0 },
-        { "name": "Quazim", "played": 0, "won": 0, "points": 0 },
-        { "name": "Sully", "played": 0, "won": 0, "points": 0 },
-        { "name": "Luke Bibby", "played": 0, "won": 0, "points": 0 },
-        { "name": "Alex", "played": 0, "won": 0, "points": 0 },
-        { "name": "Will", "played": 0, "won": 0, "points": 0 },
-        { "name": "Sam", "played": 0, "won": 0, "points": 0 },
-        { "name": "Josh", "played": 0, "won": 0, "points": 0 },
-        { "name": "Ting", "played": 0, "won": 0, "points": 0 },
-        { "name": "Emma B", "played": 0, "won": 0, "points": 0 }
+        {
+          "name": "Reagan Duff",
+          "played": 0,
+          "won": 0,
+          "points": 0
+        },
+        {
+          "name": "Louis 2",
+          "played": 0,
+          "won": 0,
+          "points": 0
+        },
+        {
+          "name": "Ryan",
+          "played": 0,
+          "won": 0,
+          "points": 0
+        },
+        {
+          "name": "Chris",
+          "played": 0,
+          "won": 0,
+          "points": 0
+        },
+        {
+          "name": "Alan Russell",
+          "played": 0,
+          "won": 0,
+          "points": 0
+        },
+        {
+          "name": "Quazim",
+          "played": 0,
+          "won": 0,
+          "points": 0
+        },
+        {
+          "name": "Sully",
+          "played": 0,
+          "won": 0,
+          "points": 0
+        },
+        {
+          "name": "Luke Bibby",
+          "played": 0,
+          "won": 0,
+          "points": 0
+        },
+        {
+          "name": "Alex",
+          "played": 0,
+          "won": 0,
+          "points": 0
+        },
+        {
+          "name": "Sam",
+          "played": 0,
+          "won": 0,
+          "points": 0
+        },
+        {
+          "name": "Josh",
+          "played": 0,
+          "won": 0,
+          "points": 0
+        },
+        {
+          "name": "Ting",
+          "played": 0,
+          "won": 0,
+          "points": 0
+        },
+        {
+          "name": "Emma B",
+          "played": 0,
+          "won": 0,
+          "points": 0
+        },
+        {
+          "name": "Jesse",
+          "played": 0,
+          "won": 0,
+          "points": 0
+        }
       ],
       "matches": []
     }
