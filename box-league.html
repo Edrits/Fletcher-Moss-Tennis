@@ -290,15 +290,18 @@
         .day-head h3 { font-size: var(--text-md); }
         .day-time { font-size: var(--text-xs); color: var(--text-muted); font-weight: 600; }
 
-        .booking-table { width: 100%; border-collapse: collapse; min-width: 460px; }
-        .booking-table th, .booking-table td { padding: 8px; text-align: center; border-bottom: 1px solid var(--border-subtle); }
-        .booking-table thead th { background: var(--green-100); color: var(--green-900); font-family: var(--font-body); font-size: var(--text-xs); text-transform: uppercase; letter-spacing: .04em; }
+        /* Four court blocks per day: 4 across on desktop, 2 x 2 on a phone,
+           so it always fits the screen without horizontal scrolling. */
+        .court-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
+        .court-block { display: flex; flex-direction: column; background: var(--paper-50); border-radius: var(--radius-md); padding: 12px 10px; text-align: center; box-shadow: var(--shadow-xs); }
+        .court-label { font-size: var(--text-xs); font-weight: 700; text-transform: uppercase; letter-spacing: .04em; color: var(--green-800); margin-bottom: 8px; }
+        .court-block .slot { flex: 1; }
 
         .slot { width: 100%; min-height: 40px; border-radius: var(--radius-sm); font-family: var(--font-body); font-size: var(--text-sm); font-weight: 600; }
         .slot-free { border: 1px dashed var(--green-500); background: var(--green-50); color: var(--green-700); cursor: pointer; padding: 9px 6px; transition: background var(--duration-base), border-color var(--duration-base); }
         .slot-free:hover { background: var(--green-100); border-color: var(--green-600); }
         .slot-booked { display: flex; align-items: center; justify-content: center; gap: 6px; background: var(--green-800); color: #fff; padding: 8px 6px; }
-        .slot-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .slot-name { min-width: 0; overflow-wrap: anywhere; }
         .slot-cancel { display: none; flex-shrink: 0; background: rgba(255,255,255,.18); color: #fff; border: none; width: 20px; height: 20px; border-radius: 5px; cursor: pointer; line-height: 1; font-size: 1em; }
         .slot-cancel:hover { background: var(--color-alert); }
         body.bk-admin-on .slot-cancel { display: inline-flex; align-items: center; justify-content: center; }
@@ -325,6 +328,7 @@
 
         @media (max-width: 768px) {
             .booking-body { padding: 24px 16px 18px; }
+            .court-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
             body { background-attachment: scroll; }
             .top-bar { padding: 10px 15px; }
             .top-bar-inner { flex-direction: row; justify-content: space-between; align-items: center; gap: 8px; text-align: left; }
@@ -966,26 +970,20 @@
             if (!bkState.schedule) { area.textContent = 'Court booking is not available right now.'; return; }
 
             area.innerHTML = bkState.schedule.days.map(day => {
-                const headCols = bkState.schedule.courts.map(c => `<th>Court ${c}</th>`).join('');
-                // One hour slot per day: a single row of court cells.
+                // One hour slot per day, shown as four court blocks.
                 const t = day.times[0];
-                const cells = bkState.schedule.courts.map(c => {
+                const blocks = bkState.schedule.courts.map(c => {
                     const key = `${day.id}|${c}|${t}`;
                     const b = bkState.bookings[key];
-                    if (b) {
-                        return `<td><div class="slot slot-booked" title="Booked by ${bkEscape(b.name)}"><span class="slot-name">${bkEscape(b.name)}</span><button class="slot-cancel" aria-label="Cancel booking" title="Cancel booking" onclick="bkCancel('${key}')">×</button></div></td>`;
-                    }
-                    return `<td><button class="slot slot-free" onclick="bkOpenModal('${key}')">Book</button></td>`;
+                    const inner = b
+                        ? `<div class="slot slot-booked" title="Booked by ${bkEscape(b.name)}"><span class="slot-name">${bkEscape(b.name)}</span><button class="slot-cancel" aria-label="Cancel booking" title="Cancel booking" onclick="bkCancel('${key}')">×</button></div>`
+                        : `<button class="slot slot-free" onclick="bkOpenModal('${key}')">Book</button>`;
+                    return `<div class="court-block"><div class="court-label">Court ${c}</div>${inner}</div>`;
                 }).join('');
                 return `
                     <div class="day-card">
                         <div class="day-head"><h3>${day.label}</h3><span class="day-time">${bkEscape(day.session || '')}</span></div>
-                        <div class="table-responsive">
-                            <table class="booking-table">
-                                <thead><tr>${headCols}</tr></thead>
-                                <tbody><tr>${cells}</tr></tbody>
-                            </table>
-                        </div>
+                        <div class="court-grid">${blocks}</div>
                     </div>`;
             }).join('');
         }
