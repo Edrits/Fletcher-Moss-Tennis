@@ -1,4 +1,4 @@
-// Court booking backend for the singles court-booking grid on box-league.html.
+// Court booking backend for the singles court-booking grid on singles-league.html.
 //
 // Follows the same "GitHub repo as the database" pattern as the other handlers:
 // this function reads and writes bookings.json in this repo via the GitHub
