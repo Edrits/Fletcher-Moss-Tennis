@@ -326,7 +326,63 @@
         .btn-ghost { background: var(--ink-300); }
         .btn-ghost:hover { background: var(--ink-500); }
 
+        /* League finishing touches: quiet surfaces and clear task hierarchy. */
+        [hidden] { display: none !important; }
+        :is(a, button, input, select):focus-visible { outline: 3px solid var(--green-600); outline-offset: 4px; }
+        #standings, #record-result { scroll-margin-top: 150px; }
+        .league-hero { display: grid; grid-template-columns: 1fr 210px; gap: 36px; align-items: center; margin-bottom: 36px; }
+        .league-hero .section-heading { text-align: left; margin: 0; }
+        .league-hero h2 { max-width: 480px; font-size: clamp(2rem, 4vw, 3rem); }
+        .league-intro { color: var(--text-muted); font-size: var(--text-sm); line-height: 1.75; margin: 14px 0 22px; max-width: 450px; }
+        .league-cup { width: 100%; height: 250px; object-fit: cover; border-radius: var(--radius-lg); box-shadow: var(--shadow-sm); }
+        .league-actions { display: flex; flex-wrap: wrap; gap: 18px; align-items: center; }
+        .league-actions a { text-decoration: none; font-size: var(--text-sm); }
+        .league-link { color: var(--green-800); font-weight: 600; padding: 12px 0; }
+        .league-link:hover { text-decoration: underline; }
+        .standings-heading { display: flex; align-items: center; justify-content: space-between; gap: 20px; margin: 38px 0 16px; }
+        .standings-heading h2, #result-heading { font-size: var(--text-lg); }
+        .standings-heading .points-note { text-align: right; margin: 0; font-size: var(--text-xs); line-height: 1.7; }
+        .btn-admin { background: transparent; color: var(--text-muted); padding: 8px 0; }
+        .btn-admin:hover { background: transparent; color: var(--green-800); box-shadow: none; transform: none; }
+        .box-container { box-shadow: var(--shadow-sm); }
+        th { background: var(--paper-50); }
+        td { font-variant-numeric: tabular-nums; }
+        td:nth-child(n+3), th:nth-child(n+3) { text-align: right; }
+        td:nth-child(2) { white-space: normal; overflow-wrap: anywhere; }
+        .standings-table { table-layout: fixed; }
+        .standings-table .position-column { width: 50px; }
+        .standings-table .score-column { width: 80px; }
+        .short-heading { display: none; }
+        tbody tr:last-child td { border-bottom: none; }
+        tbody tr:hover { background: var(--green-50); }
+        .leader-crown { display: inline-block; width: 18px; height: 18px; margin-left: 6px; vertical-align: -3px; color: var(--brown-600); }
+        .results-title { font-family: var(--font-body); font-size: var(--text-xs); color: var(--text-muted); }
+        #scoreForm { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+        #scoreForm .form-group { margin: 0; min-width: 0; }
+        #scoreForm .form-group:first-child { grid-column: 1 / -1; }
+        #scoreForm > .btn { grid-column: 1 / -1; justify-self: start; }
+        .slot-free { border-style: solid; border-color: var(--border-subtle); background: var(--paper-0); min-height: 44px; }
+        .slot-cancel { width: 44px; height: 44px; }
+        .btn-ghost { background: var(--paper-50); color: var(--text-body); }
+        .btn-ghost:hover { background: var(--green-100); }
+        .admin-box-grid { grid-template-columns: repeat(auto-fit, minmax(min(280px, 100%), 1fr)); }
         @media (max-width: 768px) {
+            .league-hero { grid-template-columns: 1fr 100px; gap: 16px; margin-bottom: 28px; }
+            .league-cup { height: 150px; align-self: start; }
+            .league-hero .section-heading { display: contents; }
+            .league-hero .kicker { grid-column: 1; margin: 0; }
+            .league-hero h2 { grid-column: 1; font-size: 1.8rem; }
+            .league-cup { grid-column: 2; grid-row: 1 / 4; }
+            .league-hero .league-intro { grid-column: 1; margin: 0; }
+            .league-actions { grid-column: 1 / -1; gap: 16px; }
+            .standings-heading { align-items: start; flex-direction: column; gap: 8px; }
+            .standings-heading .points-note { text-align: left; }
+            .box-container, .form-section { padding: 20px 14px; }
+            #scoreForm { grid-template-columns: 1fr; }
+            #scoreForm > .btn { justify-self: stretch; }
+            .booking-toggle { padding: 18px 16px; }
+            .booking-toggle .bk-title > svg { display: none; }
+            .day-head { align-items: start; flex-direction: column; gap: 2px; }
             .booking-body { padding: 24px 16px 18px; }
             .court-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
             body { background-attachment: scroll; }
@@ -339,9 +395,17 @@
             .top-title { min-width: 0; overflow: hidden; }
             .top-title h1 { font-size: 1.15em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
             .top-title p { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-            .main-container { padding: 40px 20px; margin: 60px 15px 80px 15px; }
+            .main-container { padding: 26px 16px; margin: 24px 12px 48px; }
             .section-heading h2 { font-size: var(--text-xl); }
             th, td { padding: 8px 6px; }
+            .standings-table .position-column { width: 30px; }
+            .standings-table .score-column { width: 36px; }
+            .standings-table .points-column { width: 40px; }
+            .standings-table th, .standings-table td { padding: 10px 4px; }
+            .standings-table td:nth-child(2) { line-height: 1.5; }
+            .standings-table .full-heading { display: none; }
+            .standings-table .short-heading { display: inline; }
+            .standings-table abbr { text-decoration: none; }
         }
     </style>
 </head>
@@ -385,10 +449,18 @@
         </nav>
     </header>
 
-    <div class="main-container">
-        <div class="section-heading">
-            <span class="kicker">Season standings</span>
+    <main class="main-container">
+        <div class="league-hero">
+          <div class="section-heading">
+            <span class="kicker">Club singles</span>
             <h2>FMST Singles League</h2>
+            <p class="league-intro">Book a court, follow your group and record your result.</p>
+            <nav class="league-actions" aria-label="League shortcuts">
+                <a class="btn" href="#record-result">Record a result</a>
+                <a class="league-link" href="#standings">View standings <span aria-hidden="true">↓</span></a>
+            </nav>
+          </div>
+          <img class="league-cup" src="league-cup-etched.jpg" width="720" height="900" alt="" fetchpriority="high">
         </div>
 
         <!-- Court booking: expandable panel above the league standings -->
@@ -397,14 +469,14 @@
                 <span class="bk-title">
                     <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18M8 2v4M16 2v4"/></svg>
                     <span>
-                        <strong>Court Booking</strong>
-                        <span class="bk-sub">Book a singles court for the hour after each session</span>
+                        <strong>Book a court</strong>
+                        <span class="bk-sub">One hour of singles after each club session</span>
                     </span>
                 </span>
                 <svg class="icon bk-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
             </button>
             <div class="booking-body" id="bookingBody" hidden>
-                <p class="booking-intro">Singles games only. Book a court for the hour after each session. Just add your name to book. Once a slot is taken it is locked unless an admin clears it.</p>
+                <p class="booking-intro">Choose a free court and add your name. Need to cancel? Ask an organiser.</p>
                 <p class="booking-week" id="bookingWeek">These bookings clear every Sunday morning.</p>
                 <div id="bookingArea"><div class="spinner"></div></div>
                 <div class="booking-admin">
@@ -418,7 +490,10 @@
             </div>
         </section>
 
-        <p class="points-note">Points: <strong>3</strong> for a win · <strong>1</strong> for playing · <strong>0</strong> for a no-show. Walkovers count as wins.</p>
+        <div class="standings-heading" id="standings">
+            <h2>Standings</h2>
+            <p class="points-note"><strong>3</strong> win · <strong>1</strong> played · <strong>0</strong> no-show<br><span>Walkovers count as wins.</span></p>
+        </div>
 
         <!-- Admin Toggle -->
         <div style="text-align: right; margin-bottom: 25px;">
@@ -453,13 +528,14 @@
         <div id="leagueBoxes">Loading league standings...</div>
 
         <!-- Submit Score Form -->
-        <div class="form-section">
-            <h3 style="margin-bottom: 15px;">Submit Match Result</h3>
+        <section class="form-section" id="record-result" aria-labelledby="result-heading">
+            <h2 id="result-heading">Record a result</h2>
+            <p class="league-intro">Choose your group, the players and who won.</p>
             <form id="scoreForm" onsubmit="submitScore(event)">
                 <div class="form-group">
-                    <label for="matchBoxId">Select League</label>
+                    <label for="matchBoxId">Your group</label>
                     <select id="matchBoxId" required>
-                        <option value="">Select League...</option>
+                        <option value="">Choose your group</option>
                     </select>
                 </div>
                 <div class="form-group">
@@ -475,23 +551,23 @@
                     </select>
                 </div>
                 <div class="form-group">
-                    <label for="matchType">Result Type</label>
+                    <label for="matchType">Result type</label>
                     <select id="matchType" onchange="updateResultTypeUI()">
                         <option value="played">Match played</option>
                         <option value="walkover">Walkover (opponent didn't show)</option>
                     </select>
                 </div>
                 <div class="form-group">
-                    <label for="matchWinner" id="matchWinnerLabel">Match Winner</label>
+                    <label for="matchWinner" id="matchWinnerLabel">Match winner</label>
                     <select id="matchWinner" required>
                         <option value="">Select Players First</option>
                     </select>
                 </div>
-                <button type="submit" class="btn">Submit Result</button>
+                <button type="submit" class="btn">Save result</button>
             </form>
-        </div>
+        </section>
 
-    </div>
+    </main>
 
     <footer>
         <div class="footer-inner">
@@ -567,7 +643,7 @@
             container.innerHTML = '';
 
             const boxSelect = document.getElementById('matchBoxId');
-            boxSelect.innerHTML = '<option value="">Select Group...</option>';
+            boxSelect.innerHTML = '<option value="">Choose your group</option>';
 
             if (!leagueData.boxes || leagueData.boxes.length === 0) {
                 container.innerHTML = '<p style="text-align: center; color: var(--text-muted);">No boxes configured.</p>';
@@ -583,10 +659,13 @@
                 const boxSection = document.createElement('div');
                 boxSection.className = 'box-container';
 
+                const leadingPoints = Math.max(0, ...box.players.map(p => Number(p.points) || 0));
+                const jointLead = box.players.filter(p => Number(p.points) === leadingPoints).length > 1;
+                const crown = `<svg class="leader-crown" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="${jointLead ? 'Joint league leader' : 'League leader'}"><title>${jointLead ? 'Joint league leader' : 'League leader'}</title><path d="m3 6 4 4 5-7 5 7 4-4-2 12H5L3 6ZM5 21h14"/></svg>`;
                 let playerRows = box.players.map((p, index) => `
                     <tr>
                         <td><strong>${index + 1}</strong></td>
-                        <td>${p.name}</td>
+                        <td>${bkEscape(p.name)}${leadingPoints > 0 && Number(p.points) === leadingPoints ? crown : ''}</td>
                         <td>${p.played || 0}</td>
                         <td>${p.won || 0}</td>
                         <td><strong>${p.points || 0}</strong></td>
@@ -608,14 +687,14 @@
                 boxSection.innerHTML = `
                     <h3 class="box-title">${box.name}</h3>
                     <div class="table-responsive">
-                        <table>
+                        <table class="standings-table">
                             <thead>
                                 <tr>
-                                    <th style="width: 50px;">Pos</th>
-                                    <th>Player</th>
-                                    <th style="width: 80px;">Played</th>
-                                    <th style="width: 80px;">Won</th>
-                                    <th style="width: 80px;">Points</th>
+                                    <th scope="col" class="position-column" aria-label="Position"><span class="full-heading">Pos</span><span class="short-heading" aria-hidden="true">#</span></th>
+                                    <th scope="col">Player</th>
+                                    <th scope="col" class="score-column" aria-label="Played"><span class="full-heading">Played</span><abbr class="short-heading" title="Played" aria-hidden="true">P</abbr></th>
+                                    <th scope="col" class="score-column" aria-label="Won"><span class="full-heading">Won</span><abbr class="short-heading" title="Won" aria-hidden="true">W</abbr></th>
+                                    <th scope="col" class="score-column points-column" aria-label="Points"><span class="full-heading">Points</span><abbr class="short-heading" title="Points" aria-hidden="true">Pts</abbr></th>
                                 </tr>
                             </thead>
                             <tbody>
