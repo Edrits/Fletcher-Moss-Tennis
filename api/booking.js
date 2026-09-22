@@ -13,7 +13,7 @@
 // Slots are singles games in the hour after each club session:
 //   Monday and Thursday  8:00 to 9:00 PM
 //   Saturday             1:00 to 2:00 PM
-// Each slot is 30 minutes on courts 1 to 4.
+// Each slot is one hour on courts 1 to 4 (one slot per day).
 //
 // Requires GIT_TOKEN (GitHub token with contents write access) and, for the
 // admin cancel/clear operations, ADMIN_PASSWORD. Both come from the Vercel
@@ -36,13 +36,13 @@ export default async function handler(req, res) {
 
   const githubUrl = `https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/contents/${DATA_FILE}`;
 
-  // Singles booking slots: the hour after each session, in 30 minute steps.
+  // Singles booking slots: one hour after each session, one slot per day.
   const COURTS = [1, 2, 3, 4];
   const SCHEDULE = {
     days: [
-      { id: 'mon', label: 'Monday', session: '8:00 to 9:00 PM', times: ['20:00', '20:30'] },
-      { id: 'thu', label: 'Thursday', session: '8:00 to 9:00 PM', times: ['20:00', '20:30'] },
-      { id: 'sat', label: 'Saturday', session: '1:00 to 2:00 PM', times: ['13:00', '13:30'] }
+      { id: 'mon', label: 'Monday', session: '8:00 to 9:00 PM', times: ['20:00'] },
+      { id: 'thu', label: 'Thursday', session: '8:00 to 9:00 PM', times: ['20:00'] },
+      { id: 'sat', label: 'Saturday', session: '1:00 to 2:00 PM', times: ['13:00'] }
     ],
     courts: COURTS
   };

@@ -293,7 +293,6 @@
         .booking-table { width: 100%; border-collapse: collapse; min-width: 460px; }
         .booking-table th, .booking-table td { padding: 8px; text-align: center; border-bottom: 1px solid var(--border-subtle); }
         .booking-table thead th { background: var(--green-100); color: var(--green-900); font-family: var(--font-body); font-size: var(--text-xs); text-transform: uppercase; letter-spacing: .04em; }
-        .booking-table .time-col { text-align: left; white-space: nowrap; font-weight: 700; color: var(--green-900); background: var(--paper-50); }
 
         .slot { width: 100%; min-height: 40px; border-radius: var(--radius-sm); font-family: var(--font-body); font-size: var(--text-sm); font-weight: 600; }
         .slot-free { border: 1px dashed var(--green-500); background: var(--green-50); color: var(--green-700); cursor: pointer; padding: 9px 6px; transition: background var(--duration-base), border-color var(--duration-base); }
@@ -401,7 +400,7 @@
                 <svg class="icon bk-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
             </button>
             <div class="booking-body" id="bookingBody" hidden>
-                <p class="booking-intro">Singles games only. Book a 30 minute court slot for the hour after each session. Just add your name to book. Once a slot is taken it is locked unless an admin clears it.</p>
+                <p class="booking-intro">Singles games only. Book a court for the hour after each session. Just add your name to book. Once a slot is taken it is locked unless an admin clears it.</p>
                 <p class="booking-week" id="bookingWeek">These bookings clear every Sunday morning.</p>
                 <div id="bookingArea"><div class="spinner"></div></div>
                 <div class="booking-admin">
@@ -909,17 +908,11 @@
             return String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
         }
 
-        function bkFormatTime(t) {
-            let [h, m] = t.split(':').map(Number);
-            const ap = h >= 12 ? 'PM' : 'AM';
-            let hh = h % 12; if (hh === 0) hh = 12;
-            return `${hh}:${String(m).padStart(2, '0')} ${ap}`;
-        }
-
         function bkKeyLabel(key) {
-            const [dayId, court, t] = key.split('|');
+            const [dayId, court] = key.split('|');
             const day = bkState.schedule ? bkState.schedule.days.find(d => d.id === dayId) : null;
-            return `${day ? day.label : dayId}, ${bkFormatTime(t)}, Court ${court}`;
+            const range = day && day.session ? `, ${day.session}` : '';
+            return `${day ? day.label : dayId}${range}, Court ${court}`;
         }
 
         function bkWeekLabel(weekKey) {
@@ -974,24 +967,23 @@
 
             area.innerHTML = bkState.schedule.days.map(day => {
                 const headCols = bkState.schedule.courts.map(c => `<th>Court ${c}</th>`).join('');
-                const rows = day.times.map(t => {
-                    const cells = bkState.schedule.courts.map(c => {
-                        const key = `${day.id}|${c}|${t}`;
-                        const b = bkState.bookings[key];
-                        if (b) {
-                            return `<td><div class="slot slot-booked" title="Booked by ${bkEscape(b.name)}"><span class="slot-name">${bkEscape(b.name)}</span><button class="slot-cancel" aria-label="Cancel booking" title="Cancel booking" onclick="bkCancel('${key}')">×</button></div></td>`;
-                        }
-                        return `<td><button class="slot slot-free" onclick="bkOpenModal('${key}')">Book</button></td>`;
-                    }).join('');
-                    return `<tr><th class="time-col">${bkFormatTime(t)}</th>${cells}</tr>`;
+                // One hour slot per day: a single row of court cells.
+                const t = day.times[0];
+                const cells = bkState.schedule.courts.map(c => {
+                    const key = `${day.id}|${c}|${t}`;
+                    const b = bkState.bookings[key];
+                    if (b) {
+                        return `<td><div class="slot slot-booked" title="Booked by ${bkEscape(b.name)}"><span class="slot-name">${bkEscape(b.name)}</span><button class="slot-cancel" aria-label="Cancel booking" title="Cancel booking" onclick="bkCancel('${key}')">×</button></div></td>`;
+                    }
+                    return `<td><button class="slot slot-free" onclick="bkOpenModal('${key}')">Book</button></td>`;
                 }).join('');
                 return `
                     <div class="day-card">
                         <div class="day-head"><h3>${day.label}</h3><span class="day-time">${bkEscape(day.session || '')}</span></div>
                         <div class="table-responsive">
                             <table class="booking-table">
-                                <thead><tr><th class="time-col">Time</th>${headCols}</tr></thead>
-                                <tbody>${rows}</tbody>
+                                <thead><tr>${headCols}</tr></thead>
+                                <tbody><tr>${cells}</tr></tbody>
                             </table>
                         </div>
                     </div>`;
