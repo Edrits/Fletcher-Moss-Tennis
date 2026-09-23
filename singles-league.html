@@ -455,6 +455,11 @@
             .standings-table .short-heading { display: inline; }
             .standings-table abbr { text-decoration: none; }
         }
+        /* Small phones (iPhone SE/mini, compact Androids): a smaller trophy keeps
+           the booking card nearer the first screen. Must follow the 768px block. */
+        @media (max-width: 380px) {
+            .main-container { --cup-h: 220px; }
+        }
     </style>
 </head>
 <body>
