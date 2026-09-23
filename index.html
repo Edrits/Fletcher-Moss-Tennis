@@ -706,7 +706,7 @@
             .top-bar-left { gap: 10px; min-width: 0; }
             .top-logo { width: 72px; height: 72px; }
             .top-title { min-width: 0; overflow: hidden; }
-            .top-title .brand-name { font-size: 1.1em; overflow: hidden; text-overflow: ellipsis; }
+            .top-title .brand-name { font-size: 1.1em; white-space: normal; overflow: visible; text-overflow: clip; line-height: 1.15; }
             .top-title .tagline { overflow: hidden; text-overflow: ellipsis; }
 
             /* Lift the centred copy slightly clear of the net in the photograph. */
@@ -1253,7 +1253,7 @@
         // HTML keeps the plain heading text for search engines.
         (function rippleTitle() {
             const h1 = document.querySelector('.top-title .brand-name');
-            if (!h1 || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+            if (!h1 || window.matchMedia('(prefers-reduced-motion: reduce)').matches || window.matchMedia('(max-width: 768px)').matches) return;
             const text = h1.textContent.trim();
             h1.setAttribute('aria-label', text);
             const wrap = document.createElement('span');
