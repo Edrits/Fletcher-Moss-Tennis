@@ -323,13 +323,13 @@
         :is(a, button, input, select):focus-visible { outline: 3px solid var(--green-600); outline-offset: 4px; }
         #standings, #record-result { scroll-margin-top: 150px; }
         /* Hero geometry, shared by the hero and the booking card that tucks under it.
-           The cutout trophy is 518 x 669; its wooden plinth starts ~77% of the way
+           The cutout trophy is 517 x 668; its wooden plinth starts ~77% of the way
            down and spans 24% to 74% of its width. The plinth drops below the hero
            (--cup-break) to stand on the grey, and the booking card stops short of it. */
         .main-container {
             --hero-pad-x: 40px; --hero-pad-y: 28px;
             --hero-text: 520px; --hero-gap: 36px;
-            --cup-h: 350px; --cup-w: calc(var(--cup-h) * 518 / 669);
+            --cup-h: 350px; --cup-w: calc(var(--cup-h) * 517 / 668);
             --cup-break: calc(var(--cup-h) * .23);
             --card-tuck: 40px;
             /* Bottom padding leaves room for the card to tuck in below the buttons. */
@@ -406,23 +406,23 @@
         .btn-ghost:hover { background: var(--green-100); }
         .admin-box-grid { grid-template-columns: repeat(auto-fit, minmax(min(280px, 100%), 1fr)); }
         @media (max-width: 768px) {
-            /* Phones: text on top, trophy large and centred beneath it. The trophy
-               stays inside the hero here so the booking card can still tuck up
-               over the hero's bottom edge without touching the plinth. */
-            .main-container { --hero-pad-x: 20px; --hero-pad-y: 24px; --cup-h: 270px; --card-tuck: 36px; }
+            /* Phones: text on top, trophy large and centred beneath it, its plinth
+               crossing the hero's bottom edge onto the grey as on desktop. The card
+               is full width here, so it sits below the plinth rather than tucking in. */
+            .main-container { --hero-pad-x: 20px; --hero-pad-y: 24px; --hero-pad-b: 0px; --cup-h: 270px; }
             .league-hero {
                 grid-template-columns: minmax(0, 1fr); row-gap: 14px;
-                margin: -26px -16px 0; padding-bottom: calc(var(--card-tuck) + 20px); min-height: 0;
+                margin: -26px -16px 0; min-height: 0;
                 background:
-                    radial-gradient(ellipse 230px 200px at 50% calc(100% - var(--card-tuck) - 20px - var(--cup-h) / 2), rgba(214, 228, 190, .065), transparent 72%),
+                    radial-gradient(ellipse 230px 200px at 50% calc(100% + var(--cup-break) - var(--cup-h) / 2), rgba(214, 228, 190, .065), transparent 72%),
                     linear-gradient(115deg, #19321a, #25371d);
             }
             .league-hero h2 { font-size: clamp(1.6rem, 7vw, 2rem); }
             .league-hero .league-intro { margin: 8px 0 16px; }
             .league-actions { gap: 8px 18px; }
-            .league-cup-slot { justify-self: center; width: var(--cup-w); height: var(--cup-h); }
-            .league-cup { bottom: 0; }
-            .booking-section { max-width: none; min-height: 0; }
+            /* The slot holds only the part of the trophy above the hero's edge. */
+            .league-cup-slot { justify-self: center; width: var(--cup-w); height: calc(var(--cup-h) - var(--cup-break)); }
+            .booking-section { max-width: none; min-height: 0; margin-top: calc(var(--cup-break) + 28px); }
             .standings-heading { align-items: start; flex-direction: column; gap: 8px; }
             .standings-heading .points-note { text-align: left; }
             .box-container, .form-section { padding: 20px 14px; }
@@ -510,8 +510,8 @@
           </div>
           <div class="league-cup-slot">
             <picture>
-              <source srcset="league-cup-cutout.webp" type="image/webp">
-              <img class="league-cup" src="league-cup-cutout.png" width="518" height="669" alt="" fetchpriority="high">
+              <source srcset="league-cup-plain.webp" type="image/webp">
+              <img class="league-cup" src="league-cup-plain.png" width="517" height="668" alt="" fetchpriority="high">
             </picture>
           </div>
         </div>
