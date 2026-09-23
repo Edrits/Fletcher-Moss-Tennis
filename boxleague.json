@@ -2,7 +2,7 @@
   "boxes": [
     {
       "id": "league-1",
-      "name": "League 1",
+      "name": "League",
       "players": [
         {
           "name": "Hannah",
@@ -87,14 +87,7 @@
           "played": 0,
           "won": 0,
           "points": 0
-        }
-      ],
-      "matches": []
-    },
-    {
-      "id": "league-2",
-      "name": "League 2",
-      "players": [
+        },
         {
           "name": "Reagan Duff",
           "played": 0,
