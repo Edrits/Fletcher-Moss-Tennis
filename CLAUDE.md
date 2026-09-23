@@ -30,7 +30,7 @@ The admin password comes from the `ADMIN_PASSWORD` environment variable, not a l
 
 ### League scoring (domain logic in `api/boxleague.js`)
 
-`recalculateBox()` is the single source of truth for standings, re-run server-side after every change. Points: **3** for a win (walkovers included), **1** for playing and losing, **0** for a no-show. Matches store `winner` and an optional `noShow` (there is no game-score field — scores were removed). Players self-report results including walkovers; only roster edits and match deletion require the admin password. Leagues hold any number of players (blank admin rows are dropped).
+`recalculateBox()` is the single source of truth for standings, re-run server-side after every change. Matches store `winner` and an optional `noShow` (there is no game-score field — scores were removed). Players self-report results including walkovers; only roster edits and match deletion require the admin password. Leagues hold any number of players (blank admin rows are dropped).
 
 ## Session sign-up (`signup.html`, `api/signup.js`)
 
@@ -57,7 +57,7 @@ When changing the shape of data used by a page (e.g. adding a field to a box-lea
 
 The `design-system/` directory is the **Fletcher Moss Design System**, a self-contained brand kit and reference export. It is a *reference*, **not** wired into the live site: the production pages do not `<link>` its `styles.css` or import its `.jsx` components, and there is no build step that consumes them. Apply the system by hand-translating its tokens and rules into each page's inline `<style>`. Treat the `.jsx`/`ui_kits` files as design specimens, not shippable code.
 
-Token source of truth is `design-system/tokens/*.css` (also flattened in `design-system/_ds_manifest.json`). Core values already reflected in the pages: park green `--green-800` `#2d5016` (brand/header) and `--green-600` `#4a7c2c` (primary action); `Lora` for all headings, `Plus Jakarta Sans` for body/UI; warm ink/paper neutrals rather than pure black/white/grey.
+Token source of truth is `design-system/tokens/*.css` (also flattened in `design-system/_ds_manifest.json`).
 
 Key principles of the "premium refresh" when restyling (full rationale in [design-system/readme.md](design-system/readme.md)):
 
@@ -80,7 +80,7 @@ Verify changes by running a static file server from the repo root and checking b
 python3 -m http.server 8000
 ```
 
-(`.claude/launch.json` already defines this as the `static-site` preview server on port 8000.) Note that `api/*.js` functions do **not** run under a plain static server — they need `GIT_TOKEN` and only work deployed on Vercel. To exercise data-backed pages locally, mock `fetch('/api/...')` in the browser console against the root JSON file. Vercel deploys `api/*.js` automatically as serverless functions on push; there's no separate deploy command.
+Note that `api/*.js` functions do **not** run under a plain static server — they need `GIT_TOKEN` and only work deployed on Vercel. To exercise data-backed pages locally, mock `fetch('/api/...')` in the browser console against the root JSON file. Vercel deploys `api/*.js` automatically as serverless functions on push; there's no separate deploy command.
 
 ## SEO/sitemap
 
