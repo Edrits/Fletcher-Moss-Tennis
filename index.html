@@ -286,6 +286,24 @@
             background-size: cover; background-position: center;
         }
         .hero-scrim { position: absolute; inset: 0; background: var(--gradient-hero-scrim); }
+
+        /* A few autumn leaves drift down once on load, then are removed. Transform and
+           opacity only, below the hero text, and never shown with reduced motion. */
+        .hero-leaves { position: absolute; inset: 0; z-index: 5; pointer-events: none; overflow: hidden; }
+        .leaf { position: absolute; top: -40px; will-change: transform, opacity; animation: leaf-fall var(--dur) cubic-bezier(.35,.1,.6,1) var(--delay) both; }
+        .leaf-sway { animation: leaf-sway var(--sway-dur) ease-in-out var(--delay) infinite alternate both; }
+        .leaf svg { display: block; width: var(--size); height: auto; filter: drop-shadow(0 2px 3px rgba(20,30,10,.25)); }
+        @keyframes leaf-fall {
+            0%   { transform: translateY(0); opacity: 0; }
+            12%  { opacity: var(--alpha); }
+            80%  { opacity: var(--alpha); }
+            100% { transform: translateY(var(--fall)); opacity: 0; }
+        }
+        @keyframes leaf-sway {
+            from { transform: translateX(calc(var(--drift) * -1)) rotate(var(--r0)); }
+            to   { transform: translateX(var(--drift)) rotate(var(--r1)); }
+        }
+        @media (prefers-reduced-motion: reduce) { .hero-leaves { display: none; } }
         .hero-content {
             position: absolute; inset: 0; display: flex; flex-direction: column;
             align-items: center; justify-content: center; text-align: center; padding: 20px; gap: 22px; z-index: 10;
@@ -797,6 +815,7 @@
     <div class="hero">
         <div class="hero-bg"></div>
         <div class="hero-scrim"></div>
+        <div class="hero-leaves" id="heroLeaves" aria-hidden="true"></div>
         <div class="hero-content">
             <div class="weather-pill" id="heroPill">
                 <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="M20 12h2"/><path d="m19.07 4.93-1.41 1.41"/><path d="M15.947 12.65a4 4 0 0 0-5.925-4.128"/><path d="M13 22H7a5 5 0 1 1 4.9-6H13a3 3 0 0 1 0 6Z"/></svg>
@@ -1404,6 +1423,36 @@
         const animatedElements = document.querySelectorAll('.fade-in, .slide-in-left, .slide-in-right');
         animatedElements.forEach(el => observer.observe(el));
 
+    
+        // ── Autumn leaves on load ──
+        (function dropLeaves() {
+            const layer = document.getElementById('heroLeaves');
+            if (!layer || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+            const tones = ['#c98a2c', '#a8552b', '#8b6f47', '#d9a441', '#7a3f1d'];
+            const shape = 'M12 1C7 5 4 9 4 13.5 4 18 7.6 21 12 23c4.4-2 8-5 8-9.5C20 9 17 5 12 1Z';
+            const vein = 'M12 3v19M12 9l-3.5-2.5M12 9l3.5-2.5M12 14l-4.5-3M12 14l4.5-3';
+            const rand = (a, b) => a + Math.random() * (b - a);
+            const fall = layer.offsetHeight + 80;
+            const count = window.innerWidth < 600 ? 7 : 11;
+            let longest = 0;
+            for (let i = 0; i < count; i++) {
+                const leaf = document.createElement('div');
+                leaf.className = 'leaf';
+                const dur = rand(9, 13), delay = rand(0, 3);
+                longest = Math.max(longest, dur + delay);
+                const tone = tones[i % tones.length];
+                leaf.style.cssText =
+                    `left:${rand(2, 96)}%;--dur:${dur}s;--delay:${delay}s;--fall:${fall}px;` +
+                    `--alpha:${rand(.55, .85).toFixed(2)};--size:${rand(13, 24).toFixed(0)}px;`;
+                leaf.innerHTML =
+                    `<div class="leaf-sway" style="--sway-dur:${rand(1.8, 3).toFixed(2)}s;--drift:${rand(14, 34).toFixed(0)}px;` +
+                    `--r0:${rand(-40, 0).toFixed(0)}deg;--r1:${rand(20, 70).toFixed(0)}deg">` +
+                    `<svg viewBox="0 0 24 24"><path d="${shape}" fill="${tone}"/>` +
+                    `<path d="${vein}" stroke="rgba(60,30,10,.35)" stroke-width=".8" fill="none" stroke-linecap="round"/></svg></div>`;
+                layer.appendChild(leaf);
+            }
+            setTimeout(() => layer.replaceChildren(), (longest + 0.5) * 1000);
+        })();
     </script>
 </body>
 </html>
