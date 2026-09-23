@@ -10,7 +10,6 @@ const defaultData = {
     .map((name, i, arr) => ({ name, sub: i >= arr.length - 2 })),
   numCourts: 3,
   numGames: 6,
-  seed: null,
   generatedGames: [],
   activeGame: 0,
   updated: null
@@ -22,7 +21,7 @@ export default repoHandler(async (req, res) => {
     return res.status(200).json(data || defaultData);
   }
 
-  const { action, password, players, numCourts, numGames, seed, generatedGames, activeGame } = req.body || {};
+  const { action, password, players, numCourts, numGames, generatedGames, activeGame } = req.body || {};
   const denied = await checkAdminPassword(req, password);
   if (denied) return res.status(denied.status).json({ error: denied.error });
 
@@ -39,7 +38,6 @@ export default repoHandler(async (req, res) => {
     players: players.map(p => ({ ...p, name: p.name.trim() })),
     numCourts: numCourts || 3,
     numGames: numGames || 6,
-    seed: seed ?? null,
     generatedGames: generatedGames.map(game => ({
       ...game,
       sitters: game.sitters.map(name => name.trim()),

@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FMST Singles League | Fletcher Moss Social Tennis Club</title>
+    <meta name="description" content="League standings, results and singles court booking for the FMST Singles League at Fletcher Moss Social Tennis Club, Didsbury.">
+    <link rel="canonical" href="https://www.fletchermoss-socialtennisclub.co.uk/singles-league.html">
     <link rel="icon" href="favicon.ico" sizes="any">
     <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
@@ -237,15 +239,6 @@
         .footer-col h4 { font-size: var(--text-xs); opacity: 0.7; margin-bottom: 10px; text-transform: uppercase; letter-spacing: var(--tracking-wider); color: var(--paper-100); font-family: var(--font-body); }
         .footer-col p { opacity: 0.9; font-size: var(--text-sm); line-height: 1.8; }
 
-        /* ── Floating controls ── */
-        .scroll-top {
-            position: fixed; bottom: 30px; right: 30px; background: var(--green-800); color: #fff;
-            border: none; width: 46px; height: 46px; border-radius: 50%; font-size: 1.3em; cursor: pointer;
-            box-shadow: var(--shadow-md); opacity: 0; visibility: hidden;
-            transition: opacity 0.3s, visibility 0.3s, transform 0.2s; z-index: 999;
-        }
-        .scroll-top.visible { opacity: 1; visibility: visible; }
-        .scroll-top:hover { transform: translateY(-3px); background: var(--green-700); }
 
         /* ── Spinner ── */
         .spinner {
@@ -535,7 +528,7 @@
                 <div class="booking-admin">
                     <button type="button" class="bk-link-btn" onclick="bkToggleAdmin()">Admin controls</button>
                     <div class="booking-admin-bar" id="bookingAdminBar" hidden>
-                        <input type="password" id="bookingAdminPass" placeholder="Admin password" autocomplete="off">
+                        <input type="password" id="bookingAdminPass" aria-label="Admin password" placeholder="Admin password" autocomplete="off">
                         <button type="button" class="btn btn-sm" style="background: var(--color-alert);" onclick="bkClearAll()">Clear all bookings</button>
                         <span class="bk-admin-hint">Cancel buttons now show on booked slots.</span>
                     </div>
@@ -557,7 +550,7 @@
             <h3 style="color: #8b6f47; margin-bottom: 15px;">Admin Player Management</h3>
 
             <div class="form-group">
-                <input type="password" id="adminPass" placeholder="Enter admin password" style="width: 100%; padding: 12px; border: 1px solid var(--border-strong); border-radius: var(--radius-sm);">
+                <input type="password" id="adminPass" aria-label="Admin password" placeholder="Enter admin password" style="width: 100%; padding: 12px; border: 1px solid var(--border-strong); border-radius: var(--radius-sm);">
             </div>
 
             <!-- Dynamic Player Input Containers -->
@@ -636,7 +629,7 @@
                 </div>
                 <div class="footer-col">
                     <h4>Sessions</h4>
-                    <p>Monday 6:00 - 8:00 PM<br>Thursday 6:00 - 8:00 PM<br>Saturday 11:00 AM - 2:00 PM</p>
+                    <p>Monday 6:00 to 8:00 PM<br>Thursday 6:00 to 8:00 PM<br>Saturday 11:00 AM to 2:00 PM</p>
                 </div>
             </div>
             <p style="margin-top: 25px; font-size: 0.9em; opacity: 0.5;">Hope to see you on the court soon.</p>
@@ -660,7 +653,6 @@
     </div>
 
     <!-- Scroll to top button -->
-    <button class="scroll-top" id="scrollTop" onclick="window.scrollTo({top:0,behavior:'smooth'})" aria-label="Back to top">↑</button>
 
     <script>
         const API_URL = '/api/boxleague';
@@ -826,6 +818,11 @@
             const isWalkover = document.getElementById('matchType').value === 'walkover';
             const noShow = isWalkover ? (winner === p1 ? p2 : p1) : null;
 
+            // Each save is a commit and takes a few seconds. Without this a second tap
+            // records the same match twice.
+            const submitBtn = e.submitter || document.querySelector('#scoreForm button[type="submit"]');
+            if (submitBtn.disabled) return;
+            submitBtn.disabled = true;
             try {
                 const response = await fetch(API_URL, {
                     method: 'POST',
@@ -851,6 +848,8 @@
             } catch (err) {
                 console.error(err);
                 alert("Connection error. Try again.");
+            } finally {
+                submitBtn.disabled = false;
             }
         }
 
@@ -932,8 +931,8 @@
             const safeName = bkEscape(name);
             return `
                 <div class="form-group" style="margin-bottom: 8px; display: flex; gap: 6px; align-items: center;">
-                    <input type="text" class="admin-player-input" data-box-id="${boxId}" value="${safeName}" placeholder="Player name" style="padding: 6px; flex: 1; border: 1px solid var(--border-strong); border-radius: 6px;">
-                    <button type="button" onclick="this.parentElement.remove()" title="Remove player" style="background: var(--color-alert); color: white; border: none; width: 24px; height: 24px; border-radius: 4px; cursor: pointer; flex-shrink: 0; line-height: 1;">×</button>
+                    <input type="text" class="admin-player-input" data-box-id="${boxId}" data-was="${safeName}" value="${safeName}" aria-label="Player name" placeholder="Player name" style="padding: 6px; flex: 1; border: 1px solid var(--border-strong); border-radius: 6px;">
+                    <button type="button" onclick="this.parentElement.remove()" title="Remove player" aria-label="Remove player" style="background: var(--color-alert); color: white; border: none; width: 24px; height: 24px; border-radius: 4px; cursor: pointer; flex-shrink: 0; line-height: 1;">×</button>
                 </div>
             `;
         }
@@ -970,8 +969,11 @@
                     await loadLeague();
                     const panel = document.getElementById('adminPanel');
                     if (panel.classList.contains('active')) {
+                        // Re-render the admin lists, keeping the password so several
+                        // results can be undone in a row.
                         panel.classList.remove('active');
                         toggleAdmin();
+                        document.getElementById('adminPass').value = password;
                     }
                 } else {
                     const result = await response.json();
@@ -992,16 +994,21 @@
                 return;
             }
 
+            // Each row carries the name it was loaded with, so a renamed player keeps
+            // their results. A removed player's results go with them, so say so first.
             const updatedBoxes = [];
+            let lostResults = 0;
             leagueData.boxes.forEach(box => {
                 const inputs = document.querySelectorAll(`.admin-player-input[data-box-id="${box.id}"]`);
-                const players = Array.from(inputs).map(input => input.value.trim());
-
-                updatedBoxes.push({
-                    id: box.id,
-                    players: players
-                });
+                const players = Array.from(inputs).map(input => ({ name: input.value.trim(), was: input.dataset.was || '' }));
+                const kept = new Set(players.filter(p => p.name).map(p => p.was).filter(Boolean));
+                lostResults += (box.matches || []).filter(m => !kept.has(m.player1) || !kept.has(m.player2)).length;
+                updatedBoxes.push({ id: box.id, players });
             });
+            if (!clearMatches && lostResults &&
+                !confirm(`${lostResults} recorded ${lostResults === 1 ? 'result involves' : 'results involve'} a player you removed and will be deleted. Continue?`)) {
+                return;
+            }
 
             try {
                 const response = await fetch(API_URL, {
@@ -1132,6 +1139,9 @@
             if (!name) { alert('Please enter your name to book.'); return; }
             if (!bkPendingKey) return;
             const key = bkPendingKey;
+            const bookBtn = e.submitter || document.querySelector('#bkModal button[type="submit"]');
+            if (bookBtn.disabled) return;
+            bookBtn.disabled = true;
             try {
                 const res = await fetch(BOOKING_API, {
                     method: 'POST',
@@ -1152,6 +1162,8 @@
             } catch (err) {
                 console.error(err);
                 alert('Connection error. Please try again.');
+            } finally {
+                bookBtn.disabled = false;
             }
         }
 

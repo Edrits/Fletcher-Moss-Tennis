@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Court Pairings | Fletcher Moss Social Tennis Club</title>
+    <meta name="description" content="Tonight's court pairings for Fletcher Moss Social Tennis Club in Didsbury: who plays with whom on each court, game by game.">
     <link rel="icon" href="favicon.ico" sizes="any">
     <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
@@ -536,7 +537,9 @@
 
     <script>
         // ── State ──
-        let numCourts = 3, numGames = 6, activeGame = 0, currentSeed = null;
+        let numCourts = 3, numGames = 6, activeGame = 0;
+        let saving = false;      // a save is in flight: hold further edits so rollbacks can't cross
+        let setupSnapshot = null; // the saved roster and courts, while the setup screen edits them
         let editMode = false;   // false = view-only; true = unlocked with admin password
         let boardLoaded = false;
         let adminCredential = '';
@@ -568,17 +571,6 @@
 
         let generatedGames = [];
         const COLORS = ["#2d5016","#3f6f92","#a83c2d","#8b6f47"];
-        let randFn = Math.random;
-
-        // Seeded Mulberry32 Generator for completely identical groupings across shared links
-        function mulberry32(a) {
-            return function() {
-                let t = a += 0x6D2B79F5;
-                t = Math.imul(t ^ (t >>> 15), t | 1);
-                t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
-                return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
-            }
-        }
 
         // ── Paste handler with advanced attached number filtering ──
         function applyPaste() {
@@ -726,6 +718,12 @@
         }
 
         function backToSetup() {
+            // The setup list edits players and numCourts in place. Remember the saved values
+            // so leaving without generating can put them back; otherwise the live board is
+            // shown against a roster it doesn't match, and every later save is rejected.
+            if (generatedGames.length && !setupSnapshot) {
+                setupSnapshot = JSON.stringify({ players, numCourts, numGames });
+            }
             document.getElementById('setup-screen').style.display = 'block';
             document.getElementById('game-screen').style.display = 'none';
             renderPlayerInputs();
@@ -742,6 +740,7 @@
                 if (!pw) return false;
             }
             try {
+                saving = true;
                 const res = await fetch('/api/pairings', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -765,6 +764,8 @@
                 console.error('Save failed:', err);
                 alert('Network error, changes were not saved.');
                 return false;
+            } finally {
+                saving = false;
             }
         }
 
@@ -786,9 +787,6 @@
                 msg.style.display = 'block'; return;
             }
             msg.style.display = 'none';
-
-            currentSeed = Math.floor(Math.random() * 1000000);
-            randFn = mulberry32(currentSeed);
 
             // Order: non-subs in list order, then subs in list order
             const ordered = [
@@ -817,9 +815,10 @@
 
                 // Update tracking
                 courts.forEach(([t1,t2]) => {
-                    usedPartners.add(pairKey(t1));
-                    usedPartners.add(pairKey(t2));
+                    if (realPair(t1)) usedPartners.add(pairKey(t1));
+                    if (realPair(t2)) usedPartners.add(pairKey(t2));
                     t1.forEach(a => t2.forEach(b => {
+                        if (isBall(a) || isBall(b)) return;
                         const k = pairKey([a,b]);
                         usedOpponents[k] = (usedOpponents[k]||0)+1;
                     }));
@@ -833,7 +832,7 @@
             btn.disabled = true;
             btn.textContent = 'Saving…';
 
-            const ok = await saveSession({ players, numCourts, numGames, seed: currentSeed, generatedGames: newGames, activeGame: 0 });
+            const ok = await saveSession({ players, numCourts, numGames, generatedGames: newGames, activeGame: 0 });
 
             btn.disabled = false;
             btn.textContent = 'Generate Pairings →';
@@ -842,6 +841,7 @@
 
             generatedGames = newGames;
             activeGame = 0;
+            setupSnapshot = null;
             document.getElementById('setup-screen').style.display = 'none';
             document.getElementById('game-screen').style.display = 'block';
             document.getElementById('gs-title').textContent = `${named.length} Players · ${numCourts} Courts`;
@@ -850,7 +850,7 @@
 
         // Perfect mathematically shifting sit out queue (Bottom Upwards)
         function buildSitQueue(ordered, sitPerGame, numGames) {
-            if (sitPerGame <= 0) return Array(numGames).fill([]);
+            if (sitPerGame <= 0) return Array.from({ length: numGames }, () => []);
             const n = ordered.length;
             const result = [];
             
@@ -867,16 +867,34 @@
 
         function pairKey(arr) { return [...arr].sort().join('|'); }
 
+        // A team with an empty seat isn't a partnership, and an empty seat isn't an opponent
+        function realPair(team) { return team.every(p => !isBall(p)); }
+
         function bestShuffle(active, numCourts, usedPartners, usedOpponents) {
+            // Empty seats are placed, not shuffled in with the players. Shuffled, they bunch
+            // up at random and can leave one player alone on a court while another court is
+            // full. Instead they fill from the last court backwards, one per court per round,
+            // and alternate teams within a court, so no court has more empties than it must.
+            const real = active.filter(p => !isBall(p));
+            const seats = numCourts * 4;
+            const seatOrder = [1, 3, 0, 2];   // team 1 second seat, team 2 second, then the firsts
+            const empty = new Set();
+            for (let k = 0; k < seats - real.length; k++) {
+                const court = numCourts - 1 - (k % numCourts);
+                empty.add(court * 4 + seatOrder[Math.floor(k / numCourts)]);
+            }
+
             let best = null, bestScore = Infinity;
             for (let attempt = 0; attempt < 10000; attempt++) {
-                const s = shuffle([...active]);
-                const courts = Array.from({length:numCourts}, (_,c) => [s.slice(c*4,c*4+2), s.slice(c*4+2,c*4+4)]);
+                const s = shuffle([...real]);
+                let next = 0;
+                const flat = Array.from({ length: seats }, (_, i) => empty.has(i) ? '' : s[next++]);
+                const courts = Array.from({length:numCourts}, (_,c) => [flat.slice(c*4,c*4+2), flat.slice(c*4+2,c*4+4)]);
                 let pS = 0, oS = 0;
                 courts.forEach(([t1,t2]) => {
-                    if (usedPartners.has(pairKey(t1))) pS++;
-                    if (usedPartners.has(pairKey(t2))) pS++;
-                    t1.forEach(a => t2.forEach(b => { oS += usedOpponents[pairKey([a,b])]||0; }));
+                    if (realPair(t1) && usedPartners.has(pairKey(t1))) pS++;
+                    if (realPair(t2) && usedPartners.has(pairKey(t2))) pS++;
+                    t1.forEach(a => t2.forEach(b => { if (!isBall(a) && !isBall(b)) oS += usedOpponents[pairKey([a,b])]||0; }));
                 });
                 const score = pS*200 + oS;
                 if (score < bestScore) { bestScore = score; best = courts; if (!score) break; }
@@ -886,7 +904,7 @@
 
         function shuffle(arr) {
             for (let i = arr.length-1; i>0; i--) {
-                const j = Math.floor(randFn()*(i+1));
+                const j = Math.floor(Math.random()*(i+1));
                 [arr[i],arr[j]] = [arr[j],arr[i]];
             }
             return arr;
@@ -894,7 +912,7 @@
 
         // Swap players instantly on-the-fly without regenerating the underlying schedule layout, then persist so everyone sees the swap
         async function renamePlayerOnFly(oldName) {
-            if (!editMode) return;
+            if (!editMode || saving) return;
             const newName = prompt(`Swap "${oldName}" across all rounds with:`, oldName);
             if (!newName || newName.trim() === "" || newName.trim() === oldName) return;
             const cleanNewName = newName.trim();
@@ -928,7 +946,7 @@
             // 3. Re-render display immediately, then persist — roll back locally if the save fails
             renderGameScreen();
 
-            const ok = await saveSession({ players, numCourts, numGames, seed: currentSeed, generatedGames, activeGame });
+            const ok = await saveSession({ players, numCourts, numGames, generatedGames, activeGame });
             if (!ok) {
                 players = prevPlayers;
                 generatedGames = prevGames;
@@ -1005,6 +1023,11 @@
         function lockEditing() {
             forgetCredential();
             editMode = false;
+            if (setupSnapshot) {
+                ({ players, numCourts, numGames } = JSON.parse(setupSnapshot));
+                setupSnapshot = null;
+                syncOptionButtons();
+            }
             document.getElementById('setup-screen').style.display = 'none';
             if (generatedGames.length) {
                 document.getElementById('game-screen').style.display = 'block';
@@ -1020,7 +1043,7 @@
         // Wipe the slate clean after a session: every seat becomes a tennis ball and
         // the player list is emptied, ready for a fresh set of names next time.
         async function resetBoard() {
-            if (!editMode || !generatedGames.length) return;
+            if (!editMode || saving || !generatedGames.length) return;
             if (!confirm("Wipe the slate clean? Every court seat becomes an empty slot and the player list is cleared.")) return;
 
             const prevPlayers = JSON.parse(JSON.stringify(players));
@@ -1034,7 +1057,7 @@
             document.getElementById('gs-title').textContent = `Fresh board · ${numCourts} Courts`;
             renderGameScreen();
 
-            const ok = await saveSession({ players, numCourts, numGames, seed: currentSeed, generatedGames, activeGame });
+            const ok = await saveSession({ players, numCourts, numGames, generatedGames, activeGame });
             if (!ok) {
                 players = prevPlayers;
                 generatedGames = prevGames;
@@ -1072,7 +1095,6 @@
             ).join('');
 
             const g = generatedGames[activeGame];
-            const playing = new Set(g.courts.flatMap(([t1,t2])=>[...t1,...t2]));
 
             // Sitting banner (ignore any tennis-ball placeholders)
             const realSitters = g.sitters.filter(s=>!isBall(s));
@@ -1144,18 +1166,18 @@
         }
 
         async function swapSlots(locA, locB) {
-            if (locA === locB) return;
+            if (locA === locB || saving) return;
             const a = slotAccessor(locA), b = slotAccessor(locB);
             const av = a.get(), bv = b.get();
             const prevGames = JSON.parse(JSON.stringify(generatedGames));
             a.set(bv); b.set(av);
             renderGameScreen();
-            const ok = await saveSession({ players, numCourts, numGames, seed: currentSeed, generatedGames, activeGame });
+            const ok = await saveSession({ players, numCourts, numGames, generatedGames, activeGame });
             if (!ok) { generatedGames = prevGames; renderGameScreen(); }
         }
 
         function onDragStart(e) {
-            if (!editMode) return;                               // view-only: no dragging
+            if (!editMode || saving) return;                     // view-only, or a save in flight
             if (e.button && e.button !== 0) return;              // left button / touch only
             const el = e.target.closest('[data-loc]');
             if (!el) return;
@@ -1249,7 +1271,6 @@
             document.querySelectorAll('.drag-ghost').forEach(g => g.remove());
             document.querySelectorAll('.drop-target').forEach(el => el.classList.remove('drop-target'));
             document.querySelectorAll('.drag-source').forEach(el => el.classList.remove('drag-source'));
-            d.el.style.opacity = '';
             if (d.moved) {
                 // Swallow the click that follows a drag so it doesn't also trigger rename
                 const swallow = ev => { ev.stopPropagation(); ev.preventDefault(); };
@@ -1297,6 +1318,20 @@
         }
 
         // Load the current shared session from the backend — the single source of truth for every visitor
+        // Update visual active classes on configuration selectors
+        function syncOptionButtons() {
+            document.querySelectorAll('.options-row .btn-opt').forEach(btn => {
+                const groupLabel = btn.closest('.option-group').querySelector('label').textContent.toLowerCase();
+                if (groupLabel.includes('courts')) {
+                    const selected = parseInt(btn.textContent) === numCourts;
+                    btn.classList.toggle('active', selected);
+                    btn.setAttribute('aria-pressed', String(selected));
+                } else if (groupLabel.includes('games')) {
+                    btn.classList.toggle('active', parseInt(btn.textContent) === numGames);
+                }
+            });
+        }
+
         async function loadCurrentSession() {
             try {
                 const res = await fetch('/api/pairings');
@@ -1309,7 +1344,6 @@
                 }
                 numCourts = data.numCourts || numCourts;
                 numGames = data.numGames || numGames;
-                currentSeed = data.seed ?? null;
                 generatedGames = Array.isArray(data.generatedGames) ? data.generatedGames : [];
                 activeGame = data.activeGame || 0;
                 const invalid = rosterError(players);
@@ -1323,17 +1357,7 @@
                 return;
             }
 
-            // Update visual active classes on configuration selectors
-            document.querySelectorAll('.options-row .btn-opt').forEach(btn => {
-                const groupLabel = btn.closest('.option-group').querySelector('label').textContent.toLowerCase();
-                if (groupLabel.includes('courts')) {
-                    const selected = parseInt(btn.textContent) === numCourts;
-                    btn.classList.toggle('active', selected);
-                    btn.setAttribute('aria-pressed', String(selected));
-                } else if (groupLabel.includes('games')) {
-                    btn.classList.toggle('active', parseInt(btn.textContent) === numGames);
-                }
-            });
+            syncOptionButtons();
 
             // Unlocked earlier this browser session? Stay in edit mode; otherwise view-only.
             editMode = !!adminCredential;

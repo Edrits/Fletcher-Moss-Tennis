@@ -61,21 +61,37 @@ export default repoHandler(async (req, res) => {
   let mutate, message;
 
   if (type === 'admin_update_players') {
-    if (!Array.isArray(updatedBoxes) ||
-        updatedBoxes.some(ub => !ub || !Array.isArray(ub.players) || ub.players.some(n => typeof n !== 'string'))) {
+    // Each player is { name, was }: was is the name the row was loaded with, so a rename
+    // can carry that player's results across. A bare string is a row with no history.
+    const rows = Array.isArray(updatedBoxes) && updatedBoxes.map(ub => ub && Array.isArray(ub.players) && ub.players.map(p =>
+      typeof p === 'string' ? { name: p, was: '' } : p));
+    if (!rows || rows.some(r => !r || r.some(p => !p || typeof p.name !== 'string' || typeof (p.was ?? '') !== 'string'))) {
       return res.status(400).json({ error: 'The player list is invalid. Please reload and try again.' });
+    }
+    for (const r of rows) {
+      const names = r.map(p => p.name.trim()).filter(Boolean);
+      // Standings and results match players by name, so two of the same would merge.
+      if (new Set(names).size !== names.length) {
+        return res.status(400).json({ error: 'Give each player a different name, for example Alex P. and Alex R.' });
+      }
     }
     message = 'Admin updated players';
     mutate = data => {
-      updatedBoxes.forEach(ub => {
+      updatedBoxes.forEach((ub, i) => {
         const box = data.boxes.find(b => b.id === ub.id);
         if (!box) return;
         if (clearMatches) box.matches = [];
         // Leagues can have any number of players; blank rows are dropped
-        box.players = ub.players
-          .map(n => n.trim())
-          .filter(n => n)
-          .map(name => ({ name, played: 0, won: 0, points: 0 }));
+        const kept = rows[i].map(p => ({ name: p.name.trim(), was: (p.was || '').trim() })).filter(p => p.name);
+        const renamed = new Map(kept.filter(p => p.was && p.was !== p.name).map(p => [p.was, p.name]));
+        const rename = n => renamed.get(n) ?? n;
+        (box.matches || []).forEach(m => {
+          m.player1 = rename(m.player1);
+          m.player2 = rename(m.player2);
+          m.winner = rename(m.winner);
+          if (m.noShow) m.noShow = rename(m.noShow);
+        });
+        box.players = kept.map(p => ({ name: p.name, played: 0, won: 0, points: 0 }));
       });
       data.boxes.forEach(recalculateBox);
       return data;

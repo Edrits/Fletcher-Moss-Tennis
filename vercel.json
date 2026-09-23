@@ -1,0 +1,5 @@
+{
+  "redirects": [
+    { "source": "/box-league.html", "destination": "/singles-league.html", "permanent": true }
+  ]
+}

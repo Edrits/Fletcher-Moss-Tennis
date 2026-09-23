@@ -230,8 +230,8 @@ export default async function handler(req, res) {
       // `force` is the deliberate way past this. Without it there was no way at all to
       // cancel a session and build it again from scratch: the only control that cleared
       // the list also closed sign-up, and pressing Open on the same date silently kept
-      // the old names. The page asks for confirmation before it sends force, so the
-      // typo-protection above still holds for the accidental case.
+      // the old names. The page does not send force yet; until it does, Cancel then Open
+      // rebuilds the list, and the typo-protection above holds for every page request.
       if (previous.date && previous.date === useDate && !force) {
         const editedResult = await signupStore({ action: 'edit', sessionId, changes: {
           label: useLabel, opensAt: useOpensAt, state: 'open',
@@ -255,7 +255,7 @@ export default async function handler(req, res) {
       const sessionPin = generatePin();
       const nextMeta = {
         date: useDate, label: useLabel, opensAt: useOpensAt,
-        state: 'open', seeds: '0', capacity: JSON.stringify(cap),
+        state: 'open', capacity: JSON.stringify(cap),
         organiser: organiserDisplay, endsAt: endsAtFor(useDate), pin: sessionPin,
         generation: randomUUID()
       };

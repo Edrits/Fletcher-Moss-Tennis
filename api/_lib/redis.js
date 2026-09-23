@@ -82,161 +82,24 @@ export async function hgetall(key) {
   return out;
 }
 
-export async function hset(key, obj) {
-  const parts = ['HSET', key];
-  for (const [k, v] of Object.entries(obj)) {
-    parts.push(k, typeof v === 'string' ? v : JSON.stringify(v));
-  }
-  return command(parts);
-}
-
-export async function lrangeJSON(key) {
-  const raw = await command(['LRANGE', key, 0, -1]);
-  if (!Array.isArray(raw)) return [];
-  return raw
-    .map(item => {
-      try { return JSON.parse(item); } catch { return null; }
-    })
-    .filter(Boolean);
-}
-
-export async function del(...keys) {
-  return command(['DEL', ...keys]);
-}
-
-// Everything that must not interleave happens inside this script, so the whole check-then
-// -append is one atomic step:
-//   1. reject a token that already holds a place
-//   2. reject once the list is full, waiting list included
-//   3. resolve a display-name clash to "John S.2" against the live list
-//   4. append and report the position
-//
-// Step 3 has to be in here rather than in JavaScript. Reading the list, picking a free
-// name and then pushing would let two people racing with the same shortened name both see
-// it as free and both take it. Duplicate names would then corrupt the pairings tool, which
-// matches players by name string.
-// Clash detection compares a `key` field rather than lower-casing inside the script. Lua's
-// string.lower is byte-wise and leaves multi-byte UTF-8 untouched, so "Renée D." and
-// "RENÉE D." would not match there even though JavaScript considers them the same name.
-// The caller supplies an already-lower-cased key and the script only ever concatenates a
-// digit onto it, which keeps the comparison Unicode-correct.
-export const JOIN_SCRIPT = `
-local queue   = KEYS[1]
-local token   = ARGV[1]
-local base    = ARGV[2]
-local limit   = tonumber(ARGV[3])
-local at      = ARGV[4]
-local baseKey = ARGV[5]
-
-local items = redis.call('LRANGE', queue, 0, -1)
-local keys = {}
-for i = 1, #items do
-  local ok, entry = pcall(cjson.decode, items[i])
-  if ok and entry then
-    if entry.token == token then
-      return cjson.encode({ error = 'already_in' })
-    end
-    if entry.key then
-      keys[entry.key] = true
-    elseif entry.name then
-      keys[string.lower(entry.name)] = true
-    end
-  end
-end
-
-if #items >= limit then
-  return cjson.encode({ error = 'full' })
-end
-
-local candidate = base
-local candKey   = baseKey
-local n = 1
-while keys[candKey] do
-  n = n + 1
-  candidate = base .. n
-  candKey   = baseKey .. n
-end
-
-redis.call('RPUSH', queue, cjson.encode({ name = candidate, key = candKey, token = token, at = at }))
-return cjson.encode({ position = #items + 1, name = candidate })
-`;
-
-export async function joinAtomic({ token, displayBase, limit, at }) {
-  const raw = await command([
-    'EVAL', JOIN_SCRIPT, 1, KEYS.queue,
-    token, displayBase, limit, at, displayBase.toLowerCase()
-  ]);
-  try {
-    return JSON.parse(raw);
-  } catch {
-    throw new Error('Unexpected response from the sign-up script');
-  }
-}
-
-// Removing by NAME, not by position.
-//
-// Positions shift the instant anybody else leaves, so an admin screen that is even a few
-// seconds stale would take off the wrong person. Display names are unique by construction,
-// because the join script disambiguates clashes, which makes them a safe key.
-//
-// Removing by exact stored value is also what produces the cascade: LREM shifts everything
-// below up by one, so sub 1 becomes main 16 with no separate promotion step.
-export async function removeByNames(names) {
-  const wanted = new Set((names || []).map(n => String(n).trim().toLowerCase()).filter(Boolean));
-  if (!wanted.size) return { removed: [], missing: [] };
-
-  const items = await command(['LRANGE', KEYS.queue, 0, -1]);
-  if (!Array.isArray(items)) return { removed: [], missing: [...wanted] };
-
-  const removed = [];
-  for (const raw of items) {
-    let entry;
-    try { entry = JSON.parse(raw); } catch { continue; }
-    const key = String(entry.key || entry.name || '').toLowerCase();
-    if (wanted.has(key)) {
-      await command(['LREM', KEYS.queue, 1, raw]);
-      removed.push(entry.name);
-      wanted.delete(key);
-    }
-  }
-  return { removed, missing: [...wanted] };
-}
-
 // Crude per-caller throttle. The endpoint is public and unauthenticated, so without this
 // one script can take all 28 places in a couple of seconds at opening time, before any
-// member's thumb lands. INCR then EXPIRE on first hit keeps it to two commands.
+// member's thumb lands.
 //
 // Keyed on the forwarded client IP. Several members on the same home wifi or on mobile
 // carrier NAT share an address, so the limit has to be loose enough not to catch a couple
 // of housemates signing up together.
 export async function hitRateLimit(bucket, id, limit, windowSeconds) {
   const key = `fm:rate:${bucket}:${id}`;
+  // Create the counter with its expiry first, then count. INCR-then-EXPIRE left a counter
+  // with no expiry, and that caller locked out for good, if the second command failed.
+  await command(['SET', key, 0, 'EX', windowSeconds, 'NX']);
   const count = Number(await command(['INCR', key]));
-  if (count === 1) await command(['EXPIRE', key, windowSeconds]);
   return { allowed: count <= limit, count };
 }
 
-// Read the counter WITHOUT spending an attempt.
-//
-// The admin throttle used to call hitRateLimit on every request, which counted the
-// organiser's successful actions as though they were failed guesses: unlock, open the
-// session, add a couple of names, take a couple off, and the allowance was gone with the
-// right password in hand. Reading first and only spending on an actual wrong password
-// keeps the brute-force protection and stops it landing on the one person who is
-// entitled to be there.
-export async function peekRateLimit(bucket, id) {
-  const raw = await command(['GET', `fm:rate:${bucket}:${id}`]);
-  const count = Number(raw);
-  return Number.isFinite(count) ? count : 0;
-}
-
-export async function removeByToken(token) {
-  const items = await command(['LRANGE', KEYS.queue, 0, -1]);
-  if (!Array.isArray(items)) return { error: 'Nothing to cancel.' };
-  const match = items.find(raw => {
-    try { return JSON.parse(raw).token === token; } catch { return false; }
-  });
-  if (!match) return { error: 'No sign-up found on this device.' };
-  await command(['LREM', KEYS.queue, 1, match]);
-  return { ok: true };
+// Hand back an attempt counted by hitRateLimit, for a request that turned out to be
+// legitimate (the right admin password). The organiser's own work is never throttled.
+export async function refundRateLimit(bucket, id) {
+  await command(['DECR', `fm:rate:${bucket}:${id}`]);
 }

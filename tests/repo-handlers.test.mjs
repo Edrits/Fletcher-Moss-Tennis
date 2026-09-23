@@ -13,8 +13,11 @@ let files, redis, conflictsLeft;
 globalThis.fetch = async (url, options = {}) => {
   if (url === storeURL) {
     const [cmd, key] = JSON.parse(options.body);
+    if (cmd === 'SET' && !redis.has(key)) redis.set(key, 0);
     if (cmd === 'INCR') redis.set(key, (redis.get(key) || 0) + 1);
-    return { ok: true, json: async () => ({ result: cmd === 'EXPIRE' ? 1 : (redis.get(key) ?? null) }) };
+    if (cmd === 'DECR') redis.set(key, (redis.get(key) || 0) - 1);
+    const result = redis.get(key) ?? null;   // read now, as Redis answers at the moment of the command
+    return { ok: true, json: async () => ({ result }) };
   }
   const file = url.split('/contents/')[1];
   const stored = files.get(file);
@@ -97,4 +100,26 @@ test('wrong-password guesses are capped across every endpoint, not per endpoint'
   assert.equal((await call(boxleague, 'POST', { type: 'delete_match', password: 'test-only', boxId: 'league-1', matchIndex: 0 }, ip)).status, 429);
   // Another connection is unaffected, and right answers never spend an attempt.
   for (let i = 0; i < 12; i++) assert.equal((await call(noticeboard, 'POST', { password: 'test-only', message: 'ok' })).status, 200);
+});
+
+test('renaming a league player keeps their results; duplicate names are refused', async () => {
+  await call(boxleague, 'POST', { type: 'submit_score',
+    match: { boxId: 'league-1', player1: 'Ann', player2: 'Bob', winner: 'Ann' } });
+  const rename = players => call(boxleague, 'POST', { type: 'admin_update_players', password: 'test-only',
+    updatedBoxes: [{ id: 'league-1', players }] });
+  assert.equal((await rename([{ name: 'Ann', was: 'Ann' }, { name: 'Ann', was: 'Bob' }])).status, 400);
+  assert.equal((await rename([{ name: 'Anne', was: 'Ann' }, { name: 'Bob', was: 'Bob' }])).status, 200);
+  const box = read('boxleague.json').boxes[0];
+  assert.equal(box.matches.length, 1);
+  assert.equal(box.matches[0].winner, 'Anne');
+  assert.deepEqual(box.players.map(p => [p.name, p.points]), [['Anne', 3], ['Bob', 1]]);
+  // The old plain-string shape still works.
+  assert.equal((await rename(['Anne', 'Bob', 'Cat'])).status, 200);
+});
+
+test('a burst of simultaneous guesses is capped too', async () => {
+  const results = await Promise.all(Array.from({ length: 50 }, () =>
+    call(noticeboard, 'POST', { password: 'guess' }, '3.3.3.3')));
+  const counts = {}; results.forEach(r => { counts[r.status] = (counts[r.status] || 0) + 1; });
+  assert.deepEqual(counts, { 401: 10, 429: 40 }, JSON.stringify(results.find(r => r.status !== 401 && r.status !== 429)));
 });

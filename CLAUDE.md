@@ -43,7 +43,7 @@ The admin password comes from the `ADMIN_PASSWORD` environment variable, not a l
 
 The queue is a single Redis list and **its order is the queue**: positions 1-16 are main players (4 courts of 4), 17-18 are subs, 19-28 are the waiting list. Removing anyone shifts everyone below up one, which is exactly the club's promotion rule (next in line becomes a sub, sub 1 becomes main 16) with no separate promotion code.
 
-`JOIN_SCRIPT` in `api/_lib/redis.js` is Lua and runs inside Redis. Joining checks the token, checks capacity, and resolves a display-name clash in **one atomic step**. Splitting any of that into separate commands reintroduces the race.
+`STORE_SCRIPT` in `api/_lib/signup-store.js` is Lua and runs inside Redis. Joining checks the token, checks capacity, and resolves a display-name clash in **one atomic step**. Splitting any of that into separate commands reintroduces the race.
 
 Names are published as first name plus an initial ("John Smith" becomes "John S."). A clash becomes "John S.2". This is not cosmetic: the pairings tool matches players by name string, so two identical names would be renamed and swapped as one person.
 

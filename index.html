@@ -12,7 +12,8 @@
     <meta property="og:title" content="Didsbury Tennis | Fletcher Moss Social Tennis Club, Free & Social">
     <meta property="og:description" content="Didsbury tennis, free and social. Join our friendly community tennis group. Free sessions, no sign up or membership fees.">
     <meta property="og:type" content="website">
-    <meta property="og:image" content="fletcher-moss-logo.png">
+    <meta property="og:image" content="https://www.fletchermoss-socialtennisclub.co.uk/fletcher-moss-logo.png">
+    <meta property="og:url" content="https://www.fletchermoss-socialtennisclub.co.uk/">
 
     <!-- Favicon -->
     <link rel="icon" href="favicon.ico" sizes="any">
@@ -326,8 +327,6 @@
         .btn:hover { background: var(--green-700); transform: translateY(-2px); box-shadow: var(--shadow-md); }
         .btn:active { transform: translateY(0); box-shadow: var(--shadow-sm); }
 
-        .btn-inverse { background: var(--paper-50); color: var(--green-800); }
-        .btn-inverse:hover { background: #fff; }
 
         .btn-whatsapp { background: var(--color-whatsapp); }
         .btn-whatsapp:hover { background: #1f8259; }
@@ -904,8 +903,8 @@
                 </div>
                 <div id="adminPanel" class="admin-panel">
                     <h3>Edit Noticeboard</h3>
-                    <input type="password" id="adminPass" placeholder="Enter admin password">
-                    <textarea id="noticeText" placeholder="Type your noticeboard content here…"></textarea>
+                    <input type="password" id="adminPass" aria-label="Admin password" placeholder="Enter admin password">
+                    <textarea id="noticeText" aria-label="Noticeboard message" placeholder="Type your noticeboard content here…"></textarea>
                     <button class="btn" onclick="saveNotice()">Save changes</button>
                     <button class="btn" style="background: var(--ink-300); margin-left: 10px;" onclick="toggleAdmin()">Cancel</button>
                 </div>
