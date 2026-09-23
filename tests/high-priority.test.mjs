@@ -4,6 +4,7 @@ import { readFile, mkdtemp, rm } from 'node:fs/promises';
 import { spawn, execFile } from 'node:child_process';
 import { promisify } from 'node:util';
 import { join } from 'node:path';
+import { tmpdir } from 'node:os';
 import vm from 'node:vm';
 import { validatePairings } from '../api/_lib/pairings-core.js';
 
@@ -46,7 +47,7 @@ globalThis.fetch = async (url, options = {}) => {
 
 before(async () => {
   if (!binary) return;
-  temporary = await mkdtemp('/private/tmp/fmst-regression-');
+  temporary = await mkdtemp(join(tmpdir(), 'fmst-regression-'));
   socket = join(temporary, 'redis.sock');
   server = spawn(binary, ['--port','0','--unixsocket',socket,'--save','','--appendonly','no','--dir',temporary]);
   await new Promise((resolve, reject) => {
@@ -160,7 +161,7 @@ test('archive retries are idempotent and same-day generations do not overwrite',
   assert.equal(archives.size,2);
 });
 
-test('pairings validation preserves real data, underfilled and wiped boards; rejects duplicate identities',async()=>{
+integration('pairings validation preserves real data, underfilled and wiped boards; rejects duplicate identities',async()=>{
   const saved=JSON.parse(await readFile(new URL('../pairings.json',import.meta.url)));
   assert.equal(validatePairings(saved),null);
   assert.ok(validatePairings({...saved,players:[...saved.players,saved.players[0]]}));

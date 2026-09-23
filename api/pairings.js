@@ -1,133 +1,54 @@
+// Court pairings board. Stored in pairings.json in this repo; saving needs the admin password.
 import { validatePairings } from './_lib/pairings-core.js';
+import { checkAdminPassword } from './_lib/admin-auth.js';
+import { readRepoJson, updateRepoJson, repoHandler } from './_lib/repo-json.js';
 
-export default async function handler(req, res) {
-  // Set in the Vercel environment config, never committed to this repo
-  const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
-  const GITHUB_TOKEN = process.env.GIT_TOKEN;
-  const GITHUB_USER = 'Edrits';
-  const GITHUB_REPO = 'Fletcher-Moss-Tennis';
-  const DATA_FILE = 'pairings.json';
+const DATA_FILE = 'pairings.json';
 
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+const defaultData = {
+  players: ["Ed", "Sofia", "Will", "Adam", "Alex", "Adam B", "Daniel", "Kamal", "Emma B", "Will (10)", "Rhys", "Lucy", "Joe", "Michael"]
+    .map((name, i, arr) => ({ name, sub: i >= arr.length - 2 })),
+  numCourts: 3,
+  numGames: 6,
+  seed: null,
+  generatedGames: [],
+  activeGame: 0,
+  updated: null
+};
 
-  if (req.method === 'OPTIONS') {
-    return res.status(200).end();
+export default repoHandler(async (req, res) => {
+  if (req.method === 'GET') {
+    const { data } = await readRepoJson(DATA_FILE);
+    return res.status(200).json(data || defaultData);
   }
 
-  const githubUrl = `https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/contents/${DATA_FILE}`;
+  const { action, password, players, numCourts, numGames, seed, generatedGames, activeGame } = req.body || {};
+  const denied = await checkAdminPassword(req, password);
+  if (denied) return res.status(denied.status).json({ error: denied.error });
 
-  const defaultData = {
-    players: ["Ed", "Sofia", "Will", "Adam", "Alex", "Adam B", "Daniel", "Kamal", "Emma B", "Will (10)", "Rhys", "Lucy", "Joe", "Michael"]
-      .map((name, i, arr) => ({ name, sub: i >= arr.length - 2 })),
-    numCourts: 3,
-    numGames: 6,
-    seed: null,
-    generatedGames: [],
-    activeGame: 0,
-    updated: null
+  // Lightweight check used by the "unlock to edit" prompt — confirms the
+  // password without writing anything back to the repo.
+  if (action === 'verify') {
+    return res.status(200).json({ valid: true });
+  }
+
+  const invalid = validatePairings({ players, numCourts, numGames, generatedGames, activeGame });
+  if (invalid) return res.status(400).json({ error: invalid });
+
+  const dataToSave = {
+    players: players.map(p => ({ ...p, name: p.name.trim() })),
+    numCourts: numCourts || 3,
+    numGames: numGames || 6,
+    seed: seed ?? null,
+    generatedGames: generatedGames.map(game => ({
+      ...game,
+      sitters: game.sitters.map(name => name.trim()),
+      courts: game.courts.map(court => court.map(team => team.map(name => name.trim())))
+    })),
+    activeGame: activeGame || 0,
+    updated: new Date().toISOString()
   };
 
-  try {
-    // GET - Fetch the current pairings session
-    if (req.method === 'GET') {
-      const response = await fetch(githubUrl, {
-        headers: {
-          'Authorization': `token ${GITHUB_TOKEN}`,
-          'Accept': 'application/vnd.github.v3+json'
-        }
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        const content = Buffer.from(data.content, 'base64').toString('utf8');
-        return res.status(200).json(JSON.parse(content));
-      } else if (response.status === 404) {
-        return res.status(200).json(defaultData);
-      } else {
-        throw new Error('Failed to fetch from GitHub');
-      }
-    }
-
-    // POST - Save the current pairings session (requires admin password)
-    if (req.method === 'POST') {
-      const { action, password, players, numCourts, numGames, seed, generatedGames, activeGame } = req.body || {};
-
-      if (!ADMIN_PASSWORD) {
-        return res.status(500).json({ error: 'Server is missing ADMIN_PASSWORD configuration' });
-      }
-
-      if (password !== ADMIN_PASSWORD) {
-        return res.status(401).json({ error: 'Incorrect password' });
-      }
-
-      // Lightweight check used by the "unlock to edit" prompt — confirms the
-      // password without writing anything back to the repo.
-      if (action === 'verify') {
-        return res.status(200).json({ valid: true });
-      }
-
-      const invalid = validatePairings({ players, numCourts, numGames, generatedGames, activeGame });
-      if (invalid) return res.status(400).json({ error: invalid });
-
-      let sha = null;
-      const getResponse = await fetch(githubUrl, {
-        headers: {
-          'Authorization': `token ${GITHUB_TOKEN}`,
-          'Accept': 'application/vnd.github.v3+json'
-        }
-      });
-
-      if (getResponse.ok) {
-        const getData = await getResponse.json();
-        sha = getData.sha;
-      } else if (getResponse.status !== 404) {
-        throw new Error('Could not read the current board. Nothing was saved.');
-      }
-
-      const dataToSave = {
-        players: players.map(p => ({ ...p, name: p.name.trim() })),
-        numCourts: numCourts || 3,
-        numGames: numGames || 6,
-        seed: seed ?? null,
-        generatedGames: generatedGames.map(game => ({
-          ...game,
-          sitters: game.sitters.map(name => name.trim()),
-          courts: game.courts.map(court => court.map(team => team.map(name => name.trim())))
-        })),
-        activeGame: activeGame || 0,
-        updated: new Date().toISOString()
-      };
-
-      const encodedContent = Buffer.from(JSON.stringify(dataToSave, null, 2)).toString('base64');
-
-      const saveResponse = await fetch(githubUrl, {
-        method: 'PUT',
-        headers: {
-          'Authorization': `token ${GITHUB_TOKEN}`,
-          'Accept': 'application/vnd.github.v3+json',
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          message: 'Updated court pairings',
-          content: encodedContent,
-          sha: sha
-        })
-      });
-
-      if (saveResponse.ok) {
-        return res.status(200).json({ success: true, data: dataToSave });
-      } else {
-        const error = await saveResponse.json();
-        throw new Error(error.message || 'Failed to save');
-      }
-    }
-
-    return res.status(405).json({ error: 'Method not allowed' });
-
-  } catch (error) {
-    console.error('Function error:', error);
-    return res.status(500).json({ error: error.message || 'Internal server error' });
-  }
-}
+  await updateRepoJson(DATA_FILE, () => dataToSave, 'Updated court pairings');
+  return res.status(200).json({ success: true, data: dataToSave });
+});

@@ -12,17 +12,19 @@ A static marketing/community website for Fletcher Moss Social Tennis Club, deplo
 
 ## Page naming
 
-`box-league.html` is the **FMST Singles League**. The file and route keep the old `box-league` name, only the product was renamed.
+`singles-league.html` is the **FMST Singles League**. Its data still lives in `boxleague.json` / `api/boxleague.js` under the old name. `box-league.html` is only a redirect for old links; keep it.
 
 `signup.html` is the session sign-up page. It does **not** use the GitHub-as-a-database pattern the other pages use. See "Session sign-up" below before changing it.
 
 ## Data flow
 
-Each data-backed page follows the same pattern: `<script>` in the HTML calls `fetch('/api/<name>')` on load to GET the current JSON, renders it, and POSTs updates back through the same endpoint. There is no database — `api/*.js` functions read and write the corresponding root-level JSON file (`noticeboard.json`, `boxleague.json`, `pairings.json`) in this repo using the GitHub Contents API, so every save creates a commit to this repo.
+Each data-backed page follows the same pattern: `<script>` in the HTML calls `fetch('/api/<name>')` on load to GET the current JSON, renders it, and POSTs updates back through the same endpoint. There is no database — `api/*.js` functions read and write the corresponding root-level JSON file (`noticeboard.json`, `boxleague.json`, `pairings.json`, `bookings.json`) in this repo using the GitHub Contents API, so every save creates a commit to this repo. All four go through `api/_lib/repo-json.js`, which retries when two saves collide on the same file version; don't hand-roll GitHub fetches in a handler.
 
-Each `api/*.js` handler requires `GIT_TOKEN` as a Vercel environment variable (a GitHub token with contents write access to this repo) — there is no local `.env` file, so these functions only work when deployed on Vercel, not run locally as plain Node.
+Each `api/*.js` handler requires `GIT_TOKEN` as a Vercel environment variable (a GitHub token with contents write access to this repo), and every admin action also needs the Upstash Redis variables for the password throttle — there is no local `.env` file, so these functions only work when deployed on Vercel, not run locally as plain Node.
 
 Write operations (POST) are gated by a shared admin password checked server-side inside each handler; GET requests are unauthenticated and public. `boxleague.js` additionally accepts an unauthenticated `submit_score` request type for players to record match results without the admin password.
+
+Every admin password check must go through `checkAdminPassword()` in `api/_lib/admin-auth.js`. It limits wrong guesses per connection through Redis, shared across all endpoints; a plain `password !== ADMIN_PASSWORD` anywhere reopens the brute-force hole on that endpoint.
 
 The admin password comes from the `ADMIN_PASSWORD` environment variable, not a literal in the source. It used to be hardcoded, and because this repo is public it was readable by anyone; that value is burned and must never be reused. Each handler returns a 500 if the variable is missing rather than falling through to an unauthenticated write.
 
@@ -72,9 +74,11 @@ All three production pages have been converted to the system (tokens copied into
 
 **Homepage feature bands:** full-bleed photographic `.feature-band` sections punctuate the content (kicker + serif headline over a scrimmed photo). Full-bleed is done inside the single `.page-wrap` container with `width:100vw; margin-left:calc(50% - 50vw)` (`body` has `overflow-x:hidden`). Keep band backgrounds static — do **not** use scroll parallax on them (an earlier parallax attempt caused a white-bar bug). Only four real club photos exist, so imagery is scarce; reuse thoughtfully.
 
-## No build/test/lint tooling
+## Tests, no build/lint tooling
 
-Verify changes by running a static file server from the repo root and checking behaviour in a browser:
+`node --test tests/*.test.mjs` runs the API regression tests with no install. The sign-up tests in `tests/high-priority.test.mjs` skip unless `FMST_REDIS_SERVER` points at a `redis-server` binary.
+
+Verify page changes by running a static file server from the repo root and checking behaviour in a browser:
 
 ```
 python3 -m http.server 8000
@@ -84,7 +88,7 @@ Note that `api/*.js` functions do **not** run under a plain static server — th
 
 ## SEO/sitemap
 
-`sitemap.xml` lists the three public pages. When adding a new page, add it here too. `google705e088e9a41894e.html` is a Google Search Console site-verification file — leave it as-is, it is not a real page.
+`sitemap.xml` lists the public pages. When adding a new page, add it here too. `google705e088e9a41894e.html` is a Google Search Console site-verification file — leave it as-is, it is not a real page.
 
 ## Skills
 

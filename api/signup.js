@@ -15,8 +15,9 @@
 // taps at once, which the GitHub Contents API cannot absorb. The finished list is archived
 // to the repo once, on reset.
 import {
-  KEYS, isConfigured, describeCredentialEnv, hgetall, hitRateLimit, peekRateLimit
+  KEYS, isConfigured, describeCredentialEnv, hgetall, hitRateLimit
 } from './_lib/redis.js';
+import { checkAdminPassword, clientId } from './_lib/admin-auth.js';
 import { signupStore, sessionIdentity, admission } from './_lib/signup-store.js';
 import { randomUUID, randomInt } from 'node:crypto';
 import { archiveSession } from './_lib/archive.js';
@@ -25,10 +26,6 @@ import {
   validateName, shortenName, totalSlots, tierFor, viewModel, labelForDate,
   validatePin, normalisePin, shareMessage, PIN_LENGTH
 } from './_lib/signup-core.js';
-
-// Wrong-password guesses allowed per connection per fifteen minutes. Successful admin
-// actions do not count against it, so this only ever has to be large enough for typos.
-const ADMIN_ATTEMPT_LIMIT = 10;
 
 const JOIN_ERRORS = {
   already_in: 'You already have a place for this session.',
@@ -46,9 +43,6 @@ function generatePin() {
 }
 
 export default async function handler(req, res) {
-  // Set in the Vercel environment config, never committed to this repo
-  const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
-
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, X-Signup-Token');
@@ -169,34 +163,9 @@ export default async function handler(req, res) {
     }
 
     // ── Admin actions ────────────────────────────────────────────────────────────
-    if (!ADMIN_PASSWORD) {
-      return res.status(500).json({ error: 'Server is missing ADMIN_PASSWORD configuration' });
-    }
-    // One shared, human-chosen password with an unlimited-rate check is a dictionary
-    // attack waiting to happen, and CORS is open so it can be driven from any page.
-    //
-    // Only a WRONG password spends an attempt. This used to increment on every admin
-    // request, so an organiser running a session normally (unlock, open, add a couple of
-    // names, take a couple off) spent the whole allowance while holding the correct
-    // password, and was then locked out for fifteen minutes mid-session. Reading the
-    // counter before checking, and spending only on a failure, keeps a guesser capped at
-    // ADMIN_ATTEMPT_LIMIT wrong guesses per window while leaving legitimate work
-    // completely unthrottled.
-    const spent = await peekRateLimit('admin', clientId(req));
-    if (spent >= ADMIN_ATTEMPT_LIMIT) {
-      return res.status(429).json({
-        error: 'Too many incorrect passwords from this connection. Wait fifteen minutes and try again.'
-      });
-    }
-    if (password !== ADMIN_PASSWORD) {
-      const used = await hitRateLimit('admin', clientId(req), ADMIN_ATTEMPT_LIMIT, 900);
-      const left = Math.max(0, ADMIN_ATTEMPT_LIMIT - used.count);
-      return res.status(401).json({
-        error: left
-          ? `Incorrect password. ${left} ${left === 1 ? 'try' : 'tries'} left before this connection is locked out for fifteen minutes.`
-          : 'Incorrect password. This connection is now locked out for fifteen minutes.'
-      });
-    }
+    // Rate-limited on wrong guesses only; see api/_lib/admin-auth.js.
+    const denied = await checkAdminPassword(req, password);
+    if (denied) return res.status(denied.status).json({ error: denied.error });
 
     // Unlocking the panel also returns the live session's code and the message to paste
     // into the group, so an organiser who reloads the page can get at both again. This is
@@ -377,14 +346,6 @@ function organiserExtras(meta) {
 function endsAtFor(dateStr) {
   const end = sessionEndsAt(dateStr);
   return end ? end.toISOString() : '';
-}
-
-// Vercel puts the real caller at the front of x-forwarded-for. Anything absent falls back
-// to a shared bucket, which throttles a little too eagerly rather than not at all.
-function clientId(req) {
-  const fwd = req.headers['x-forwarded-for'];
-  const first = Array.isArray(fwd) ? fwd[0] : String(fwd || '').split(',')[0];
-  return (first || req.headers['x-real-ip'] || 'unknown').trim().slice(0, 45);
 }
 
 async function readState(now, myToken) {

@@ -721,17 +721,17 @@
                 let matchRows = (box.matches && box.matches.length > 0)
                     ? box.matches.slice(-5).reverse().map(m => m.noShow ? `
                         <li class="result-line">
-                            <strong>${m.winner}</strong> won by walkover. ${m.noShow} didn't show
+                            <strong>${bkEscape(m.winner)}</strong> won by walkover. ${bkEscape(m.noShow)} didn't show
                         </li>
                       ` : `
                         <li class="result-line">
-                            <strong>${m.winner}</strong> beat ${m.winner === m.player1 ? m.player2 : m.player1}
+                            <strong>${bkEscape(m.winner)}</strong> beat ${bkEscape(m.winner === m.player1 ? m.player2 : m.player1)}
                         </li>
                       `).join('')
                     : '<li class="result-line empty">No matches played yet in this round.</li>';
 
                 boxSection.innerHTML = `
-                    <h3 class="box-title">${box.name}</h3>
+                    <h3 class="box-title">${bkEscape(box.name)}</h3>
                     <div class="table-responsive">
                         <table class="standings-table">
                             <thead>
@@ -893,7 +893,7 @@
                     const playerRows = box.players.map(p => adminPlayerRow(box.id, p.name)).join('');
 
                     playerCard.innerHTML = `
-                        <h4 style="margin-bottom: 12px; border-bottom: 1px solid var(--border-subtle); padding-bottom: 4px;">${box.name} Players</h4>
+                        <h4 style="margin-bottom: 12px; border-bottom: 1px solid var(--border-subtle); padding-bottom: 4px;">${bkEscape(box.name)} Players</h4>
                         <div id="adminRows-${box.id}">${playerRows}</div>
                         <button type="button" onclick="addAdminPlayerRow('${box.id}')" style="background: none; border: 1px dashed var(--green-600); color: var(--green-700); padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 0.85em; width: 100%; margin-top: 4px;">+ Add player</button>
                     `;
@@ -908,7 +908,7 @@
                         box.matches.forEach((m, matchIdx) => {
                             matchListItems += `
                                 <div style="display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--border-subtle); font-size: 0.85em; gap: 8px;">
-                                    <span style="flex: 1; text-align: left;">${m.winner} beat ${m.winner === m.player1 ? m.player2 : m.player1}</span>
+                                    <span style="flex: 1; text-align: left;">${bkEscape(m.winner)} beat ${bkEscape(m.winner === m.player1 ? m.player2 : m.player1)}</span>
                                     <button onclick="deleteMatch('${box.id}', ${matchIdx})" style="background: var(--color-alert); color: white; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 0.8em; flex-shrink: 0; transition: background 0.2s;">Undo</button>
                                 </div>
                             `;
@@ -918,7 +918,7 @@
                     }
 
                     matchCard.innerHTML = `
-                        <h4 style="color: var(--color-alert); margin-bottom: 12px; border-bottom: 1px solid var(--border-subtle); padding-bottom: 4px;">${box.name} History</h4>
+                        <h4 style="color: var(--color-alert); margin-bottom: 12px; border-bottom: 1px solid var(--border-subtle); padding-bottom: 4px;">${bkEscape(box.name)} History</h4>
                         <div style="max-height: 250px; overflow-y: auto; padding-right: 4px;">
                             ${matchListItems}
                         </div>
@@ -929,7 +929,7 @@
         }
 
         function adminPlayerRow(boxId, name) {
-            const safeName = name.replace(/"/g, '&quot;');
+            const safeName = bkEscape(name);
             return `
                 <div class="form-group" style="margin-bottom: 8px; display: flex; gap: 6px; align-items: center;">
                     <input type="text" class="admin-player-input" data-box-id="${boxId}" value="${safeName}" placeholder="Player name" style="padding: 6px; flex: 1; border: 1px solid var(--border-strong); border-radius: 6px;">
