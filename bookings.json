@@ -1,4 +1,9 @@
 {
-  "weekKey": null,
-  "bookings": {}
+  "weekKey": "2026-09-20",
+  "bookings": {
+    "sat|2|13:00": {
+      "name": "Luke Bibby",
+      "at": "2026-09-24T18:05:54.965Z"
+    }
+  }
 }
