@@ -794,11 +794,11 @@
                 ...named.filter(p => p.sub).map(p => p.name.trim()),
             ];
 
-            // Too few to fill every court? Pad the spare seats with placeholders
-            // (an empty string renders as an empty-seat block) so the courts still fill out.
-            while (ordered.length < playPerGame) ordered.push('');
-
-            const sitPerGame = ordered.length - playPerGame;
+            // More players than seats: the extras sit out. Fewer: courts fill in order and
+            // only the last court in use is short (a three or a singles). One player over
+            // would be alone on a court, so one person sits out instead, in rotation.
+            let sitPerGame = Math.max(0, ordered.length - playPerGame);
+            if (ordered.length <= playPerGame && ordered.length % 4 === 1) sitPerGame = 1;
 
             // Build sit-out queue: bottom of list upwards, cycling if needed
             const sitQueue = buildSitQueue(ordered, sitPerGame, numGames);
@@ -807,11 +807,15 @@
             const newGames = [];
             const usedPartners = new Set();
             const usedOpponents = {};
+            const shortCount = {};        // games each player has spent on the short court
+            let lastShort = new Set();    // who was on it last game
 
             for (let g = 0; g < numGames; g++) {
                 const sitters = sitQueue[g];
                 const active = ordered.filter(p => !sitters.includes(p));
-                const courts = bestShuffle(active, numCourts, usedPartners, usedOpponents);
+                const { courts, shortGroup } = bestShuffle(active, numCourts, usedPartners, usedOpponents, shortCount, lastShort);
+                shortGroup.forEach(p => { shortCount[p] = (shortCount[p] || 0) + 1; });
+                lastShort = new Set(shortGroup);
 
                 // Update tracking
                 courts.forEach(([t1,t2]) => {
@@ -870,26 +874,29 @@
         // A team with an empty seat isn't a partnership, and an empty seat isn't an opponent
         function realPair(team) { return team.every(p => !isBall(p)); }
 
-        function bestShuffle(active, numCourts, usedPartners, usedOpponents) {
-            // Empty seats are placed, not shuffled in with the players. Shuffled, they bunch
-            // up at random and can leave one player alone on a court while another court is
-            // full. Instead they fill from the last court backwards, one per court per round,
-            // and alternate teams within a court, so no court has more empties than it must.
-            const real = active.filter(p => !isBall(p));
-            const seats = numCourts * 4;
-            const seatOrder = [1, 3, 0, 2];   // team 1 second seat, team 2 second, then the firsts
-            const empty = new Set();
-            for (let k = 0; k < seats - real.length; k++) {
-                const court = numCourts - 1 - (k % numCourts);
-                empty.add(court * 4 + seatOrder[Math.floor(k / numCourts)]);
-            }
+        function bestShuffle(active, numCourts, usedPartners, usedOpponents, shortCount, lastShort) {
+            // Courts fill in order: full fours first, then whoever is left on the next court
+            // (a three or a singles), and any courts after that stay empty.
+            const full = Math.floor(active.length / 4), left = active.length % 4;
+
+            // Who plays on the short court: never anyone who was on it last game, then
+            // whoever has had it least. Shuffling first breaks ties at random.
+            const shortGroup = left
+                ? shuffle([...active])
+                    .sort((a, b) => (lastShort.has(a) - lastShort.has(b)) || ((shortCount[a] || 0) - (shortCount[b] || 0)))
+                    .slice(0, left)
+                : [];
+            const rest = active.filter(p => !shortGroup.includes(p));
 
             let best = null, bestScore = Infinity;
             for (let attempt = 0; attempt < 10000; attempt++) {
-                const s = shuffle([...real]);
-                let next = 0;
-                const flat = Array.from({ length: seats }, (_, i) => empty.has(i) ? '' : s[next++]);
-                const courts = Array.from({length:numCourts}, (_,c) => [flat.slice(c*4,c*4+2), flat.slice(c*4+2,c*4+4)]);
+                const s = shuffle([...rest]);
+                const courts = Array.from({ length: full }, (_, c) => [s.slice(c*4, c*4+2), s.slice(c*4+2, c*4+4)]);
+                if (left) {
+                    const g = shuffle([...shortGroup]);
+                    courts.push(left === 3 ? [[g[0], g[1]], [g[2], '']] : [[g[0], ''], [g[1], '']]);
+                }
+                while (courts.length < numCourts) courts.push([['', ''], ['', '']]);
                 let pS = 0, oS = 0;
                 courts.forEach(([t1,t2]) => {
                     if (realPair(t1) && usedPartners.has(pairKey(t1))) pS++;
@@ -899,7 +906,7 @@
                 const score = pS*200 + oS;
                 if (score < bestScore) { bestScore = score; best = courts; if (!score) break; }
             }
-            return best;
+            return { courts: best, shortGroup };
         }
 
         function shuffle(arr) {
