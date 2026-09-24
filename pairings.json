@@ -1,35 +1,27 @@
 {
   "players": [
     {
-      "name": "Ed",
+      "name": "Rebecca",
       "sub": false
     },
     {
-      "name": "Ash",
+      "name": "Chris",
       "sub": false
     },
     {
-      "name": "Sully",
+      "name": "Ting",
       "sub": false
     },
     {
-      "name": "Quazim",
+      "name": "Richard",
       "sub": false
     },
     {
-      "name": "Hannah",
+      "name": "Adam",
       "sub": false
     },
     {
-      "name": "Ali",
-      "sub": false
-    },
-    {
-      "name": "Yee",
-      "sub": false
-    },
-    {
-      "name": "Louis K.",
+      "name": "Nehal",
       "sub": false
     },
     {
@@ -37,29 +29,28 @@
       "sub": false
     },
     {
-      "name": "Jesse R.",
+      "name": "Josh",
       "sub": false
     },
     {
-      "name": "Kamal",
+      "name": "Zak",
       "sub": false
     },
     {
-      "name": "Jack H.",
+      "name": "Shyam",
       "sub": false
     },
     {
-      "name": "Sope",
+      "name": "Lucy",
       "sub": false
     },
     {
-      "name": "Imran",
+      "name": "Rod",
       "sub": false
     }
   ],
-  "numCourts": 4,
+  "numCourts": 3,
   "numGames": 4,
-  "seed": 542552,
   "generatedGames": [
     {
       "game": 1,
@@ -67,42 +58,32 @@
       "courts": [
         [
           [
-            "Jesse R.",
-            "Sully"
+            "Nehal",
+            "Shyam"
           ],
           [
-            "Hannah",
-            "Ed"
+            "Rod",
+            "Ting"
           ]
         ],
         [
           [
-            "Imran",
-            "Alex"
+            "Richard",
+            "Zak"
           ],
           [
-            "Quazim",
-            "Yee"
+            "Alex",
+            "Rebecca"
           ]
         ],
         [
           [
-            "Kamal",
-            "Ali"
+            "Adam",
+            "Chris"
           ],
           [
-            "Sope",
-            "Louis K."
-          ]
-        ],
-        [
-          [
-            "",
-            "Jack H."
-          ],
-          [
-            "",
-            "Ash"
+            "Josh",
+            "Lucy"
           ]
         ]
       ]
@@ -113,42 +94,32 @@
       "courts": [
         [
           [
-            "",
-            "Sully"
+            "Chris",
+            "Shyam"
           ],
           [
-            "",
-            "Louis K."
+            "Rebecca",
+            "Adam"
           ]
         ],
         [
+          [
+            "Ting",
+            "Josh"
+          ],
           [
             "Alex",
-            "Quazim"
-          ],
-          [
-            "Kamal",
-            "Ali"
+            "Rod"
           ]
         ],
         [
           [
-            "Yee",
-            "Imran"
+            "Nehal",
+            "Zak"
           ],
           [
-            "Ash",
-            "Hannah"
-          ]
-        ],
-        [
-          [
-            "Sope",
-            "Jesse R."
-          ],
-          [
-            "Ed",
-            "Jack H."
+            "Lucy",
+            "Richard"
           ]
         ]
       ]
@@ -159,42 +130,32 @@
       "courts": [
         [
           [
-            "Jesse R.",
-            "Sully"
+            "Nehal",
+            "Richard"
           ],
           [
-            "Imran",
-            "Quazim"
+            "Josh",
+            "Adam"
           ]
         ],
         [
           [
-            "Yee",
-            "Hannah"
+            "Chris",
+            "Rebecca"
           ],
           [
-            "Ali",
-            "Sope"
+            "Alex",
+            "Ting"
           ]
         ],
         [
           [
-            "Ed",
-            ""
+            "Zak",
+            "Lucy"
           ],
           [
-            "Louis K.",
-            ""
-          ]
-        ],
-        [
-          [
-            "Ash",
-            "Jack H."
-          ],
-          [
-            "Kamal",
-            "Alex"
+            "Shyam",
+            "Rod"
           ]
         ]
       ]
@@ -205,47 +166,37 @@
       "courts": [
         [
           [
-            "Yee",
-            "Jack H."
+            "Rebecca",
+            "Ting"
           ],
           [
-            "Louis K.",
-            "Hannah"
+            "Adam",
+            "Nehal"
           ]
         ],
         [
           [
-            "Sope",
-            ""
+            "Rod",
+            "Lucy"
           ],
           [
-            "Jesse R.",
-            ""
+            "Richard",
+            "Alex"
           ]
         ],
         [
           [
-            "Ali",
-            "Sully"
+            "Josh",
+            "Chris"
           ],
           [
-            "Alex",
-            "Ash"
-          ]
-        ],
-        [
-          [
-            "Ed",
-            "Imran"
-          ],
-          [
-            "Kamal",
-            "Quazim"
+            "Shyam",
+            "Zak"
           ]
         ]
       ]
     }
   ],
-  "activeGame": 3,
-  "updated": "2026-09-21T16:35:08.992Z"
+  "activeGame": 0,
+  "updated": "2026-09-24T14:02:01.249Z"
 }
