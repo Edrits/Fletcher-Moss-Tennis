@@ -9,7 +9,7 @@
       "sub": false
     },
     {
-      "name": "Ting",
+      "name": "Jesse",
       "sub": false
     },
     {
@@ -59,31 +59,31 @@
         [
           [
             "Nehal",
+            "Josh"
+          ],
+          [
+            "Zak",
+            "Richard"
+          ]
+        ],
+        [
+          [
+            "Rebecca",
+            "Adam"
+          ],
+          [
+            "Lucy",
+            "Alex"
+          ]
+        ],
+        [
+          [
+            "Jesse",
             "Shyam"
           ],
           [
-            "Rod",
-            "Ting"
-          ]
-        ],
-        [
-          [
-            "Richard",
-            "Zak"
-          ],
-          [
-            "Alex",
-            "Rebecca"
-          ]
-        ],
-        [
-          [
-            "Adam",
-            "Chris"
-          ],
-          [
-            "Josh",
-            "Lucy"
+            "Chris",
+            "Rod"
           ]
         ]
       ]
@@ -94,32 +94,32 @@
       "courts": [
         [
           [
-            "Chris",
-            "Shyam"
-          ],
-          [
-            "Rebecca",
-            "Adam"
-          ]
-        ],
-        [
-          [
-            "Ting",
-            "Josh"
-          ],
-          [
             "Alex",
             "Rod"
+          ],
+          [
+            "Chris",
+            "Lucy"
           ]
         ],
         [
           [
             "Nehal",
-            "Zak"
+            "Jesse"
           ],
           [
-            "Lucy",
-            "Richard"
+            "Josh",
+            "Adam"
+          ]
+        ],
+        [
+          [
+            "Richard",
+            "Shyam"
+          ],
+          [
+            "Zak",
+            "Rebecca"
           ]
         ]
       ]
@@ -130,32 +130,32 @@
       "courts": [
         [
           [
-            "Nehal",
-            "Richard"
+            "Rod",
+            "Jesse"
           ],
           [
-            "Josh",
-            "Adam"
+            "Alex",
+            "Nehal"
           ]
         ],
         [
           [
-            "Chris",
-            "Rebecca"
+            "Adam",
+            "Shyam"
           ],
           [
-            "Alex",
-            "Ting"
+            "Josh",
+            "Richard"
           ]
         ],
         [
           [
             "Zak",
-            "Lucy"
+            "Chris"
           ],
           [
-            "Shyam",
-            "Rod"
+            "Lucy",
+            "Rebecca"
           ]
         ]
       ]
@@ -166,37 +166,37 @@
       "courts": [
         [
           [
-            "Rebecca",
-            "Ting"
+            "Jesse",
+            "Josh"
           ],
           [
-            "Adam",
-            "Nehal"
+            "Lucy",
+            "Shyam"
           ]
         ],
         [
           [
-            "Rod",
-            "Lucy"
+            "Chris",
+            "Alex"
           ],
+          [
+            "Nehal",
+            "Zak"
+          ]
+        ],
+        [
           [
             "Richard",
-            "Alex"
-          ]
-        ],
-        [
-          [
-            "Josh",
-            "Chris"
+            "Adam"
           ],
           [
-            "Shyam",
-            "Zak"
+            "Rod",
+            "Rebecca"
           ]
         ]
       ]
     }
   ],
   "activeGame": 0,
-  "updated": "2026-09-24T14:02:01.249Z"
+  "updated": "2026-09-24T17:05:05.786Z"
 }
