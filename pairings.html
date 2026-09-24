@@ -296,7 +296,9 @@
         .vs { display: inline-block; width: 30px; height: 30px; border-radius: 50%; border: 1.5px solid var(--border-strong); font-size: 9px; font-weight: 900; color: var(--text-muted); line-height: 26px; }
 
         /* Drag & drop to rearrange players */
-        .pp[data-loc], .sitting-pill[data-loc] { touch-action: none; user-select: none; -webkit-user-select: none; cursor: grab; }
+        /* pan-y: a finger on a name still scrolls the page. Dragging needs a press and hold first. */
+        .pp[data-loc], .sitting-pill[data-loc] { touch-action: pan-y; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; cursor: grab; }
+        .drag-armed { transform: scale(1.06); box-shadow: 0 6px 16px rgba(20,40,10,.25); transition: transform .12s, box-shadow .12s; }
         .pp[data-loc]:active, .sitting-pill[data-loc]:active { cursor: grabbing; }
         .drag-ghost { position: fixed; z-index: 2000; pointer-events: none; opacity: .95; transform: translate(-50%,-50%) rotate(-2deg); box-shadow: var(--shadow-lg); }
         .drop-target { outline: 3px dashed var(--green-600); outline-offset: 2px; border-radius: var(--radius-sm); }
@@ -988,7 +990,7 @@
             if (hint) {
                 hint.classList.toggle('view', !editMode);
                 hint.innerHTML = editMode
-                    ? '↔ Drag any name onto another to swap their places. This works with sitting-out players too.'
+                    ? '↔ Drag any name onto another to swap their places. On a phone, press and hold the name first. This works with sitting-out players too.'
                     : 'View only. Tap “Unlock to edit” above to change the pairings.';
             }
             const tt = document.getElementById('tally-title');
@@ -1183,18 +1185,35 @@
             if (!ok) { generatedGames = prevGames; renderGameScreen(); }
         }
 
+        // On a phone the names cover most of the screen, so a drag that started on touch
+        // made the page impossible to scroll: organisers kept moving players when they
+        // meant to scroll. A touch drag now needs a short press and hold. Moving the finger
+        // before then is a scroll. A mouse drags straight away as before.
+        const HOLD_MS = 350;
+        const HOLD_SLOP = 10;        // px a finger may wander during the hold
+
         function onDragStart(e) {
             if (!editMode || saving) return;                     // view-only, or a save in flight
             if (e.button && e.button !== 0) return;              // left button / touch only
             const el = e.target.closest('[data-loc]');
             if (!el) return;
             if (drag) endDrag(false);                            // never leave an earlier drag half-finished
+            const touch = e.pointerType !== 'mouse';
             drag = {
                 el, loc: el.getAttribute('data-loc'),
                 startX: e.clientX, startY: e.clientY,
                 x: e.clientX, y: e.clientY,
-                moved: false, ghost: null, over: null, timer: null
+                moved: false, ghost: null, over: null, timer: null,
+                armed: !touch, hold: null
             };
+            if (touch) {
+                drag.hold = setTimeout(() => {
+                    if (!drag) return;
+                    drag.armed = true;
+                    drag.el.classList.add('drag-armed');
+                    if (navigator.vibrate) navigator.vibrate(12);
+                }, HOLD_MS);
+            }
             document.addEventListener('pointermove', onDragMove);
             document.addEventListener('pointerup', onDragUp);
             // A touch drag can be taken away from us at any point: a second finger, an
@@ -1205,6 +1224,11 @@
 
         function onDragMove(e) {
             if (!drag) return;
+            if (!drag.armed) {
+                // Still inside the hold: moving means the finger is scrolling, so let it go.
+                if (Math.hypot(e.clientX - drag.startX, e.clientY - drag.startY) > HOLD_SLOP) endDrag(false);
+                return;
+            }
             drag.x = e.clientX; drag.y = e.clientY;
             if (!drag.moved) {
                 if (Math.hypot(e.clientX - drag.startX, e.clientY - drag.startY) < 8) return;
@@ -1273,13 +1297,16 @@
             const d = drag; drag = null;
             if (!d) return;
             if (d.timer) clearInterval(d.timer);
+            clearTimeout(d.hold);
+            d.el.classList.remove('drag-armed');
             // Sweep the document rather than only this drag's own nodes, so any ghost
             // orphaned by an earlier interrupted drag gets cleared too.
             document.querySelectorAll('.drag-ghost').forEach(g => g.remove());
             document.querySelectorAll('.drop-target').forEach(el => el.classList.remove('drop-target'));
             document.querySelectorAll('.drag-source').forEach(el => el.classList.remove('drag-source'));
-            if (d.moved) {
-                // Swallow the click that follows a drag so it doesn't also trigger rename
+            if (d.moved || (d.armed && d.hold)) {
+                // Swallow the click that follows a drag (or a press and hold) so it doesn't
+                // also trigger rename
                 const swallow = ev => { ev.stopPropagation(); ev.preventDefault(); };
                 document.addEventListener('click', swallow, { capture: true, once: true });
                 setTimeout(() => document.removeEventListener('click', swallow, { capture: true }), 350);
@@ -1288,6 +1315,11 @@
         }
 
         document.addEventListener('pointerdown', onDragStart);
+        // Once a name is picked up, the finger moves the name, not the page. Only a
+        // non-passive touchmove listener can stop the scroll.
+        document.addEventListener('touchmove', e => { if (drag && drag.armed) e.preventDefault(); }, { passive: false });
+        // A press and hold would otherwise open the phone's own menu over the name.
+        document.addEventListener('contextmenu', e => { if (editMode && e.target.closest('[data-loc]')) e.preventDefault(); });
 
         // Hamburger menu triggers matching index.html
         function toggleMobileNav() {
