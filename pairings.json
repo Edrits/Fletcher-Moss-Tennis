@@ -178,7 +178,7 @@
       "game": 3,
       "sitters": [
         "Linda",
-        "Adam"
+        "Art"
       ],
       "courts": [
         [
@@ -193,7 +193,7 @@
         ],
         [
           [
-            "Art",
+            "Adam",
             "Adam B"
           ],
           [
@@ -273,6 +273,6 @@
       ]
     }
   ],
-  "activeGame": 1,
-  "updated": "2026-09-26T08:28:43.367Z"
+  "activeGame": 2,
+  "updated": "2026-09-26T08:29:04.502Z"
 }
