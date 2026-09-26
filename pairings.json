@@ -37,10 +37,6 @@
       "sub": false
     },
     {
-      "name": "Ryan",
-      "sub": false
-    },
-    {
       "name": "Richard",
       "sub": false
     },
@@ -65,11 +61,11 @@
       "sub": false
     },
     {
-      "name": "Sub1 Yemi (trial)",
+      "name": "Yemi (trial)",
       "sub": false
     },
     {
-      "name": "Sub2 Tess",
+      "name": "Sub1 Tess",
       "sub": false
     }
   ],
@@ -79,48 +75,47 @@
     {
       "game": 1,
       "sitters": [
-        "Sub1 Yemi (trial)",
-        "Sub2 Tess"
+        "Sub1 Tess"
       ],
       "courts": [
         [
           [
-            "Shyam",
-            "Linda"
-          ],
-          [
-            "George Gleaves (trial)",
-            "John"
-          ]
-        ],
-        [
-          [
-            "Luke",
+            "Adam",
             "Richard"
           ],
           [
-            "Art",
-            "Ali"
+            "Ali",
+            "Adam B"
           ]
         ],
         [
           [
-            "Ayesa",
+            "George Gleaves (trial)",
             "Imran"
           ],
           [
-            "Bridget",
-            "Ryan"
+            "James",
+            "Yemi (trial)"
           ]
         ],
         [
           [
-            "Adam",
-            "Ting"
+            "Ting",
+            "Luke"
           ],
           [
-            "Adam B",
-            "James"
+            "Shyam",
+            "Linda"
+          ]
+        ],
+        [
+          [
+            "Bridget",
+            "Ayesa"
+          ],
+          [
+            "Art",
+            "John"
           ]
         ]
       ]
@@ -128,38 +123,65 @@
     {
       "game": 2,
       "sitters": [
-        "Bridget",
+        "Yemi (trial)"
+      ],
+      "courts": [
+        [
+          [
+            "Linda",
+            "Luke"
+          ],
+          [
+            "Adam",
+            "Ali"
+          ]
+        ],
+        [
+          [
+            "Shyam",
+            "John"
+          ],
+          [
+            "George Gleaves (trial)",
+            "Adam B"
+          ]
+        ],
+        [
+          [
+            "James",
+            "Ayesa"
+          ],
+          [
+            "Sub1 Tess",
+            "Bridget"
+          ]
+        ],
+        [
+          [
+            "Richard",
+            "Art"
+          ],
+          [
+            "Imran",
+            "Ting"
+          ]
+        ]
+      ]
+    },
+    {
+      "game": 3,
+      "sitters": [
         "Ayesa"
       ],
       "courts": [
         [
           [
-            "Shyam",
-            "Richard"
-          ],
-          [
-            "Sub1 Yemi (trial)",
-            "James"
-          ]
-        ],
-        [
-          [
-            "George Gleaves (trial)",
+            "Bridget",
             "Luke"
           ],
           [
-            "Adam",
-            "Sub2 Tess"
-          ]
-        ],
-        [
-          [
-            "Adam B",
-            "Ting"
-          ],
-          [
-            "Art",
-            "Imran"
+            "Ting",
+            "Richard"
           ]
         ],
         [
@@ -168,57 +190,28 @@
             "John"
           ],
           [
-            "Ali",
-            "Ryan"
-          ]
-        ]
-      ]
-    },
-    {
-      "game": 3,
-      "sitters": [
-        "Linda",
-        "Art"
-      ],
-      "courts": [
-        [
-          [
-            "Ali",
-            "Sub2 Tess"
-          ],
-          [
-            "Sub1 Yemi (trial)",
+            "Yemi (trial)",
             "Shyam"
           ]
         ],
         [
           [
-            "Adam",
-            "Adam B"
-          ],
-          [
             "James",
-            "Ryan"
-          ]
-        ],
-        [
-          [
-            "Bridget",
-            "George Gleaves (trial)"
-          ],
-          [
-            "Ting",
-            "Luke"
-          ]
-        ],
-        [
-          [
-            "Richard",
             "Imran"
           ],
           [
-            "John",
-            "Ayesa"
+            "Adam",
+            "Adam B"
+          ]
+        ],
+        [
+          [
+            "Sub1 Tess",
+            "Ali"
+          ],
+          [
+            "George Gleaves (trial)",
+            "Art"
           ]
         ]
       ]
@@ -226,53 +219,52 @@
     {
       "game": 4,
       "sitters": [
-        "Ali",
-        "George Gleaves (trial)"
+        "John"
       ],
       "courts": [
         [
           [
-            "Art",
-            "Linda"
+            "Ting",
+            "Shyam"
           ],
           [
-            "Adam",
-            "Sub1 Yemi (trial)"
+            "Imran",
+            "Ayesa"
           ]
         ],
         [
           [
-            "Bridget",
-            "Luke"
+            "Art",
+            "James"
           ],
           [
-            "John",
+            "Yemi (trial)",
+            "Linda"
+          ]
+        ],
+        [
+          [
+            "Luke",
+            "George Gleaves (trial)"
+          ],
+          [
+            "Bridget",
             "Adam B"
           ]
         ],
         [
           [
-            "Richard",
-            "Imran"
+            "Ali",
+            "Richard"
           ],
           [
-            "James",
-            "Sub2 Tess"
-          ]
-        ],
-        [
-          [
-            "Shyam",
-            "Ting"
-          ],
-          [
-            "Ryan",
-            "Ayesa"
+            "Adam",
+            "Sub1 Tess"
           ]
         ]
       ]
     }
   ],
-  "activeGame": 3,
-  "updated": "2026-09-26T08:30:02.000Z"
+  "activeGame": 0,
+  "updated": "2026-09-26T09:36:52.057Z"
 }
