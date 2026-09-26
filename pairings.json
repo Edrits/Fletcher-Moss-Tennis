@@ -128,7 +128,7 @@
     {
       "game": 2,
       "sitters": [
-        "John",
+        "Bridget",
         "Ayesa"
       ],
       "courts": [
@@ -165,7 +165,7 @@
         [
           [
             "Linda",
-            "Bridget"
+            "John"
           ],
           [
             "Ali",
@@ -273,6 +273,6 @@
       ]
     }
   ],
-  "activeGame": 0,
-  "updated": "2026-09-26T08:27:21.380Z"
+  "activeGame": 1,
+  "updated": "2026-09-26T08:28:43.367Z"
 }
