@@ -142,12 +142,12 @@
       "game": 3,
       "sitters": [
         "Art",
-        "Alan"
+        "Will"
       ],
       "courts": [
         [
           [
-            "Will",
+            "Alan",
             "Sub 1 Jack"
           ],
           [
@@ -218,5 +218,5 @@
     }
   ],
   "activeGame": 2,
-  "updated": "2026-09-28T16:04:07.291Z"
+  "updated": "2026-09-28T16:04:22.664Z"
 }
