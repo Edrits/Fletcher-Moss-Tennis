@@ -181,7 +181,7 @@
       "game": 4,
       "sitters": [
         "Ting",
-        "Ryan"
+        "Sub 2 Rod"
       ],
       "courts": [
         [
@@ -191,7 +191,7 @@
           ],
           [
             "Will",
-            "Sub 2 Rod"
+            "Ryan"
           ]
         ],
         [
@@ -217,6 +217,6 @@
       ]
     }
   ],
-  "activeGame": 2,
-  "updated": "2026-09-28T17:50:38.331Z"
+  "activeGame": 3,
+  "updated": "2026-09-28T17:50:54.413Z"
 }
