@@ -9,11 +9,11 @@
       "sub": false
     },
     {
-      "name": "George Gleaves (trial)",
+      "name": "Sofia",
       "sub": false
     },
     {
-      "name": "Adam B",
+      "name": "Will",
       "sub": false
     },
     {
@@ -21,101 +21,80 @@
       "sub": false
     },
     {
-      "name": "James",
+      "name": "Sope",
       "sub": false
     },
     {
-      "name": "Imran",
+      "name": "Jamie",
       "sub": false
     },
     {
-      "name": "Luke",
+      "name": "Josh",
       "sub": false
     },
     {
-      "name": "Ali",
+      "name": "Shaun",
       "sub": false
     },
     {
-      "name": "Richard",
+      "name": "Alan",
       "sub": false
     },
     {
-      "name": "Shyam",
+      "name": "Reagan",
       "sub": false
     },
     {
-      "name": "Linda",
+      "name": "Ryan",
       "sub": false
     },
     {
-      "name": "Adam",
+      "name": "Sub 1 Jack",
       "sub": false
     },
     {
-      "name": "John",
-      "sub": false
-    },
-    {
-      "name": "Ayesa",
-      "sub": false
-    },
-    {
-      "name": "Yemi (trial)",
-      "sub": false
-    },
-    {
-      "name": "Sub1 Tess",
+      "name": "Sub 2 Rod",
       "sub": false
     }
   ],
-  "numCourts": 4,
+  "numCourts": 3,
   "numGames": 4,
   "generatedGames": [
     {
       "game": 1,
       "sitters": [
-        "Sub1 Tess"
+        "Sub 1 Jack",
+        "Sub 2 Rod"
       ],
       "courts": [
         [
           [
-            "Adam",
-            "Richard"
+            "Reagan",
+            "Sofia"
           ],
           [
-            "Ali",
-            "Adam B"
-          ]
-        ],
-        [
-          [
-            "George Gleaves (trial)",
-            "Imran"
-          ],
-          [
-            "James",
-            "Yemi (trial)"
-          ]
-        ],
-        [
-          [
-            "Ting",
-            "Luke"
-          ],
-          [
-            "Shyam",
-            "Linda"
+            "Shaun",
+            "Art"
           ]
         ],
         [
           [
             "Bridget",
-            "Art"
+            "Sope"
           ],
           [
-            "Ayesa",
-            "John"
+            "Josh",
+            "Ryan"
+          ]
+        ],
+        [
+          [
+            "Alan",
+            "Will"
+          ],
+          [
+            "Ting",
+            "Jamie"
           ]
         ]
       ]
@@ -123,47 +102,38 @@
     {
       "game": 2,
       "sitters": [
-        "Yemi (trial)"
+        "Reagan",
+        "Ryan"
       ],
       "courts": [
         [
           [
-            "Linda",
-            "Luke"
+            "Jamie",
+            "Will"
           ],
           [
-            "Adam",
-            "Ali"
+            "Sub 1 Jack",
+            "Shaun"
           ]
         ],
         [
           [
-            "Shyam",
-            "John"
+            "Josh",
+            "Sofia"
           ],
           [
-            "George Gleaves (trial)",
-            "Adam B"
-          ]
-        ],
-        [
-          [
-            "James",
-            "Ayesa"
-          ],
-          [
-            "Sub1 Tess",
-            "Bridget"
-          ]
-        ],
-        [
-          [
-            "Richard",
-            "Art"
-          ],
-          [
-            "Imran",
+            "Alan",
             "Ting"
+          ]
+        ],
+        [
+          [
+            "Sub 2 Rod",
+            "Sope"
+          ],
+          [
+            "Art",
+            "Bridget"
           ]
         ]
       ]
@@ -171,47 +141,38 @@
     {
       "game": 3,
       "sitters": [
-        "Art"
+        "Shaun",
+        "Alan"
       ],
       "courts": [
         [
           [
-            "Bridget",
-            "Luke"
+            "Will",
+            "Sub 1 Jack"
           ],
+          [
+            "Reagan",
+            "Bridget"
+          ]
+        ],
+        [
           [
             "Ting",
-            "Richard"
+            "Ryan"
+          ],
+          [
+            "Art",
+            "Sub 2 Rod"
           ]
         ],
         [
           [
-            "Linda",
-            "John"
+            "Josh",
+            "Sope"
           ],
           [
-            "Yemi (trial)",
-            "Shyam"
-          ]
-        ],
-        [
-          [
-            "James",
-            "Imran"
-          ],
-          [
-            "Adam",
-            "Adam B"
-          ]
-        ],
-        [
-          [
-            "Sub1 Tess",
-            "Ali"
-          ],
-          [
-            "George Gleaves (trial)",
-            "Ayesa"
+            "Sofia",
+            "Jamie"
           ]
         ]
       ]
@@ -219,52 +180,43 @@
     {
       "game": 4,
       "sitters": [
-        "Ayesa"
+        "Jamie",
+        "Josh"
       ],
       "courts": [
         [
           [
-            "Ting",
-            "Shyam"
+            "Alan",
+            "Sofia"
           ],
           [
-            "Imran",
-            "John"
+            "Will",
+            "Sub 2 Rod"
           ]
         ],
         [
-          [
-            "Art",
-            "James"
-          ],
-          [
-            "Yemi (trial)",
-            "Linda"
-          ]
-        ],
-        [
-          [
-            "Luke",
-            "George Gleaves (trial)"
-          ],
           [
             "Bridget",
-            "Adam B"
+            "Sub 1 Jack"
+          ],
+          [
+            "Art",
+            "Ting"
           ]
         ],
         [
           [
-            "Ali",
-            "Richard"
+            "Sope",
+            "Ryan"
           ],
           [
-            "Adam",
-            "Sub1 Tess"
+            "Shaun",
+            "Reagan"
           ]
         ]
       ]
     }
   ],
-  "activeGame": 3,
-  "updated": "2026-09-26T11:18:30.240Z"
+  "activeGame": 0,
+  "updated": "2026-09-28T16:02:47.716Z"
 }
