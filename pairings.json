@@ -142,7 +142,7 @@
       "game": 3,
       "sitters": [
         "Art",
-        "Will"
+        "Sub 2 Rod"
       ],
       "courts": [
         [
@@ -162,7 +162,7 @@
           ],
           [
             "Shaun",
-            "Sub 2 Rod"
+            "Will"
           ]
         ],
         [
@@ -217,6 +217,6 @@
       ]
     }
   ],
-  "activeGame": 3,
-  "updated": "2026-09-28T16:04:57.548Z"
+  "activeGame": 2,
+  "updated": "2026-09-28T17:49:48.337Z"
 }
