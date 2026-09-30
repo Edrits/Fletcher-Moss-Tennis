@@ -5,6 +5,18 @@
       "name": "League",
       "players": [
         {
+          "name": "Josh",
+          "played": 1,
+          "won": 1,
+          "points": 3
+        },
+        {
+          "name": "Ryan",
+          "played": 1,
+          "won": 0,
+          "points": 1
+        },
+        {
           "name": "Hannah",
           "played": 0,
           "won": 0,
@@ -101,12 +113,6 @@
           "points": 0
         },
         {
-          "name": "Ryan",
-          "played": 0,
-          "won": 0,
-          "points": 0
-        },
-        {
           "name": "Chris",
           "played": 0,
           "won": 0,
@@ -149,12 +155,6 @@
           "points": 0
         },
         {
-          "name": "Josh",
-          "played": 0,
-          "won": 0,
-          "points": 0
-        },
-        {
           "name": "Ting",
           "played": 0,
           "won": 0,
@@ -173,7 +173,15 @@
           "points": 0
         }
       ],
-      "matches": []
+      "matches": [
+        {
+          "player1": "Josh",
+          "player2": "Ryan",
+          "winner": "Josh",
+          "noShow": null,
+          "date": "2026-09-30T08:43:46.014Z"
+        }
+      ]
     }
   ]
 }
