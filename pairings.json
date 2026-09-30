@@ -1,19 +1,11 @@
 {
   "players": [
     {
-      "name": "Bridget",
+      "name": "Ed",
       "sub": false
     },
     {
-      "name": "Art",
-      "sub": false
-    },
-    {
-      "name": "Sofia",
-      "sub": false
-    },
-    {
-      "name": "Will",
+      "name": "Evie",
       "sub": false
     },
     {
@@ -21,27 +13,15 @@
       "sub": false
     },
     {
-      "name": "Sope",
+      "name": "Will H.",
       "sub": false
     },
     {
-      "name": "Jamie",
+      "name": "Sofia",
       "sub": false
     },
     {
-      "name": "Josh",
-      "sub": false
-    },
-    {
-      "name": "Shaun",
-      "sub": false
-    },
-    {
-      "name": "Alan",
-      "sub": false
-    },
-    {
-      "name": "Reagan",
+      "name": "Luke",
       "sub": false
     },
     {
@@ -49,12 +29,28 @@
       "sub": false
     },
     {
-      "name": "Sub 1 Jack",
+      "name": "Sully",
       "sub": false
     },
     {
-      "name": "Sub 2 Rod",
+      "name": "Ayesa",
       "sub": false
+    },
+    {
+      "name": "Shyam",
+      "sub": false
+    },
+    {
+      "name": "Alan R.",
+      "sub": false
+    },
+    {
+      "name": "Louis W.",
+      "sub": false
+    },
+    {
+      "name": "Rashid",
+      "sub": true
     }
   ],
   "numCourts": 3,
@@ -63,38 +59,37 @@
     {
       "game": 1,
       "sitters": [
-        "Sub 1 Jack",
-        "Sub 2 Rod"
+        "Rashid"
       ],
       "courts": [
         [
           [
-            "Reagan",
+            "Louis W.",
+            "Ting"
+          ],
+          [
+            "Shyam",
+            "Luke"
+          ]
+        ],
+        [
+          [
+            "Ryan",
+            "Ayesa"
+          ],
+          [
+            "Will H.",
             "Sofia"
-          ],
-          [
-            "Shaun",
-            "Art"
           ]
         ],
         [
           [
-            "Bridget",
-            "Sope"
+            "Evie",
+            "Ed"
           ],
           [
-            "Josh",
-            "Ryan"
-          ]
-        ],
-        [
-          [
-            "Alan",
-            "Will"
-          ],
-          [
-            "Ting",
-            "Jamie"
+            "Sully",
+            "Alan R."
           ]
         ]
       ]
@@ -102,38 +97,37 @@
     {
       "game": 2,
       "sitters": [
-        "Bridget",
-        "Jamie"
+        "Louis W."
       ],
       "courts": [
         [
           [
-            "Ryan",
-            "Will"
+            "Rashid",
+            "Ayesa"
           ],
           [
-            "Sub 1 Jack",
-            "Shaun"
+            "Luke",
+            "Ryan"
           ]
         ],
         [
           [
-            "Josh",
-            "Sofia"
+            "Alan R.",
+            "Evie"
           ],
           [
-            "Alan",
+            "Sofia",
             "Ting"
           ]
         ],
         [
           [
-            "Sub 2 Rod",
-            "Sope"
+            "Will H.",
+            "Shyam"
           ],
           [
-            "Art",
-            "Reagan"
+            "Ed",
+            "Sully"
           ]
         ]
       ]
@@ -141,38 +135,37 @@
     {
       "game": 3,
       "sitters": [
-        "Art",
-        "Sub 2 Rod"
+        "Alan R."
       ],
       "courts": [
         [
           [
-            "Alan",
-            "Sub 1 Jack"
-          ],
-          [
-            "Reagan",
-            "Shaun"
-          ]
-        ],
-        [
-          [
-            "Bridget",
-            "Ryan"
-          ],
-          [
             "Sofia",
-            "Will"
+            "Ayesa"
+          ],
+          [
+            "Shyam",
+            "Louis W."
           ]
         ],
         [
           [
-            "Josh",
-            "Sope"
+            "Will H.",
+            "Sully"
           ],
           [
             "Ting",
-            "Jamie"
+            "Rashid"
+          ]
+        ],
+        [
+          [
+            "Evie",
+            "Ryan"
+          ],
+          [
+            "Ed",
+            "Luke"
           ]
         ]
       ]
@@ -180,43 +173,42 @@
     {
       "game": 4,
       "sitters": [
-        "Ting",
-        "Sub 2 Rod"
+        "Shyam"
       ],
       "courts": [
         [
           [
-            "Alan",
-            "Sofia"
+            "Sofia",
+            "Alan R."
           ],
           [
-            "Will",
-            "Art"
+            "Will H.",
+            "Luke"
           ]
         ],
         [
           [
-            "Bridget",
-            "Sub 1 Jack"
+            "Louis W.",
+            "Ryan"
           ],
           [
-            "Ryan",
-            "Jamie"
+            "Ting",
+            "Sully"
           ]
         ],
         [
           [
-            "Sope",
-            "Josh"
+            "Evie",
+            "Rashid"
           ],
           [
-            "Shaun",
-            "Reagan"
+            "Ed",
+            "Ayesa"
           ]
         ]
       ]
     }
   ],
-  "activeGame": 3,
-  "updated": "2026-09-28T17:51:11.129Z"
+  "activeGame": 0,
+  "updated": "2026-09-30T17:55:59.142Z"
 }
