@@ -51,6 +51,8 @@ Cancel tokens are never returned by the API. They are the only thing stopping a 
 
 The server decides whether sign-up is open, by comparing its own clock to `opensAt`. Never gate the button on the browser clock.
 
+**The pairings board follows the sign-up.** When someone leaves or is removed, `api/signup.js` calls `autoSyncPairings()` in `api/_lib/pairings-sync.js`, which applies the sign-up's promotion rule to `pairings.json`: the first sub takes the leaver's exact places, the new sub takes that sub's. It only acts on a board stamped with the same sign-up session (`signupSession`), only before the session starts (`sessionStartsAt()`), and only when every place can be handed over; otherwise the organiser sees a prompt on the board. It is guarded and time-limited so it can never fail or hold up a cancellation. The organiser's "Update from sign-up" button uses the same `planSignupSync()` through `api/pairings.js`, so the two cannot disagree.
+
 ## Editing data-backed pages
 
 When changing the shape of data used by a page (e.g. adding a field to a box-league player), update three places together: the inline `<script>` in the HTML page, the corresponding `api/*.js` handler's read/write logic, and — if you want existing data to reflect it immediately rather than waiting for the next save — the root JSON file itself.
