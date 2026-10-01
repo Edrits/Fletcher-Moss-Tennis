@@ -97,30 +97,40 @@
             max-width: 1200px; margin: 0 auto;
             display: flex; align-items: center; justify-content: space-between; gap: 20px;
         }
-        .top-bar-left { display: flex; align-items: center; gap: 20px; flex: 1; }
+        .top-bar-left { display: flex; align-items: center; gap: 20px; flex: 1; min-width: 0; }
         .top-logo {
             width: 118px; height: 118px; object-fit: contain;
             border-radius: 50%; box-shadow: var(--shadow-md); flex-shrink: 0;
         }
-        .top-title h1 { font-size: 2em; font-weight: 600; color: #fff; margin-bottom: 3px; white-space: nowrap; }
+        .top-title { min-width: 0; }
+        .top-title h1 { font-size: clamp(1.35rem, 2.6vw, 2em); font-weight: 600; color: #fff; margin-bottom: 3px; line-height: 1.15; }
         .top-title p {
             font-size: var(--text-xs); color: rgba(244,242,234,.78); white-space: nowrap;
             text-transform: uppercase; letter-spacing: var(--tracking-wider); font-weight: 600;
         }
 
-        .nav-links { display: flex; gap: 20px; align-items: center; flex-shrink: 0; }
-        .btn-home {
-            color: #fff !important; text-decoration: none;
-            font-size: var(--text-sm); font-weight: 600; font-family: var(--font-body);
-            border: 1.5px solid rgba(255,255,255,.75); padding: 8px 18px; border-radius: var(--radius-sm);
-            text-transform: uppercase; letter-spacing: .05em;
-            transition: background var(--duration-base), color var(--duration-base), transform .2s;
-            white-space: nowrap;
+        /* Header button, matching the homepage's: a cream pill with the beta marker. The
+           site menu sits next to it at every width, so the bar never has to fit a row of
+           tabs (which ran off the screen between phone and laptop widths). */
+        .top-cta {
+            display: inline-flex; align-items: center; gap: 7px; flex-shrink: 0;
+            padding: 9px 16px; border-radius: 999px;
+            background: rgba(244,242,234,.95); color: var(--green-800);
+            font-family: var(--font-body); font-size: var(--text-sm); font-weight: 700; text-decoration: none;
+            white-space: nowrap; transition: background .2s, transform .2s;
+            box-shadow: var(--shadow-sm);
         }
-        .btn-home:hover { background: #fff; color: var(--green-800) !important; transform: translateY(-2px); }
+        .top-cta:hover { background: #fff; transform: translateY(-1px); }
+        .top-cta .beta-chip {
+            display: inline-block; border-radius: 999px; padding: 2px 8px; margin: 0;
+            font-size: 9.5px; font-weight: 800; letter-spacing: 1.3px; text-transform: uppercase;
+            background: var(--gold-100); color: var(--gold-accent); border: 1px solid var(--gold-300);
+        }
+        /* Below 560px the club name needs the room; the menu carries every link. */
+        @media (max-width: 560px) { .top-cta { display: none; } }
 
         .hamburger {
-            display: none; flex-direction: column; justify-content: center; align-items: center; gap: 5px;
+            display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 5px;
             width: 44px; height: 44px; padding: 0; flex-shrink: 0; cursor: pointer;
             background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.18);
             border-radius: var(--radius-md); transition: background .2s;
@@ -470,7 +480,6 @@
             .top-bar { padding: 10px 15px; }
             .top-bar-inner { flex-direction: row; justify-content: space-between; align-items: center; gap: 8px; text-align: left; }
             .top-bar-left { flex-direction: row; align-items: center; gap: 10px; min-width: 0; flex: 1; }
-            .nav-links { display: none; }
             .hamburger { display: flex; }
             .top-logo { width: 72px; height: 72px; flex-shrink: 0; }
             .top-title { min-width: 0; overflow: hidden; }
@@ -505,10 +514,7 @@
                     <p>Court Pairings</p>
                 </div>
             </div>
-            <nav class="nav-links">
-                <a href="signup.html" class="btn-home">Session sign-up</a>
-                <a href="index.html" class="btn-home">Home</a>
-            </nav>
+            <a href="signup.html" class="top-cta">Sign-up<span class="beta-chip">Beta</span></a>
             <button class="hamburger" id="hamburger" aria-label="Open menu" aria-expanded="false" aria-controls="mobileNav" onclick="toggleMobileNav()">
                 <span></span>
                 <span></span>

@@ -140,17 +140,17 @@
       "courts": [
         [
           [
-            "Alan R.",
+            "Luke",
             "Rod"
           ],
           [
             "Will H.",
-            "Sofia"
+            "Dawid"
           ]
         ],
         [
           [
-            "Dawid",
+            "Sofia",
             "Ayesa"
           ],
           [
@@ -164,7 +164,7 @@
             "Evie"
           ],
           [
-            "Luke",
+            "Alan R.",
             "Ryan"
           ]
         ]
@@ -173,12 +173,12 @@
     {
       "game": 4,
       "sitters": [
-        "Rod"
+        "Ryan"
       ],
       "courts": [
         [
           [
-            "Evie",
+            "Sofia",
             "Ayesa"
           ],
           [
@@ -189,30 +189,30 @@
         [
           [
             "Shyam",
-            "Ting"
+            "Ben"
           ],
           [
             "Will H.",
-            "Ryan"
+            "Rod"
           ]
         ],
         [
           [
             "Luke",
-            "Sofia"
+            "Evie"
           ],
           [
-            "Ben",
+            "Ting",
             "Dawid"
           ]
         ]
       ]
     }
   ],
-  "activeGame": 0,
+  "activeGame": 3,
   "signupSession": {
     "id": "6e5836fa-4feb-46b1-94f9-8304d6d152b5",
     "date": "2026-10-01"
   },
-  "updated": "2026-10-01T16:40:48.401Z"
+  "updated": "2026-10-01T18:34:43.783Z"
 }
