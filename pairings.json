@@ -29,7 +29,7 @@
       "sub": false
     },
     {
-      "name": "Josh",
+      "name": "Rod",
       "sub": false
     },
     {
@@ -49,10 +49,6 @@
       "sub": false
     },
     {
-      "name": "Rod",
-      "sub": true
-    },
-    {
       "name": "Dawid",
       "sub": false
     }
@@ -63,7 +59,6 @@
     {
       "game": 1,
       "sitters": [
-        "Will H.",
         "Sofia"
       ],
       "courts": [
@@ -83,8 +78,8 @@
             "Luke"
           ],
           [
-            "Rod",
-            "Josh"
+            "Will H.",
+            "Rod"
           ]
         ],
         [
@@ -102,7 +97,6 @@
     {
       "game": 2,
       "sitters": [
-        "Alan R.",
         "Dawid"
       ],
       "courts": [
@@ -112,13 +106,13 @@
             "Will H."
           ],
           [
-            "Rod",
+            "Alan R.",
             "Ryan"
           ]
         ],
         [
           [
-            "Josh",
+            "Rod",
             "Evie"
           ],
           [
@@ -141,14 +135,13 @@
     {
       "game": 3,
       "sitters": [
-        "Ayesa",
         "Shyam"
       ],
       "courts": [
         [
           [
             "Alan R.",
-            "Josh"
+            "Rod"
           ],
           [
             "Will H.",
@@ -158,7 +151,7 @@
         [
           [
             "Dawid",
-            "Rod"
+            "Ayesa"
           ],
           [
             "Ting",
@@ -180,8 +173,7 @@
     {
       "game": 4,
       "sitters": [
-        "Luke",
-        "Josh"
+        "Rod"
       ],
       "courts": [
         [
@@ -206,7 +198,7 @@
         ],
         [
           [
-            "Rod",
+            "Luke",
             "Sofia"
           ],
           [
@@ -218,5 +210,13 @@
     }
   ],
   "activeGame": 3,
-  "updated": "2026-10-01T15:15:45.522Z"
+  "updated": "2026-10-01T16:39:35.157Z",
+  "signupSession": {
+    "id": "6e5836fa-4feb-46b1-94f9-8304d6d152b5",
+    "date": "2026-10-01"
+  },
+  "autoNote": {
+    "text": "Rod moved up for Josh",
+    "at": "2026-10-01T16:39:35.157Z"
+  }
 }
