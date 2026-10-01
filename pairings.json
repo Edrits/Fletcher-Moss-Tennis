@@ -145,12 +145,12 @@
           ],
           [
             "Will H.",
-            "Sofia"
+            "Dawid"
           ]
         ],
         [
           [
-            "Dawid",
+            "Sofia",
             "Ayesa"
           ],
           [
@@ -209,10 +209,10 @@
       ]
     }
   ],
-  "activeGame": 0,
+  "activeGame": 2,
   "signupSession": {
     "id": "6e5836fa-4feb-46b1-94f9-8304d6d152b5",
     "date": "2026-10-01"
   },
-  "updated": "2026-10-01T16:40:48.401Z"
+  "updated": "2026-10-01T18:02:34.650Z"
 }
