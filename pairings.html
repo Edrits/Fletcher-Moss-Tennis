@@ -316,6 +316,42 @@
         .tp.out { opacity: .38; }
         .tp .tn { color: var(--ink-700); }
         .tp .tc { font-weight: 800; }
+        .tp.gone { opacity: .5; }
+        .tp.gone .tn { text-decoration: line-through; }
+
+        /* ── Change players: update a live board without redrawing played games ── */
+        #cp-panel { scroll-margin-top: 160px; }
+        @media (max-width: 768px) { #cp-panel { scroll-margin-top: 110px; } }
+        .cp-list { display: flex; flex-wrap: wrap; gap: 6px; margin: 4px 0 12px; }
+        .cp-chip {
+            display: inline-flex; align-items: center; gap: 2px;
+            background: var(--paper-50); border: 1px solid var(--border-subtle); border-radius: var(--radius-sm);
+            padding: 2px 2px 2px 10px; font-size: 13px; font-weight: 600; color: var(--ink-700);
+        }
+        .cp-chip.new { background: var(--green-50); border-color: var(--green-500); color: var(--green-800); }
+        .cp-chip.leaving { background: var(--paper-0); border-style: dashed; color: var(--text-muted); }
+        .cp-chip.leaving .cp-name { text-decoration: line-through; }
+        .cp-tag { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; margin-left: 4px; }
+        .cp-chip button {
+            border: none; background: transparent; color: inherit; font: inherit; font-size: 16px;
+            width: 32px; height: 32px; border-radius: 6px; cursor: pointer; line-height: 1;
+        }
+        .cp-chip button:hover { background: rgba(32,36,29,.08); }
+        .cp-add { display: flex; gap: 8px; margin-bottom: 14px; }
+        .cp-add input {
+            flex: 1; min-width: 0; padding: 10px 12px; border: 1px solid var(--border-strong); border-radius: var(--radius-sm);
+            font-family: var(--font-body); font-size: 16px; color: var(--text-body); background: var(--paper-50);
+        }
+        .cp-add input:focus { outline: none; border-color: var(--green-600); background: var(--paper-0); }
+        .cp-row { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 4px; }
+        .cp-row select {
+            width: 100%; padding: 10px; border: 1px solid var(--border-strong); border-radius: var(--radius-sm);
+            font-family: var(--font-body); font-size: 15px; background: var(--paper-0); color: var(--text-body);
+        }
+        .cp-summary { font-size: var(--text-sm); color: var(--ink-700); font-weight: 600; margin-top: 14px; }
+        .cp-actions { display: flex; gap: 10px; align-items: center; }
+        .cp-actions .generate-btn { flex: 1; }
+        .cp-actions .edit-btn { margin-top: 10px; padding: 13px 18px; }
 
         /* ── Rain alert banner (softened terracotta) ── */
         #rainAlertBanner {
@@ -482,9 +518,37 @@
                 <div style="display: flex; gap: 10px; flex-wrap: wrap;">
                     <button class="edit-btn primary" onclick="copyPageLink()">Copy link</button>
                     <button class="edit-btn" id="btn-unlock" onclick="unlockEditing()">Unlock to edit</button>
-                    <button class="edit-btn" id="btn-edit-players" onclick="backToSetup()">Edit players or courts</button>
+                    <button class="edit-btn primary" id="btn-sync-signup" onclick="sortFromSignup()">Update from sign-up</button>
+                    <button class="edit-btn" id="btn-change-players" onclick="cpOpen()">Change players</button>
+                    <button class="edit-btn" id="btn-edit-players" onclick="backToSetup()">Start again from the list</button>
                     <button class="edit-btn danger" id="btn-reset" onclick="resetBoard()">Reset board</button>
                     <button class="edit-btn" id="btn-lock" onclick="lockEditing()">Done editing</button>
+                </div>
+            </div>
+            <div class="card" id="cp-panel" hidden>
+                <h3>Change players</h3>
+                <p>Games already played stay exactly as they are. The games from the one you choose are drawn again with the new list, and whoever has played least goes on court first.</p>
+                <button class="add-player-btn" id="cp-signup-btn" onclick="cpUseSignup()">Use the latest sign-up</button>
+                <p class="paste-hint" id="cp-msg">Adds anyone new from the sign-up and marks anyone no longer on it as leaving. The waiting list is left out.</p>
+                <div class="cp-list" id="cp-list"></div>
+                <form class="cp-add" onsubmit="event.preventDefault(); cpAdd()">
+                    <input id="cp-add-name" type="text" placeholder="Add someone who has turned up" autocomplete="off" aria-label="Player name">
+                    <button class="edit-btn" type="submit">Add</button>
+                </form>
+                <div class="cp-row">
+                    <div class="option-group">
+                        <label for="cp-from">Draw again from</label>
+                        <select id="cp-from" onchange="cpRender()"></select>
+                    </div>
+                    <div class="option-group">
+                        <label id="cp-courts-label">Courts from then on</label>
+                        <div class="btn-group" id="cp-courts" role="group" aria-labelledby="cp-courts-label"></div>
+                    </div>
+                </div>
+                <p class="cp-summary" id="cp-summary" role="status"></p>
+                <div class="cp-actions">
+                    <button class="generate-btn" id="cp-apply" onclick="cpApply()">Update games</button>
+                    <button class="edit-btn" onclick="cpClose()">Cancel</button>
                 </div>
             </div>
             <div class="tabs" id="tabs"></div>
@@ -726,6 +790,10 @@
             if (generatedGames.length && !setupSnapshot) {
                 setupSnapshot = JSON.stringify({ players, numCourts, numGames });
             }
+            // Starting again from the list redraws every game, so anyone who has left is
+            // dropped and late arrivals are treated as there from game 1.
+            players = players.filter(p => p.left == null).map(p => ({ name: p.name, sub: !!p.sub }));
+            cpClose();
             document.getElementById('setup-screen').style.display = 'block';
             document.getElementById('game-screen').style.display = 'none';
             renderPlayerInputs();
@@ -779,7 +847,7 @@
                 msg.textContent = invalid; msg.style.display = 'block'; return;
             }
             document.getElementById('roster-warning').textContent = '';
-            players = players.map(p => ({ ...p, name: p.name.trim() }));
+            players = players.filter(p => p.left == null).map(p => ({ name: p.name.trim(), sub: !!p.sub }));
             const named = players.filter(p => p.name.trim());
             const playPerGame = numCourts * 4;
             const msg = document.getElementById('val-msg');
@@ -983,8 +1051,11 @@
             const show = (id, on) => { const el = document.getElementById(id); if (el) el.style.display = on ? '' : 'none'; };
             show('btn-unlock', !editMode);
             show('btn-lock', editMode);
+            show('btn-sync-signup', editMode);
+            show('btn-change-players', editMode);
             show('btn-edit-players', editMode);
             show('btn-reset', editMode);
+            if (!editMode) cpClose();
 
             const hint = document.querySelector('.drag-hint');
             if (hint) {
@@ -1054,6 +1125,7 @@
         async function resetBoard() {
             if (!editMode || saving || !generatedGames.length) return;
             if (!confirm("Wipe the slate clean? Every court seat becomes an empty slot and the player list is cleared.")) return;
+            cpClose();
 
             const prevPlayers = JSON.parse(JSON.stringify(players));
             const prevGames = JSON.parse(JSON.stringify(generatedGames));
@@ -1072,6 +1144,387 @@
                 generatedGames = prevGames;
                 renderGameScreen();
             }
+        }
+
+        // ── Change players on a live board ──
+        // People arrive and leave during a session. Rather than redraw every game (and lose
+        // the ones already played), the organiser picks a game to redraw from: earlier games
+        // are kept exactly, and the rest are drawn again with the new list. A player's
+        // `joined` and `left` mark the first game they are in and the first they are not;
+        // the server checks every game holds exactly the players present for it.
+        function presentNow() { return players.filter(p => p.name.trim() && p.left == null); }
+        function boardTitle() { return `${presentNow().length} Players · ${numCourts} Courts`; }
+
+        let cp = null; // the pending change: { list: [{ name, sub, status: 'stay' | 'new' | 'leaving' }], courts }
+        const CP_HINT = 'Adds anyone new from the sign-up and marks anyone no longer on it as leaving. The waiting list is left out.';
+
+        function cpOpen() {
+            if (!editMode || saving || !generatedGames.length) return;
+            cp = { list: presentNow().map(p => ({ name: p.name.trim(), sub: !!p.sub, status: 'stay' })), courts: numCourts };
+            const from = document.getElementById('cp-from');
+            from.innerHTML = generatedGames.map((g, i) =>
+                `<option value="${i}">${i === 0 ? 'Game 1 (redraw them all)' : `Game ${i + 1} onwards`}</option>`).join('');
+            from.value = String(activeGame);
+            document.getElementById('cp-msg').textContent = CP_HINT;
+            document.getElementById('cp-add-name').value = '';
+            const panel = document.getElementById('cp-panel');
+            panel.hidden = false;
+            cpRender();
+            panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        function cpClose() {
+            cp = null;
+            document.getElementById('cp-panel').hidden = true;
+        }
+
+        function cpRender() {
+            if (!cp) return;
+            document.getElementById('cp-list').innerHTML = cp.list.map((p, i) => {
+                const tag = p.status === 'new' ? '<span class="cp-tag">New</span>'
+                    : p.status === 'leaving' ? '<span class="cp-tag">Leaving</span>' : '';
+                const action = p.status === 'leaving'
+                    ? `<button type="button" onclick="cpToggle(${i})" aria-label="Keep ${escapeHtml(p.name)}" title="Keep">↺</button>`
+                    : `<button type="button" onclick="cpToggle(${i})" aria-label="Remove ${escapeHtml(p.name)}" title="Remove">×</button>`;
+                return `<span class="cp-chip ${p.status}"><span class="cp-name">${escapeHtml(p.name)}</span>${tag}${action}</span>`;
+            }).join('');
+
+            document.getElementById('cp-courts').innerHTML = [1, 2, 3, 4].map(n =>
+                `<button type="button" class="btn-opt${n === cp.courts ? ' active' : ''}" aria-pressed="${n === cp.courts}" onclick="cpSetCourts(${n})">${n}</button>`).join('');
+
+            const from = +document.getElementById('cp-from').value;
+            const joining = cp.list.filter(p => p.status === 'new').length;
+            const leaving = cp.list.filter(p => p.status === 'leaving').length;
+            const playing = cp.list.length - leaving;
+            const seats = cp.courts * 4;
+            const changes = [];
+            if (joining) changes.push(`${joining} joining`);
+            if (leaving) changes.push(`${leaving} leaving`);
+            let text = changes.length ? changes.join(', ') + '. ' : 'No change to the players. ';
+            text += `${plural(playing, 'player')} on ${plural(cp.courts, 'court')}`;
+            text += playing > seats ? `, so ${playing - seats} sit out each game. ` : '. ';
+            text += from === 0
+                ? `All ${generatedGames.length} games are drawn again.`
+                : `Games 1 to ${from} stay as they are; ${from + 1 === generatedGames.length ? `game ${from + 1} is` : `games ${from + 1} to ${generatedGames.length} are`} drawn again.`;
+            const apply = document.getElementById('cp-apply');
+            if (playing < 2) text = 'Keep at least 2 players to draw games.';
+            apply.disabled = playing < 2 || saving;
+            document.getElementById('cp-summary').textContent = text;
+        }
+
+        function cpToggle(i) {
+            const p = cp && cp.list[i];
+            if (!p) return;
+            if (p.status === 'new') cp.list.splice(i, 1);          // added by mistake: just drop it
+            else p.status = p.status === 'leaving' ? 'stay' : 'leaving';
+            cpRender();
+        }
+
+        function cpSetCourts(n) { if (cp) { cp.courts = n; cpRender(); } }
+
+        function cpAdd() {
+            if (!cp) return;
+            const input = document.getElementById('cp-add-name');
+            const name = input.value.replace(/\s+/g, ' ').trim().slice(0, 40);
+            if (!name) return;
+            const match = cp.list.find(p => p.name.toLowerCase() === name.toLowerCase());
+            if (match && match.status !== 'leaving') {
+                document.getElementById('cp-msg').textContent = `${match.name} is already on the list.`;
+                return;
+            }
+            if (match) match.status = 'stay';
+            else cp.list.push({ name, sub: false, status: 'new' });
+            input.value = '';
+            document.getElementById('cp-msg').textContent = cp.info || CP_HINT;
+            cpRender();
+        }
+
+        // Compare the board with the sign-up instead of replacing the list: anyone new is
+        // added, anyone no longer signed up is marked as leaving (tap to keep them), and
+        // anyone the organiser added by hand stays.
+        async function cpUseSignup() {
+            if (!cp) return;
+            const btn = document.getElementById('cp-signup-btn');
+            const say = text => { document.getElementById('cp-msg').textContent = text; };
+            btn.disabled = true;
+            say('Checking who has signed up.');
+            try {
+                const res = await fetch('/api/signup');
+                if (!res.ok) throw new Error('The sign-up list returned ' + res.status);
+                const data = await res.json();
+                if (!cp) return;
+                const when = describeSignupSession(data);
+                const signed = [
+                    ...(data.main || []).map(p => ({ name: String(p.name).trim(), sub: false })),
+                    ...(data.subs || []).map(p => ({ name: String(p.name).trim(), sub: true }))
+                ].filter(p => p.name);
+                if (!signed.length) {
+                    say(data.state === 'pending'
+                        ? `Sign-up for ${when} has not opened yet, so there is nobody to compare with.`
+                        : `Nobody has signed up yet for ${when}, so the list has not changed.`);
+                    return;
+                }
+                const key = n => n.toLowerCase();
+                const onSignup = new Set(signed.map(p => key(p.name)));
+                const onBoard = new Set(cp.list.map(p => key(p.name)));
+                cp.list = cp.list.map(p => ({
+                    ...p,
+                    status: onSignup.has(key(p.name)) ? (p.status === 'leaving' ? 'stay' : p.status)
+                        : (p.status === 'new' ? 'new' : 'leaving')
+                }));
+                signed.filter(p => !onBoard.has(key(p.name))).forEach(p => cp.list.push({ ...p, status: 'new' }));
+
+                const joining = signed.filter(p => !onBoard.has(key(p.name))).length;
+                const leaving = cp.list.filter(p => p.status === 'leaving').length;
+                let text = joining || leaving
+                    ? `Compared with the sign-up for ${when}: ${plural(joining, 'new player')}, and ${plural(leaving, 'player')} no longer on it. Check the list below before updating.`
+                    : `Everyone signed up for ${when} is already on the board, and nobody has dropped off it.`;
+                const waiting = (data.waitlist || []).length;
+                if (waiting) text += ` ${plural(waiting, 'person')} on the waiting list ${waiting === 1 ? 'was' : 'were'} left out.`;
+                cp.info = text;
+                say(text);
+                cpRender();
+            } catch (err) {
+                console.error('Sign-up compare failed:', err);
+                say('Could not reach the sign-up list. Check your connection and try again, or add and remove people by hand.');
+            } finally {
+                btn.disabled = false;
+            }
+        }
+
+        // Keep games before `from` exactly, and draw the rest again for the players in
+        // `ordered`. Who sits out is chosen so games played even out: whoever has played most
+        // sits first, then whoever sat out longest ago, then from the bottom of the list up
+        // (so subs sit first, as they always have). Partners, opponents and the short court
+        // carry on from the kept games, so nobody is paired with the same person again.
+        function redrawFrom(from, ordered, courts) {
+            const kept = JSON.parse(JSON.stringify(generatedGames.slice(0, from)));
+            const names = ordered.map(p => p.name);
+            const continuing = new Set(names);
+            const before = new Map(players.filter(p => p.name.trim()).map(p => [p.name.trim(), p]));
+
+            const roster = ordered.map(p => {
+                const old = before.get(p.name);
+                const entry = { name: p.name, sub: !!p.sub };
+                const joined = old ? Math.min(old.joined ?? 0, from) : from;
+                if (joined > 0) entry.joined = joined;
+                // Someone who left and has come back: show them as sitting out for the games
+                // they missed, so every kept game still holds everyone present for it.
+                if (old && old.left != null && old.left < from) {
+                    for (let gi = old.left; gi < from; gi++) kept[gi].sitters.push(p.name);
+                }
+                return entry;
+            });
+            // Anyone not carrying on stays on the roster only if they are in a kept game.
+            players.filter(p => p.name.trim() && !continuing.has(p.name.trim())).forEach(old => {
+                const joined = old.joined ?? 0;
+                if (joined >= from) return;
+                roster.push({ name: old.name.trim(), sub: !!old.sub, ...(joined > 0 ? { joined } : {}),
+                    left: old.left != null && old.left <= from ? old.left : from });
+            });
+
+            const played = {}, lastSat = {}, shortCount = {}, usedOpponents = {};
+            const usedPartners = new Set();
+            let lastShort = new Set();
+            names.forEach(n => { played[n] = 0; });
+            const record = (game, gi) => {
+                game.sitters.forEach(n => { if (!isBall(n)) lastSat[n] = gi; });
+                game.courts.forEach(([t1, t2]) => {
+                    [...t1, ...t2].forEach(n => { if (!isBall(n)) played[n] = (played[n] || 0) + 1; });
+                    if (realPair(t1)) usedPartners.add(pairKey(t1));
+                    if (realPair(t2)) usedPartners.add(pairKey(t2));
+                    t1.forEach(a => t2.forEach(b => {
+                        if (isBall(a) || isBall(b)) return;
+                        const k = pairKey([a, b]);
+                        usedOpponents[k] = (usedOpponents[k] || 0) + 1;
+                    }));
+                });
+            };
+            kept.forEach((game, gi) => {
+                record(game, gi);
+                // The short court is one with an empty seat (but not a wholly empty court)
+                const short = game.courts.map(c => c.flat()).filter(s => s.some(isBall) && s.some(n => !isBall(n))).flat().filter(n => !isBall(n));
+                short.forEach(n => { shortCount[n] = (shortCount[n] || 0) + 1; });
+                lastShort = new Set(short);
+            });
+
+            const seats = courts * 4;
+            let sitPerGame = Math.max(0, names.length - seats);
+            if (names.length <= seats && names.length % 4 === 1) sitPerGame = 1;
+            const pos = new Map(names.map((n, i) => [n, i]));
+            const games = kept;
+            for (let gi = from; gi < numGames; gi++) {
+                const sitters = [...names]
+                    .sort((a, b) => (played[b] - played[a]) || ((lastSat[a] ?? -1) - (lastSat[b] ?? -1)) || (pos.get(b) - pos.get(a)))
+                    .slice(0, sitPerGame)
+                    .sort((a, b) => pos.get(a) - pos.get(b));
+                const active = names.filter(n => !sitters.includes(n));
+                const { courts: drawn, shortGroup } = bestShuffle(active, courts, usedPartners, usedOpponents, shortCount, lastShort);
+                shortGroup.forEach(p => { shortCount[p] = (shortCount[p] || 0) + 1; });
+                lastShort = new Set(shortGroup);
+                const game = { game: gi + 1, sitters, courts: drawn };
+                record(game, gi);
+                games.push(game);
+            }
+            games.forEach((g, i) => { g.game = i + 1; });
+            return { players: roster, games };
+        }
+
+        async function cpApply() {
+            if (!cp || saving) return;
+            const from = +document.getElementById('cp-from').value;
+            const staying = cp.list.filter(p => p.status !== 'leaving');
+            if (staying.length < 2) return;
+            const ordered = [...staying.filter(p => !p.sub), ...staying.filter(p => p.sub)];
+            const next = redrawFrom(from, ordered, cp.courts);
+            const invalid = rosterError(next.players);
+            if (invalid) { document.getElementById('cp-summary').textContent = invalid; return; }
+
+            const prev = JSON.stringify({ players, generatedGames, numCourts, activeGame });
+            players = next.players;
+            generatedGames = next.games;
+            numCourts = cp.courts;
+            activeGame = from;
+            const btn = document.getElementById('cp-apply');
+            btn.disabled = true;
+            btn.textContent = 'Saving…';
+            const ok = await saveSession({ players, numCourts, numGames, generatedGames, activeGame });
+            btn.textContent = 'Update games';
+            if (!ok) {
+                ({ players, generatedGames, numCourts, activeGame } = JSON.parse(prev));
+                btn.disabled = false;
+                return;
+            }
+            cpClose();
+            syncOptionButtons();
+            document.getElementById('gs-title').textContent = boardTitle();
+            renderGameScreen();
+        }
+
+        // ── Update from sign-up: the sign-up's own promotion rule, applied to the board ──
+        // When someone drops out of the sign-up, the first sub moves up and the first person
+        // on the waiting list becomes a sub. Here that means: the first sub takes the leaver's
+        // exact places in every game, and the new sub takes the places the promoted sub had.
+        // Nobody else's games change. It applies from the game on screen, so games already
+        // played stay as they were.
+        async function sortFromSignup() {
+            if (!editMode || saving || !generatedGames.length) return;
+            const btn = document.getElementById('btn-sync-signup');
+            btn.disabled = true;
+            let data;
+            try {
+                const res = await fetch('/api/signup');
+                if (!res.ok) throw new Error('The sign-up list returned ' + res.status);
+                data = await res.json();
+            } catch (err) {
+                console.error('Sign-up load failed:', err);
+                alert('Could not reach the sign-up list. Check your connection and try again.');
+                btn.disabled = false;
+                return;
+            }
+            btn.disabled = false;
+
+            const key = n => String(n).trim().toLowerCase();
+            const signed = [...(data.main || []), ...(data.subs || [])].map(p => String(p.name).trim()).filter(Boolean);
+            if (!signed.length) { alert(`Nobody is signed up for ${describeSignupSession(data)}, so there is nothing to compare with.`); return; }
+            const onSignup = new Set(signed.map(key));
+            const here = presentNow();
+            const onBoard = new Set(here.map(p => key(p.name)));
+            const leavers = here.filter(p => !onSignup.has(key(p.name)));
+            const joiners = signed.filter(n => !onBoard.has(key(n)));
+            if (!leavers.length && !joiners.length) {
+                alert('The board already matches the sign-up. Nobody has dropped out or joined.');
+                return;
+            }
+            if (leavers.length > here.length / 2) {
+                alert(`Most of the board is not on the sign-up for ${describeSignupSession(data)}. It may be for a different session. Use Start again from the list to set up a new board instead.`);
+                return;
+            }
+            const returning = joiners.filter(n => players.some(p => key(p.name) === key(n)));
+            if (returning.length) {
+                alert(`${returning.join(', ')} left earlier in this session. Use Change players to bring them back.`);
+                return;
+            }
+
+            // Who takes whose places. map[old] = new name, or null if nobody can fill them.
+            const map = new Map(), lines = [];
+            const queue = [...joiners];
+            const subs = here.filter(p => p.sub && !leavers.includes(p));
+            const subPlaces = here.filter(p => p.sub && leavers.includes(p));   // subs who dropped out
+            for (const gone of leavers.filter(p => !p.sub)) {
+                const up = subs.shift();
+                if (up) { map.set(gone.name, up.name); subPlaces.push(up); lines.push(`${up.name} moves up into ${gone.name}'s games.`); }
+                else if (queue.length) { const n = queue.shift(); map.set(gone.name, n); lines.push(`${n} takes ${gone.name}'s games.`); }
+                else { map.set(gone.name, null); lines.push(`Nobody is free to take ${gone.name}'s games, so whoever is sitting out fills in.`); }
+            }
+            subPlaces.sort((a, b) => here.indexOf(a) - here.indexOf(b));
+            for (const sub of subPlaces) {
+                if (queue.length) { const n = queue.shift(); map.set(sub.name, n); lines.push(`${n} becomes a sub and takes ${sub.name}'s ${leavers.includes(sub) ? 'games' : 'old places'}.`); }
+                else map.set(sub.name, null);
+            }
+            const leaving = leavers.map(p => p.name);
+            const from = activeGame;
+            // Someone who arrived after the game on screen has no places to hand over there.
+            const late = here.filter(p => map.has(p.name) && (p.joined ?? 0) > from);
+            if (late.length) {
+                alert(`${late.map(p => p.name).join(', ')} only arrived after game ${from + 1}. Go to that game first, or use Change players.`);
+                return;
+            }
+            const parts = [];
+            if (leaving.length) parts.push(`${leaving.join(', ')} ${leaving.length === 1 ? 'has' : 'have'} dropped out of the sign-up.`);
+            if (lines.length) parts.push(lines.join('\n'));
+            if (queue.length) parts.push(`${queue.join(', ')} also signed up, but there ${queue.length === 1 ? 'is no free place' : 'are no free places'} for ${queue.length === 1 ? 'them' : 'them all'}. Use Change players to redraw with ${queue.length === 1 ? 'them' : 'everyone'} in.`);
+            if (!lines.length) { alert(parts.join('\n\n')); return; }
+            parts.push(from === 0 ? 'This changes every game. Carry on?'
+                : `Games 1 to ${from} stay as they are; this changes game ${from + 1} onwards. Carry on?`);
+            if (!confirm(parts.join('\n\n'))) return;
+
+            const prev = JSON.stringify({ players, generatedGames });
+            const games = JSON.parse(JSON.stringify(generatedGames));
+            const courtGames = name => games.reduce((n, g) => n + g.courts.flat(2).filter(x => x === name).length, 0);
+            for (let gi = from; gi < games.length; gi++) {
+                const g = games[gi];
+                const swap = n => (map.has(n) ? map.get(n) : n);
+                g.sitters = g.sitters.map(swap).filter(n => n !== null);
+                g.courts = g.courts.map(c => c.map(t => t.map(n => {
+                    const next = swap(n);
+                    return next === null ? '' : next;
+                })));
+                // A place nobody could fill: bring on whoever is sitting out and has played least.
+                g.courts.forEach(c => c.forEach(t => t.forEach((n, i) => {
+                    if (n || !g.sitters.length) return;
+                    const pick = [...g.sitters].sort((a, b) => courtGames(a) - courtGames(b))[0];
+                    g.sitters = g.sitters.filter(s => s !== pick);
+                    t[i] = pick;
+                })));
+            }
+
+            // The list: each replacement takes the place (and main/sub role) of the person
+            // they replace. Leavers stay on the list only if they played an earlier game.
+            const targets = new Set([...map.values()].filter(Boolean));
+            const roster = [];
+            for (const p of here) {
+                if (!map.has(p.name)) { roster.push(p); continue; }
+                const next = map.get(p.name);
+                if (!next) continue;
+                const existing = here.find(q => q.name === next);
+                roster.push(existing ? { ...existing, sub: !!p.sub } : { name: next, sub: !!p.sub, ...(from > 0 ? { joined: from } : {}) });
+            }
+            for (const p of here) {
+                if (!map.has(p.name) || targets.has(p.name)) continue;      // still here, in a new role
+                if (from > 0 && (p.joined ?? 0) < from) roster.push({ ...p, left: from });
+            }
+            roster.push(...players.filter(p => p.name.trim() && p.left != null));
+
+            players = roster;
+            generatedGames = games;
+            renderGameScreen();
+            const ok = await saveSession({ players, numCourts, numGames, generatedGames, activeGame });
+            if (!ok) {
+                ({ players, generatedGames } = JSON.parse(prev));
+            }
+            document.getElementById('gs-title').textContent = boardTitle();
+            renderGameScreen();
         }
 
         // Player names reach this page from the paste box, where an organiser copies a list
@@ -1148,11 +1601,12 @@
             // Tally (hidden entirely once the board has been wiped to tennis balls)
             document.getElementById('tally-card').style.display = allNames.length ? '' : 'none';
             const max = Math.max(...Object.values(counts));
+            const gone = new Set(players.filter(p => p.left != null).map(p => p.name.trim()));
             document.getElementById('tally').innerHTML = allNames.map(p=>{
-                const isOut = g.sitters.includes(p);
+                const isOut = g.sitters.includes(p) || gone.has(p);
                 const c = counts[p];
                 const col = c>=max?'var(--c1)':c>=max-1?'var(--c2)':'var(--amber)';
-                return `<span class="tp${isOut?' out':''}"><span class="tn" onclick="renamePlayerOnFly('${escapeArg(p)}')" style="cursor:pointer; border-bottom:1px dotted #666;" title="Click to swap player">${escapeHtml(p)}</span><span class="tc" style="color:${col}">${c}</span></span>`;
+                return `<span class="tp${gone.has(p)?' gone':isOut?' out':''}"${gone.has(p)?' title="Left the session"':''}><span class="tn" onclick="renamePlayerOnFly('${escapeArg(p)}')" style="cursor:pointer; border-bottom:1px dotted #666;" title="Click to swap player">${escapeHtml(p)}</span><span class="tc" style="color:${col}">${c}</span></span>`;
             }).join('');
         }
 
@@ -1419,11 +1873,10 @@
             }
 
             if (generatedGames.length) {
-                const named = players.filter(p => p.name.trim());
                 document.getElementById('setup-screen').style.display = 'none';
                 document.getElementById('locked-empty').style.display = 'none';
                 document.getElementById('game-screen').style.display = 'block';
-                document.getElementById('gs-title').textContent = `${named.length} Players · ${numCourts} Courts`;
+                document.getElementById('gs-title').textContent = boardTitle();
                 renderGameScreen();
             } else if (editMode) {
                 document.getElementById('setup-screen').style.display = 'block';
