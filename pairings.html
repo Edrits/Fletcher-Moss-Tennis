@@ -610,6 +610,7 @@
             <div class="card" id="cp-panel" hidden>
                 <h3>Change players</h3>
                 <p>Games already played stay exactly as they are. The games from the one you choose are drawn again with the new list, and whoever has played least goes on court first.</p>
+                <p class="paste-hint">Just swapping one person for another? Close this and tap their name on the board instead. They are swapped into every game and the pairings stay as they are.</p>
                 <button class="add-player-btn" id="cp-signup-btn" onclick="cpUseSignup()">Use the latest sign-up</button>
                 <p class="paste-hint" id="cp-msg">Adds anyone new from the sign-up and marks anyone no longer on it as leaving. The waiting list is left out.</p>
                 <div class="cp-list" id="cp-list"></div>
@@ -1247,10 +1248,7 @@
             const from = document.getElementById('cp-from');
             from.innerHTML = generatedGames.map((g, i) =>
                 `<option value="${i}">${i === 0 ? 'Game 1 (redraw them all)' : `Game ${i + 1} onwards`}</option>`).join('');
-            // Always start from Game 1. The open tab is often just the last one looked at, not
-            // a game in progress, and starting there quietly cost late joiners their games.
-            // Mid-session, the organiser picks the game to redraw from by hand.
-            from.value = '0';
+            from.value = String(activeGame);
             document.getElementById('cp-msg').textContent = CP_HINT;
             document.getElementById('cp-add-name').value = '';
             const panel = document.getElementById('cp-panel');
