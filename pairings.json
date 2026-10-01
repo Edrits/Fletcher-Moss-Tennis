@@ -63,14 +63,14 @@
     {
       "game": 1,
       "sitters": [
-        "Ben",
+        "Will H.",
         "Rod"
       ],
       "courts": [
         [
           [
             "Alan R.",
-            "Will H."
+            "Ben"
           ],
           [
             "Ed",
@@ -218,5 +218,5 @@
     }
   ],
   "activeGame": 0,
-  "updated": "2026-10-01T12:43:47.039Z"
+  "updated": "2026-10-01T14:12:44.007Z"
 }
