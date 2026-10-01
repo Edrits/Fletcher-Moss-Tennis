@@ -727,7 +727,7 @@
             <p class="bk-modal-slot" id="bkModalSlot"></p>
             <form id="bkModalForm" onsubmit="bkConfirm(event)">
                 <label for="bkModalName">Your name</label>
-                <input type="text" id="bkModalName" maxlength="40" placeholder="e.g. John Smith" autocomplete="name" required>
+                <input type="text" id="bkModalName" maxlength="40" placeholder="e.g. John S." autocomplete="given-name" required>
                 <div class="bk-modal-actions">
                     <button type="submit" class="btn">Book it</button>
                     <button type="button" class="btn btn-ghost" onclick="bkCloseModal()">Cancel</button>
@@ -1123,7 +1123,7 @@
                     await loadLeague();
                 } else {
                     const result = await response.json();
-                    alert("Access denied: " + (result.error || "Failed to save"));
+                    alert("Could not save: " + (result.error || "Failed to save"));
                 }
             } catch (err) {
                 console.error(err);

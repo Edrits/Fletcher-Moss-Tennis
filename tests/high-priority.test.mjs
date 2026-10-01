@@ -165,6 +165,7 @@ integration('pairings validation preserves real data, underfilled and wiped boar
   const saved=JSON.parse(await readFile(new URL('../pairings.json',import.meta.url)));
   assert.equal(validatePairings(saved),null);
   assert.ok(validatePairings({...saved,players:[...saved.players,saved.players[0]]}));
+  assert.match(validatePairings({...saved,players:[...saved.players,{name:'John Smith',sub:false}]}),/first name and initial/);
   const empty={players:[],numCourts:1,numGames:1,activeGame:0,generatedGames:[{sitters:[],courts:[[['',''],['','']]]}]};
   assert.equal(validatePairings(empty),null);
   const partial={...empty,players:[{name:'Alex P.'}],generatedGames:[{sitters:[],courts:[[['Alex P.',''],['','']]]}]};

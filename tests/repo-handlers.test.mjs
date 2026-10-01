@@ -123,3 +123,23 @@ test('a burst of simultaneous guesses is capped too', async () => {
   const counts = {}; results.forEach(r => { counts[r.status] = (counts[r.status] || 0) + 1; });
   assert.deepEqual(counts, { 401: 10, 429: 40 }, JSON.stringify(results.find(r => r.status !== 401 && r.status !== 429)));
 });
+
+test('full names are refused on admin rosters and shortened on public bookings', async () => {
+  const { isFullName } = await import('../api/_lib/names.js');
+  for (const ok of ['Ann', 'Alex P.', 'Emma B', 'Will (10)', 'John S.2', 'Mary-Ann', 'José'])
+    assert.equal(isFullName(ok), false, ok);
+  for (const full of ['John Smith', 'Jane Doe', 'Jo de Souza', 'Mary Ann'])
+    assert.equal(isFullName(full), true, full);
+
+  const before = files.get('boxleague.json').text;
+  const refused = await call(boxleague, 'POST', { type: 'admin_update_players', password: 'test-only',
+    updatedBoxes: [{ id: 'league-1', players: [{ name: 'Ann', was: 'Ann' }, { name: 'Bob Jones', was: 'Bob' }] }] });
+  assert.equal(refused.status, 400);
+  assert.match(refused.json.error, /first name and initial/);
+  assert.equal(files.get('boxleague.json').text, before);
+
+  const booked = await call(booking, 'POST', { type: 'book', key: 'mon|1|20:00', name: 'art smith' });
+  assert.equal(booked.status, 200);
+  assert.equal(booked.json.bookings['mon|1|20:00'].name, 'Art S.');
+  assert.equal(read('bookings.json').bookings['mon|1|20:00'].name, 'Art S.');
+});

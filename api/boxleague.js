@@ -2,6 +2,7 @@
 // Players record results without a password; roster edits and deleting a match need it.
 import { checkAdminPassword } from './_lib/admin-auth.js';
 import { readRepoJson, updateRepoJson, repoHandler, httpError } from './_lib/repo-json.js';
+import { isFullName, FULL_NAME_ERROR } from './_lib/names.js';
 
 const DATA_FILE = 'boxleague.json';
 
@@ -74,6 +75,7 @@ export default repoHandler(async (req, res) => {
       if (new Set(names).size !== names.length) {
         return res.status(400).json({ error: 'Give each player a different name, for example Alex P. and Alex R.' });
       }
+      if (names.some(isFullName)) return res.status(400).json({ error: FULL_NAME_ERROR });
     }
     message = 'Admin updated players';
     mutate = data => {
