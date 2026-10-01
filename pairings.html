@@ -109,9 +109,8 @@
             text-transform: uppercase; letter-spacing: var(--tracking-wider); font-weight: 600;
         }
 
-        /* Header button, matching the homepage's: a cream pill with the beta marker. The
-           site menu sits next to it at every width, so the bar never has to fit a row of
-           tabs (which ran off the screen between phone and laptop widths). */
+        /* Header button, matching the homepage's: a cream pill with the beta marker, shown
+           with the menu button until the screen is wide enough for the tabs. */
         .top-cta {
             display: inline-flex; align-items: center; gap: 7px; flex-shrink: 0;
             padding: 9px 16px; border-radius: 999px;
@@ -128,6 +127,43 @@
         }
         /* Below 560px the club name needs the room; the menu carries every link. */
         @media (max-width: 560px) { .top-cta { display: none; } }
+
+        /* Header tabs, for screens wide enough to show them instead of the menu button.
+           They are the menu laid out in the bar: the same gold line icons, beta marker and
+           "you are here" highlight, grouped in soft rails. Keep all four pages in step. */
+        .nav-links { display: none; align-items: center; gap: 10px; flex-shrink: 0; }
+        .nav-rail {
+            display: flex; align-items: center; gap: 2px; padding: 4px;
+            border-radius: 999px; background: rgba(255,255,255,.06);
+            box-shadow: inset 0 0 0 1px rgba(255,255,255,.12);
+        }
+        .nav-rail a {
+            display: inline-flex; align-items: center; gap: 7px; padding: 8px 12px;
+            border-radius: 999px; color: rgba(244,242,234,.88); text-decoration: none; white-space: nowrap;
+            font-family: var(--font-body); font-size: var(--text-sm); font-weight: 600; line-height: 1.2;
+            transition: background .2s, color .2s, box-shadow .2s;
+        }
+        .nav-rail a svg { width: 16px; height: 16px; flex-shrink: 0; color: var(--gold-300); }
+        .nav-rail a:hover { background: rgba(255,255,255,.1); color: #fff; }
+        .nav-rail a:focus-visible { outline: 2px solid var(--gold-300); outline-offset: 2px; }
+        .nav-rail a[aria-current="page"], .nav-rail a.active {
+            background: rgba(244,242,234,.95); color: var(--green-800); box-shadow: var(--shadow-sm);
+        }
+        .nav-rail a[aria-current="page"] svg, .nav-rail a.active svg { color: var(--gold-accent); }
+        .nav-rail .beta-chip {
+            display: inline-block; margin: 0; border-radius: 999px; padding: 2px 7px;
+            font-size: 9px; font-weight: 800; letter-spacing: 1.2px; text-transform: uppercase;
+            background: rgba(231,183,104,.16); color: var(--gold-300); border: 1px solid rgba(231,183,104,.45);
+        }
+        .nav-rail a[aria-current="page"] .beta-chip { background: var(--gold-100); color: var(--gold-accent); border-color: var(--gold-300); }
+        /* The old outlined tabs showed from 769px and ran off the bar before about 1000px.
+           These only appear once the full club name and every tab fit side by side
+           (measured at about 1330px), with the bar's inner width grown to make room. */
+        @media (min-width: 1360px) {
+            .top-bar-inner { max-width: 1300px; }
+            .nav-links { display: flex; }
+            .top-bar-inner .top-cta, .top-bar-inner .hamburger { display: none; }
+        }
 
         .hamburger {
             display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 5px;
@@ -496,6 +532,14 @@
                     <p>Court Pairings</p>
                 </div>
             </div>
+            <nav class="nav-links" aria-label="Main">
+                <div class="nav-rail">
+                    <a href="index.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8"/><path d="M3 10a2 2 0 0 1 .709-1.528l7-5.999a2 2 0 0 1 2.582 0l7 5.999A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>Home</a>
+                    <a href="signup.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="8" height="4" x="8" y="2" rx="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M12 11h4"/><path d="M12 16h4"/><path d="M8 11h.01"/><path d="M8 16h.01"/></svg>Sign-up<span class="beta-chip">Beta</span></a>
+                    <a href="pairings.html" aria-current="page"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>Pairings</a>
+                    <a href="singles-league.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg>FMST Singles League</a>
+                </div>
+            </nav>
             <a href="signup.html" class="top-cta">Sign-up<span class="beta-chip">Beta</span></a>
             <button class="hamburger" id="hamburger" aria-label="Open menu" aria-expanded="false" aria-controls="mobileNav" onclick="toggleMobileNav()">
                 <span></span>
