@@ -5,7 +5,27 @@
       "sub": false
     },
     {
-      "name": "Ash",
+      "name": "Evie",
+      "sub": false
+    },
+    {
+      "name": "Ting",
+      "sub": false
+    },
+    {
+      "name": "Will H.",
+      "sub": false
+    },
+    {
+      "name": "Sofia",
+      "sub": false
+    },
+    {
+      "name": "Luke",
+      "sub": false
+    },
+    {
+      "name": "Ryan",
       "sub": false
     },
     {
@@ -13,239 +33,190 @@
       "sub": false
     },
     {
-      "name": "Quazim",
+      "name": "Ayesa",
       "sub": false
     },
     {
-      "name": "Hannah",
+      "name": "Shyam",
       "sub": false
     },
     {
-      "name": "Ali",
+      "name": "Alan R.",
       "sub": false
     },
     {
-      "name": "Yee",
+      "name": "Louis W.",
       "sub": false
     },
     {
-      "name": "Louis K.",
-      "sub": false
+      "name": "Rashid",
+      "sub": true
     },
     {
-      "name": "Alex",
-      "sub": false
-    },
-    {
-      "name": "Jesse R.",
-      "sub": false
-    },
-    {
-      "name": "Kamal",
-      "sub": false
-    },
-    {
-      "name": "Jack H.",
-      "sub": false
-    },
-    {
-      "name": "Sope",
-      "sub": false
-    },
-    {
-      "name": "Imran",
-      "sub": false
+      "name": "Rod",
+      "sub": true
     }
   ],
-  "numCourts": 4,
+  "numCourts": 3,
   "numGames": 4,
-  "seed": 542552,
   "generatedGames": [
     {
       "game": 1,
-      "sitters": [],
+      "sitters": [
+        "Rashid",
+        "Rod"
+      ],
       "courts": [
         [
           [
-            "Jesse R.",
+            "Alan R.",
+            "Will H."
+          ],
+          [
+            "Ed",
+            "Louis W."
+          ]
+        ],
+        [
+          [
+            "Evie",
+            "Luke"
+          ],
+          [
+            "Sofia",
             "Sully"
-          ],
-          [
-            "Hannah",
-            "Ed"
           ]
         ],
         [
           [
-            "Imran",
-            "Alex"
+            "Ayesa",
+            "Ting"
           ],
           [
-            "Quazim",
-            "Yee"
-          ]
-        ],
-        [
-          [
-            "Kamal",
-            "Ali"
-          ],
-          [
-            "Sope",
-            "Louis K."
-          ]
-        ],
-        [
-          [
-            "",
-            "Jack H."
-          ],
-          [
-            "",
-            "Ash"
+            "Shyam",
+            "Ryan"
           ]
         ]
       ]
     },
     {
       "game": 2,
-      "sitters": [],
+      "sitters": [
+        "Alan R.",
+        "Louis W."
+      ],
       "courts": [
         [
           [
-            "",
-            "Sully"
+            "Shyam",
+            "Will H."
           ],
           [
-            "",
-            "Louis K."
+            "Rod",
+            "Ryan"
           ]
         ],
         [
           [
-            "Alex",
-            "Quazim"
+            "Sully",
+            "Evie"
           ],
           [
-            "Kamal",
-            "Ali"
+            "Rashid",
+            "Ting"
           ]
         ],
         [
           [
-            "Yee",
-            "Imran"
+            "Ayesa",
+            "Ed"
           ],
           [
-            "Ash",
-            "Hannah"
-          ]
-        ],
-        [
-          [
-            "Sope",
-            "Jesse R."
-          ],
-          [
-            "Ed",
-            "Jack H."
+            "Luke",
+            "Sofia"
           ]
         ]
       ]
     },
     {
       "game": 3,
-      "sitters": [],
+      "sitters": [
+        "Ayesa",
+        "Shyam"
+      ],
       "courts": [
         [
           [
-            "Jesse R.",
+            "Alan R.",
             "Sully"
           ],
           [
-            "Imran",
-            "Quazim"
+            "Will H.",
+            "Sofia"
           ]
         ],
         [
           [
-            "Yee",
-            "Hannah"
+            "Louis W.",
+            "Rod"
           ],
           [
-            "Ali",
-            "Sope"
+            "Ting",
+            "Ed"
           ]
         ],
         [
           [
-            "Ed",
-            ""
+            "Rashid",
+            "Evie"
           ],
           [
-            "Louis K.",
-            ""
-          ]
-        ],
-        [
-          [
-            "Ash",
-            "Jack H."
-          ],
-          [
-            "Kamal",
-            "Alex"
+            "Luke",
+            "Ryan"
           ]
         ]
       ]
     },
     {
       "game": 4,
-      "sitters": [],
+      "sitters": [
+        "Ryan",
+        "Sully"
+      ],
       "courts": [
         [
           [
-            "Yee",
-            "Jack H."
+            "Evie",
+            "Ayesa"
           ],
           [
-            "Louis K.",
-            "Hannah"
+            "Alan R.",
+            "Ed"
           ]
         ],
         [
           [
-            "Sope",
-            ""
+            "Shyam",
+            "Ting"
           ],
           [
-            "Jesse R.",
-            ""
+            "Will H.",
+            "Luke"
           ]
         ],
         [
           [
-            "Ali",
-            "Sully"
+            "Rod",
+            "Sofia"
           ],
           [
-            "Alex",
-            "Ash"
-          ]
-        ],
-        [
-          [
-            "Ed",
-            "Imran"
-          ],
-          [
-            "Kamal",
-            "Quazim"
+            "Louis W.",
+            "Rashid"
           ]
         ]
       ]
     }
   ],
-  "activeGame": 3,
-  "updated": "2026-09-21T16:35:08.992Z"
+  "activeGame": 0,
+  "updated": "2026-10-01T07:23:09.902Z"
 }

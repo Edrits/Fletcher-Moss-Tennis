@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Court Pairings | Fletcher Moss Social Tennis Club</title>
+    <meta name="description" content="Tonight's court pairings for Fletcher Moss Social Tennis Club in Didsbury: who plays with whom on each court, game by game.">
     <link rel="icon" href="favicon.ico" sizes="any">
     <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
@@ -295,7 +296,9 @@
         .vs { display: inline-block; width: 30px; height: 30px; border-radius: 50%; border: 1.5px solid var(--border-strong); font-size: 9px; font-weight: 900; color: var(--text-muted); line-height: 26px; }
 
         /* Drag & drop to rearrange players */
-        .pp[data-loc], .sitting-pill[data-loc] { touch-action: none; user-select: none; -webkit-user-select: none; cursor: grab; }
+        /* pan-y: a finger on a name still scrolls the page. Dragging needs a press and hold first. */
+        .pp[data-loc], .sitting-pill[data-loc] { touch-action: pan-y; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; cursor: grab; }
+        .drag-armed { transform: scale(1.06); box-shadow: 0 6px 16px rgba(20,40,10,.25); transition: transform .12s, box-shadow .12s; }
         .pp[data-loc]:active, .sitting-pill[data-loc]:active { cursor: grabbing; }
         .drag-ghost { position: fixed; z-index: 2000; pointer-events: none; opacity: .95; transform: translate(-50%,-50%) rotate(-2deg); box-shadow: var(--shadow-lg); }
         .drop-target { outline: 3px dashed var(--green-600); outline-offset: 2px; border-radius: var(--radius-sm); }
@@ -518,7 +521,7 @@
                 </div>
                 <div class="footer-col">
                     <h4>Sessions</h4>
-                    <p>Monday 6:00 - 8:00 PM<br>Thursday 6:00 - 8:00 PM<br>Saturday 11:00 AM - 2:00 PM</p>
+                    <p>Monday 6:00 to 8:00 PM<br>Thursday 6:00 to 8:00 PM<br>Saturday 11:00 AM to 1:00 PM</p>
                 </div>
             </div>
             <p style="margin-top: 25px; font-size: 0.9em; opacity: 0.5;">Hope to see you on the court soon.</p>
@@ -536,7 +539,9 @@
 
     <script>
         // ── State ──
-        let numCourts = 3, numGames = 6, activeGame = 0, currentSeed = null;
+        let numCourts = 3, numGames = 6, activeGame = 0;
+        let saving = false;      // a save is in flight: hold further edits so rollbacks can't cross
+        let setupSnapshot = null; // the saved roster and courts, while the setup screen edits them
         let editMode = false;   // false = view-only; true = unlocked with admin password
         let boardLoaded = false;
         let adminCredential = '';
@@ -568,17 +573,6 @@
 
         let generatedGames = [];
         const COLORS = ["#2d5016","#3f6f92","#a83c2d","#8b6f47"];
-        let randFn = Math.random;
-
-        // Seeded Mulberry32 Generator for completely identical groupings across shared links
-        function mulberry32(a) {
-            return function() {
-                let t = a += 0x6D2B79F5;
-                t = Math.imul(t ^ (t >>> 15), t | 1);
-                t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
-                return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
-            }
-        }
 
         // ── Paste handler with advanced attached number filtering ──
         function applyPaste() {
@@ -726,6 +720,12 @@
         }
 
         function backToSetup() {
+            // The setup list edits players and numCourts in place. Remember the saved values
+            // so leaving without generating can put them back; otherwise the live board is
+            // shown against a roster it doesn't match, and every later save is rejected.
+            if (generatedGames.length && !setupSnapshot) {
+                setupSnapshot = JSON.stringify({ players, numCourts, numGames });
+            }
             document.getElementById('setup-screen').style.display = 'block';
             document.getElementById('game-screen').style.display = 'none';
             renderPlayerInputs();
@@ -742,6 +742,7 @@
                 if (!pw) return false;
             }
             try {
+                saving = true;
                 const res = await fetch('/api/pairings', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -765,6 +766,8 @@
                 console.error('Save failed:', err);
                 alert('Network error, changes were not saved.');
                 return false;
+            } finally {
+                saving = false;
             }
         }
 
@@ -787,20 +790,17 @@
             }
             msg.style.display = 'none';
 
-            currentSeed = Math.floor(Math.random() * 1000000);
-            randFn = mulberry32(currentSeed);
-
             // Order: non-subs in list order, then subs in list order
             const ordered = [
                 ...named.filter(p => !p.sub).map(p => p.name.trim()),
                 ...named.filter(p => p.sub).map(p => p.name.trim()),
             ];
 
-            // Too few to fill every court? Pad the spare seats with placeholders
-            // (an empty string renders as an empty-seat block) so the courts still fill out.
-            while (ordered.length < playPerGame) ordered.push('');
-
-            const sitPerGame = ordered.length - playPerGame;
+            // More players than seats: the extras sit out. Fewer: courts fill in order and
+            // only the last court in use is short (a three or a singles). One player over
+            // would be alone on a court, so one person sits out instead, in rotation.
+            let sitPerGame = Math.max(0, ordered.length - playPerGame);
+            if (ordered.length <= playPerGame && ordered.length % 4 === 1) sitPerGame = 1;
 
             // Build sit-out queue: bottom of list upwards, cycling if needed
             const sitQueue = buildSitQueue(ordered, sitPerGame, numGames);
@@ -809,17 +809,22 @@
             const newGames = [];
             const usedPartners = new Set();
             const usedOpponents = {};
+            const shortCount = {};        // games each player has spent on the short court
+            let lastShort = new Set();    // who was on it last game
 
             for (let g = 0; g < numGames; g++) {
                 const sitters = sitQueue[g];
                 const active = ordered.filter(p => !sitters.includes(p));
-                const courts = bestShuffle(active, numCourts, usedPartners, usedOpponents);
+                const { courts, shortGroup } = bestShuffle(active, numCourts, usedPartners, usedOpponents, shortCount, lastShort);
+                shortGroup.forEach(p => { shortCount[p] = (shortCount[p] || 0) + 1; });
+                lastShort = new Set(shortGroup);
 
                 // Update tracking
                 courts.forEach(([t1,t2]) => {
-                    usedPartners.add(pairKey(t1));
-                    usedPartners.add(pairKey(t2));
+                    if (realPair(t1)) usedPartners.add(pairKey(t1));
+                    if (realPair(t2)) usedPartners.add(pairKey(t2));
                     t1.forEach(a => t2.forEach(b => {
+                        if (isBall(a) || isBall(b)) return;
                         const k = pairKey([a,b]);
                         usedOpponents[k] = (usedOpponents[k]||0)+1;
                     }));
@@ -833,7 +838,7 @@
             btn.disabled = true;
             btn.textContent = 'Saving…';
 
-            const ok = await saveSession({ players, numCourts, numGames, seed: currentSeed, generatedGames: newGames, activeGame: 0 });
+            const ok = await saveSession({ players, numCourts, numGames, generatedGames: newGames, activeGame: 0 });
 
             btn.disabled = false;
             btn.textContent = 'Generate Pairings →';
@@ -842,6 +847,7 @@
 
             generatedGames = newGames;
             activeGame = 0;
+            setupSnapshot = null;
             document.getElementById('setup-screen').style.display = 'none';
             document.getElementById('game-screen').style.display = 'block';
             document.getElementById('gs-title').textContent = `${named.length} Players · ${numCourts} Courts`;
@@ -850,7 +856,7 @@
 
         // Perfect mathematically shifting sit out queue (Bottom Upwards)
         function buildSitQueue(ordered, sitPerGame, numGames) {
-            if (sitPerGame <= 0) return Array(numGames).fill([]);
+            if (sitPerGame <= 0) return Array.from({ length: numGames }, () => []);
             const n = ordered.length;
             const result = [];
             
@@ -867,26 +873,47 @@
 
         function pairKey(arr) { return [...arr].sort().join('|'); }
 
-        function bestShuffle(active, numCourts, usedPartners, usedOpponents) {
+        // A team with an empty seat isn't a partnership, and an empty seat isn't an opponent
+        function realPair(team) { return team.every(p => !isBall(p)); }
+
+        function bestShuffle(active, numCourts, usedPartners, usedOpponents, shortCount, lastShort) {
+            // Courts fill in order: full fours first, then whoever is left on the next court
+            // (a three or a singles), and any courts after that stay empty.
+            const full = Math.floor(active.length / 4), left = active.length % 4;
+
+            // Who plays on the short court: never anyone who was on it last game, then
+            // whoever has had it least. Shuffling first breaks ties at random.
+            const shortGroup = left
+                ? shuffle([...active])
+                    .sort((a, b) => (lastShort.has(a) - lastShort.has(b)) || ((shortCount[a] || 0) - (shortCount[b] || 0)))
+                    .slice(0, left)
+                : [];
+            const rest = active.filter(p => !shortGroup.includes(p));
+
             let best = null, bestScore = Infinity;
             for (let attempt = 0; attempt < 10000; attempt++) {
-                const s = shuffle([...active]);
-                const courts = Array.from({length:numCourts}, (_,c) => [s.slice(c*4,c*4+2), s.slice(c*4+2,c*4+4)]);
+                const s = shuffle([...rest]);
+                const courts = Array.from({ length: full }, (_, c) => [s.slice(c*4, c*4+2), s.slice(c*4+2, c*4+4)]);
+                if (left) {
+                    const g = shuffle([...shortGroup]);
+                    courts.push(left === 3 ? [[g[0], g[1]], [g[2], '']] : [[g[0], ''], [g[1], '']]);
+                }
+                while (courts.length < numCourts) courts.push([['', ''], ['', '']]);
                 let pS = 0, oS = 0;
                 courts.forEach(([t1,t2]) => {
-                    if (usedPartners.has(pairKey(t1))) pS++;
-                    if (usedPartners.has(pairKey(t2))) pS++;
-                    t1.forEach(a => t2.forEach(b => { oS += usedOpponents[pairKey([a,b])]||0; }));
+                    if (realPair(t1) && usedPartners.has(pairKey(t1))) pS++;
+                    if (realPair(t2) && usedPartners.has(pairKey(t2))) pS++;
+                    t1.forEach(a => t2.forEach(b => { if (!isBall(a) && !isBall(b)) oS += usedOpponents[pairKey([a,b])]||0; }));
                 });
                 const score = pS*200 + oS;
                 if (score < bestScore) { bestScore = score; best = courts; if (!score) break; }
             }
-            return best;
+            return { courts: best, shortGroup };
         }
 
         function shuffle(arr) {
             for (let i = arr.length-1; i>0; i--) {
-                const j = Math.floor(randFn()*(i+1));
+                const j = Math.floor(Math.random()*(i+1));
                 [arr[i],arr[j]] = [arr[j],arr[i]];
             }
             return arr;
@@ -894,7 +921,7 @@
 
         // Swap players instantly on-the-fly without regenerating the underlying schedule layout, then persist so everyone sees the swap
         async function renamePlayerOnFly(oldName) {
-            if (!editMode) return;
+            if (!editMode || saving) return;
             const newName = prompt(`Swap "${oldName}" across all rounds with:`, oldName);
             if (!newName || newName.trim() === "" || newName.trim() === oldName) return;
             const cleanNewName = newName.trim();
@@ -928,7 +955,7 @@
             // 3. Re-render display immediately, then persist — roll back locally if the save fails
             renderGameScreen();
 
-            const ok = await saveSession({ players, numCourts, numGames, seed: currentSeed, generatedGames, activeGame });
+            const ok = await saveSession({ players, numCourts, numGames, generatedGames, activeGame });
             if (!ok) {
                 players = prevPlayers;
                 generatedGames = prevGames;
@@ -963,7 +990,7 @@
             if (hint) {
                 hint.classList.toggle('view', !editMode);
                 hint.innerHTML = editMode
-                    ? '↔ Drag any name onto another to swap their places. This works with sitting-out players too.'
+                    ? '↔ Drag any name onto another to swap their places. On a phone, press and hold the name first. This works with sitting-out players too.'
                     : 'View only. Tap “Unlock to edit” above to change the pairings.';
             }
             const tt = document.getElementById('tally-title');
@@ -1005,6 +1032,11 @@
         function lockEditing() {
             forgetCredential();
             editMode = false;
+            if (setupSnapshot) {
+                ({ players, numCourts, numGames } = JSON.parse(setupSnapshot));
+                setupSnapshot = null;
+                syncOptionButtons();
+            }
             document.getElementById('setup-screen').style.display = 'none';
             if (generatedGames.length) {
                 document.getElementById('game-screen').style.display = 'block';
@@ -1020,7 +1052,7 @@
         // Wipe the slate clean after a session: every seat becomes a tennis ball and
         // the player list is emptied, ready for a fresh set of names next time.
         async function resetBoard() {
-            if (!editMode || !generatedGames.length) return;
+            if (!editMode || saving || !generatedGames.length) return;
             if (!confirm("Wipe the slate clean? Every court seat becomes an empty slot and the player list is cleared.")) return;
 
             const prevPlayers = JSON.parse(JSON.stringify(players));
@@ -1034,7 +1066,7 @@
             document.getElementById('gs-title').textContent = `Fresh board · ${numCourts} Courts`;
             renderGameScreen();
 
-            const ok = await saveSession({ players, numCourts, numGames, seed: currentSeed, generatedGames, activeGame });
+            const ok = await saveSession({ players, numCourts, numGames, generatedGames, activeGame });
             if (!ok) {
                 players = prevPlayers;
                 generatedGames = prevGames;
@@ -1072,7 +1104,6 @@
             ).join('');
 
             const g = generatedGames[activeGame];
-            const playing = new Set(g.courts.flatMap(([t1,t2])=>[...t1,...t2]));
 
             // Sitting banner (ignore any tennis-ball placeholders)
             const realSitters = g.sitters.filter(s=>!isBall(s));
@@ -1144,28 +1175,45 @@
         }
 
         async function swapSlots(locA, locB) {
-            if (locA === locB) return;
+            if (locA === locB || saving) return;
             const a = slotAccessor(locA), b = slotAccessor(locB);
             const av = a.get(), bv = b.get();
             const prevGames = JSON.parse(JSON.stringify(generatedGames));
             a.set(bv); b.set(av);
             renderGameScreen();
-            const ok = await saveSession({ players, numCourts, numGames, seed: currentSeed, generatedGames, activeGame });
+            const ok = await saveSession({ players, numCourts, numGames, generatedGames, activeGame });
             if (!ok) { generatedGames = prevGames; renderGameScreen(); }
         }
 
+        // On a phone the names cover most of the screen, so a drag that started on touch
+        // made the page impossible to scroll: organisers kept moving players when they
+        // meant to scroll. A touch drag now needs a short press and hold. Moving the finger
+        // before then is a scroll. A mouse drags straight away as before.
+        const HOLD_MS = 350;
+        const HOLD_SLOP = 10;        // px a finger may wander during the hold
+
         function onDragStart(e) {
-            if (!editMode) return;                               // view-only: no dragging
+            if (!editMode || saving) return;                     // view-only, or a save in flight
             if (e.button && e.button !== 0) return;              // left button / touch only
             const el = e.target.closest('[data-loc]');
             if (!el) return;
             if (drag) endDrag(false);                            // never leave an earlier drag half-finished
+            const touch = e.pointerType !== 'mouse';
             drag = {
                 el, loc: el.getAttribute('data-loc'),
                 startX: e.clientX, startY: e.clientY,
                 x: e.clientX, y: e.clientY,
-                moved: false, ghost: null, over: null, timer: null
+                moved: false, ghost: null, over: null, timer: null,
+                armed: !touch, hold: null
             };
+            if (touch) {
+                drag.hold = setTimeout(() => {
+                    if (!drag) return;
+                    drag.armed = true;
+                    drag.el.classList.add('drag-armed');
+                    if (navigator.vibrate) navigator.vibrate(12);
+                }, HOLD_MS);
+            }
             document.addEventListener('pointermove', onDragMove);
             document.addEventListener('pointerup', onDragUp);
             // A touch drag can be taken away from us at any point: a second finger, an
@@ -1176,6 +1224,11 @@
 
         function onDragMove(e) {
             if (!drag) return;
+            if (!drag.armed) {
+                // Still inside the hold: moving means the finger is scrolling, so let it go.
+                if (Math.hypot(e.clientX - drag.startX, e.clientY - drag.startY) > HOLD_SLOP) endDrag(false);
+                return;
+            }
             drag.x = e.clientX; drag.y = e.clientY;
             if (!drag.moved) {
                 if (Math.hypot(e.clientX - drag.startX, e.clientY - drag.startY) < 8) return;
@@ -1244,14 +1297,16 @@
             const d = drag; drag = null;
             if (!d) return;
             if (d.timer) clearInterval(d.timer);
+            clearTimeout(d.hold);
+            d.el.classList.remove('drag-armed');
             // Sweep the document rather than only this drag's own nodes, so any ghost
             // orphaned by an earlier interrupted drag gets cleared too.
             document.querySelectorAll('.drag-ghost').forEach(g => g.remove());
             document.querySelectorAll('.drop-target').forEach(el => el.classList.remove('drop-target'));
             document.querySelectorAll('.drag-source').forEach(el => el.classList.remove('drag-source'));
-            d.el.style.opacity = '';
-            if (d.moved) {
-                // Swallow the click that follows a drag so it doesn't also trigger rename
+            if (d.moved || (d.armed && d.hold)) {
+                // Swallow the click that follows a drag (or a press and hold) so it doesn't
+                // also trigger rename
                 const swallow = ev => { ev.stopPropagation(); ev.preventDefault(); };
                 document.addEventListener('click', swallow, { capture: true, once: true });
                 setTimeout(() => document.removeEventListener('click', swallow, { capture: true }), 350);
@@ -1260,6 +1315,11 @@
         }
 
         document.addEventListener('pointerdown', onDragStart);
+        // Once a name is picked up, the finger moves the name, not the page. Only a
+        // non-passive touchmove listener can stop the scroll.
+        document.addEventListener('touchmove', e => { if (drag && drag.armed) e.preventDefault(); }, { passive: false });
+        // A press and hold would otherwise open the phone's own menu over the name.
+        document.addEventListener('contextmenu', e => { if (editMode && e.target.closest('[data-loc]')) e.preventDefault(); });
 
         // Hamburger menu triggers matching index.html
         function toggleMobileNav() {
@@ -1297,6 +1357,20 @@
         }
 
         // Load the current shared session from the backend — the single source of truth for every visitor
+        // Update visual active classes on configuration selectors
+        function syncOptionButtons() {
+            document.querySelectorAll('.options-row .btn-opt').forEach(btn => {
+                const groupLabel = btn.closest('.option-group').querySelector('label').textContent.toLowerCase();
+                if (groupLabel.includes('courts')) {
+                    const selected = parseInt(btn.textContent) === numCourts;
+                    btn.classList.toggle('active', selected);
+                    btn.setAttribute('aria-pressed', String(selected));
+                } else if (groupLabel.includes('games')) {
+                    btn.classList.toggle('active', parseInt(btn.textContent) === numGames);
+                }
+            });
+        }
+
         async function loadCurrentSession() {
             try {
                 const res = await fetch('/api/pairings');
@@ -1309,7 +1383,6 @@
                 }
                 numCourts = data.numCourts || numCourts;
                 numGames = data.numGames || numGames;
-                currentSeed = data.seed ?? null;
                 generatedGames = Array.isArray(data.generatedGames) ? data.generatedGames : [];
                 activeGame = data.activeGame || 0;
                 const invalid = rosterError(players);
@@ -1323,17 +1396,7 @@
                 return;
             }
 
-            // Update visual active classes on configuration selectors
-            document.querySelectorAll('.options-row .btn-opt').forEach(btn => {
-                const groupLabel = btn.closest('.option-group').querySelector('label').textContent.toLowerCase();
-                if (groupLabel.includes('courts')) {
-                    const selected = parseInt(btn.textContent) === numCourts;
-                    btn.classList.toggle('active', selected);
-                    btn.setAttribute('aria-pressed', String(selected));
-                } else if (groupLabel.includes('games')) {
-                    btn.classList.toggle('active', parseInt(btn.textContent) === numGames);
-                }
-            });
+            syncOptionButtons();
 
             // Unlocked earlier this browser session? Stay in edit mode; otherwise view-only.
             editMode = !!adminCredential;

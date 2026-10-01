@@ -1,0 +1,83 @@
+{
+  "date": "2026-09-21",
+  "label": "Monday 6:00 to 8:00 PM",
+  "capacity": {
+    "main": 16,
+    "subs": 2,
+    "waitlist": 10
+  },
+  "archiveId": "e8a00ee1-6983-4af2-a8aa-de4b6dbcffe0",
+  "archivedAt": "2026-09-30T08:19:28.514Z",
+  "players": [
+    {
+      "position": 1,
+      "name": "Ed",
+      "at": "2026-09-16T17:48:50.801Z"
+    },
+    {
+      "position": 2,
+      "name": "Ash",
+      "at": "2026-09-20T15:24:54.670Z"
+    },
+    {
+      "position": 3,
+      "name": "Sully",
+      "at": "2026-09-20T15:33:10.468Z"
+    },
+    {
+      "position": 4,
+      "name": "Quazim",
+      "at": "2026-09-20T15:34:56.955Z"
+    },
+    {
+      "position": 5,
+      "name": "Hannah",
+      "at": "2026-09-20T15:37:42.947Z"
+    },
+    {
+      "position": 6,
+      "name": "Ali",
+      "at": "2026-09-20T18:02:45.551Z"
+    },
+    {
+      "position": 7,
+      "name": "Yee",
+      "at": "2026-09-20T18:37:23.240Z"
+    },
+    {
+      "position": 8,
+      "name": "Louis K.",
+      "at": "2026-09-21T11:42:24.349Z"
+    },
+    {
+      "position": 9,
+      "name": "Alex",
+      "at": "2026-09-21T11:43:28.474Z"
+    },
+    {
+      "position": 10,
+      "name": "Jesse R.",
+      "at": "2026-09-21T12:07:44.088Z"
+    },
+    {
+      "position": 11,
+      "name": "Kamal",
+      "at": "2026-09-21T12:08:09.694Z"
+    },
+    {
+      "position": 12,
+      "name": "Jack H.",
+      "at": "2026-09-21T12:09:51.671Z"
+    },
+    {
+      "position": 13,
+      "name": "Sope",
+      "at": "2026-09-21T14:50:44.409Z"
+    },
+    {
+      "position": 14,
+      "name": "Imran",
+      "at": "2026-09-21T16:16:18.357Z"
+    }
+  ]
+}

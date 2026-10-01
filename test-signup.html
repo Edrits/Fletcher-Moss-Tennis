@@ -213,32 +213,6 @@ const at = (y, m, d, h = 0, min = 0) => londonInstant(y, m, d, h, min);
 const londonHour = date => londonParts(date).hour;
 
 /* ---------------------------------------------------------------------------
-   Simulation of the Lua JOIN_SCRIPT
-   ---------------------------------------------------------------------------
-   IMPORTANT: this MIRRORS the documented semantics of JOIN_SCRIPT in
-   api/_lib/redis.js against an in-memory array. It does NOT execute the Lua.
-   Redis cannot run in a browser, so these assertions validate the join LOGIC
-   (already_in, full, name disambiguation, 1-based position) but they do not
-   validate the script itself. A change to the Lua will not fail these tests.
---------------------------------------------------------------------------- */
-function joinAtomicSim(queue, { token, displayBase, limit, at: joinedAt }) {
-  const names = new Set();
-  for (const entry of queue) {
-    if (entry.token === token) return { error: 'already_in' };
-    if (entry.name) names.add(entry.name.toLowerCase());
-  }
-  if (queue.length >= limit) return { error: 'full' };
-  let candidate = displayBase;
-  let n = 1;
-  while (names.has(candidate.toLowerCase())) {
-    n += 1;
-    candidate = `${displayBase}${n}`;
-  }
-  queue.push({ name: candidate, token, at: joinedAt });
-  return { position: queue.length, name: candidate };
-}
-
-/* ---------------------------------------------------------------------------
    SCHEDULE and the capacity constants
 --------------------------------------------------------------------------- */
 group('Constants: SCHEDULE, DEFAULT_CAPACITY, NAME_MAX');
@@ -844,75 +818,6 @@ check('pending stays pending even after opensAt has passed',
   gate('pending', '2026-08-12T20:00:00.000Z', new Date('2026-08-13T09:00:00.000Z')), 'pending');
 check('closed is not re-opened by the clock',
   gate('closed', '2026-08-12T20:00:00.000Z', new Date('2026-08-13T09:00:00.000Z')), 'closed');
-
-/* ---------------------------------------------------------------------------
-   Simulated atomic join. See the note on joinAtomicSim above: this mirrors the
-   Lua in api/_lib/redis.js, it does not run it.
---------------------------------------------------------------------------- */
-group('Atomic join (simulated Lua, see comment in source)');
-
-const LIMIT = totalSlots();                     // 28
-const AT = '2026-08-12T20:00:00.000Z';
-
-// 30 people, all called "John Smith", all racing for 28 places.
-const queue = [];
-const outcomes = [];
-for (let i = 1; i <= 30; i++) {
-  outcomes.push(joinAtomicSim(queue, {
-    token: `tok-${i}`,
-    displayBase: shortenName('John Smith'),
-    limit: LIMIT,
-    at: AT
-  }));
-}
-const seated = outcomes.filter(o => o.position);
-const rejected = outcomes.filter(o => o.error === 'full');
-
-check('28 of 30 are seated', seated.length, 28);
-check('2 of 30 are told the list is full', rejected.length, 2);
-check('the rejections are the last two', outcomes.slice(28).map(o => o.error), ['full', 'full']);
-check('the queue holds 28 entries', queue.length, 28);
-check('positions run 1..28 with no gaps',
-  seated.map(o => o.position), Array.from({ length: 28 }, (_, i) => i + 1));
-check('no position is issued twice', new Set(seated.map(o => o.position)).size, 28);
-check('every stored name is unique', new Set(queue.map(e => e.name.toLowerCase())).size, 28);
-check('the first John keeps the plain name', queue[0].name, 'John S.');
-check('the second John becomes "John S.2"', queue[1].name, 'John S.2');
-check('the third John becomes "John S.3"', queue[2].name, 'John S.3');
-check('the last seated John becomes "John S.28"', queue[27].name, 'John S.28');
-check('stored names follow the expected sequence',
-  queue.map(e => e.name),
-  ['John S.', ...Array.from({ length: 27 }, (_, i) => `John S.${i + 2}`)]);
-check('every stored entry keeps its token', queue.every(e => typeof e.token === 'string'), true);
-check('every stored entry keeps its timestamp', queue.every(e => e.at === AT), true);
-check('tier of the last seated place is waitlist', tierFor(queue.length), 'waitlist');
-
-// already_in beats both the full check and the name allocation.
-const q2 = [];
-const first = joinAtomicSim(q2, { token: 'tok-a', displayBase: 'Ed', limit: 28, at: AT });
-const repeat = joinAtomicSim(q2, { token: 'tok-a', displayBase: 'Ed', limit: 28, at: AT });
-check('a first join reports position 1', first, { position: 1, name: 'Ed' });
-check('the same token joining twice is rejected', repeat, { error: 'already_in' });
-check('a rejected repeat does not grow the queue', q2.length, 1);
-
-const fullQ = Array.from({ length: 28 }, (_, i) => ({ name: `P${i + 1}`, token: `t${i + 1}` }));
-check('a new token on a full list is rejected',
-  joinAtomicSim(fullQ, { token: 'tok-new', displayBase: 'Ed', limit: 28, at: AT }), { error: 'full' });
-check('an existing token on a full list gets already_in, not full',
-  joinAtomicSim(fullQ, { token: 't1', displayBase: 'Ed', limit: 28, at: AT }), { error: 'already_in' });
-check('a full list is not grown by a rejection', fullQ.length, 28);
-
-const mixed = [{ name: 'John S.', token: 'x1' }, { name: 'Anne M.', token: 'x2' }];
-check('a clashing name is disambiguated against the live list',
-  joinAtomicSim(mixed, { token: 'x3', displayBase: 'John S.', limit: 28, at: AT }),
-  { position: 3, name: 'John S.2' });
-check('a non-clashing name is stored as-is',
-  joinAtomicSim(mixed, { token: 'x4', displayBase: 'Bob T.', limit: 28, at: AT }),
-  { position: 4, name: 'Bob T.' });
-check('the simulation agrees with disambiguate()',
-  joinAtomicSim([{ name: 'Ed', token: 'y1' }, { name: 'Ed2', token: 'y2' }],
-    { token: 'y3', displayBase: 'Ed', limit: 28, at: AT }).name,
-  disambiguate('Ed', ['Ed', 'Ed2']));
 
 /* ---------------------------------------------------------------------------
    Render

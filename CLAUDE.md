@@ -12,17 +12,19 @@ A static marketing/community website for Fletcher Moss Social Tennis Club, deplo
 
 ## Page naming
 
-`box-league.html` is the **FMST Singles League**. The file and route keep the old `box-league` name, only the product was renamed.
+`singles-league.html` is the **FMST Singles League**. Its data still lives in `boxleague.json` / `api/boxleague.js` under the old name. `box-league.html` is only a redirect for old links; keep it.
 
 `signup.html` is the session sign-up page. It does **not** use the GitHub-as-a-database pattern the other pages use. See "Session sign-up" below before changing it.
 
 ## Data flow
 
-Each data-backed page follows the same pattern: `<script>` in the HTML calls `fetch('/api/<name>')` on load to GET the current JSON, renders it, and POSTs updates back through the same endpoint. There is no database — `api/*.js` functions read and write the corresponding root-level JSON file (`noticeboard.json`, `boxleague.json`, `pairings.json`) in this repo using the GitHub Contents API, so every save creates a commit to this repo.
+Each data-backed page follows the same pattern: `<script>` in the HTML calls `fetch('/api/<name>')` on load to GET the current JSON, renders it, and POSTs updates back through the same endpoint. There is no database — `api/*.js` functions read and write the corresponding root-level JSON file (`noticeboard.json`, `boxleague.json`, `pairings.json`, `bookings.json`) in this repo using the GitHub Contents API, so every save creates a commit to this repo. All four go through `api/_lib/repo-json.js`, which retries when two saves collide on the same file version; don't hand-roll GitHub fetches in a handler.
 
-Each `api/*.js` handler requires `GIT_TOKEN` as a Vercel environment variable (a GitHub token with contents write access to this repo) — there is no local `.env` file, so these functions only work when deployed on Vercel, not run locally as plain Node.
+Each `api/*.js` handler requires `GIT_TOKEN` as a Vercel environment variable (a GitHub token with contents write access to this repo), and every admin action also needs the Upstash Redis variables for the password throttle — there is no local `.env` file, so these functions only work when deployed on Vercel, not run locally as plain Node.
 
 Write operations (POST) are gated by a shared admin password checked server-side inside each handler; GET requests are unauthenticated and public. `boxleague.js` additionally accepts an unauthenticated `submit_score` request type for players to record match results without the admin password.
+
+Every admin password check must go through `checkAdminPassword()` in `api/_lib/admin-auth.js`. It limits wrong guesses per connection through Redis, shared across all endpoints; a plain `password !== ADMIN_PASSWORD` anywhere reopens the brute-force hole on that endpoint.
 
 The admin password comes from the `ADMIN_PASSWORD` environment variable, not a literal in the source. It used to be hardcoded, and because this repo is public it was readable by anyone; that value is burned and must never be reused. Each handler returns a 500 if the variable is missing rather than falling through to an unauthenticated write.
 
@@ -30,7 +32,7 @@ The admin password comes from the `ADMIN_PASSWORD` environment variable, not a l
 
 ### League scoring (domain logic in `api/boxleague.js`)
 
-`recalculateBox()` is the single source of truth for standings, re-run server-side after every change. Points: **3** for a win (walkovers included), **1** for playing and losing, **0** for a no-show. Matches store `winner` and an optional `noShow` (there is no game-score field — scores were removed). Players self-report results including walkovers; only roster edits and match deletion require the admin password. Leagues hold any number of players (blank admin rows are dropped).
+`recalculateBox()` is the single source of truth for standings, re-run server-side after every change. Matches store `winner` and an optional `noShow` (there is no game-score field — scores were removed). Players self-report results including walkovers; only roster edits and match deletion require the admin password. Leagues hold any number of players (blank admin rows are dropped).
 
 ## Session sign-up (`signup.html`, `api/signup.js`)
 
@@ -41,7 +43,7 @@ The admin password comes from the `ADMIN_PASSWORD` environment variable, not a l
 
 The queue is a single Redis list and **its order is the queue**: positions 1-16 are main players (4 courts of 4), 17-18 are subs, 19-28 are the waiting list. Removing anyone shifts everyone below up one, which is exactly the club's promotion rule (next in line becomes a sub, sub 1 becomes main 16) with no separate promotion code.
 
-`JOIN_SCRIPT` in `api/_lib/redis.js` is Lua and runs inside Redis. Joining checks the token, checks capacity, and resolves a display-name clash in **one atomic step**. Splitting any of that into separate commands reintroduces the race.
+`STORE_SCRIPT` in `api/_lib/signup-store.js` is Lua and runs inside Redis. Joining checks the token, checks capacity, and resolves a display-name clash in **one atomic step**. Splitting any of that into separate commands reintroduces the race.
 
 Names are published as first name plus an initial ("John Smith" becomes "John S."). A clash becomes "John S.2". This is not cosmetic: the pairings tool matches players by name string, so two identical names would be renamed and swapped as one person.
 
@@ -57,7 +59,7 @@ When changing the shape of data used by a page (e.g. adding a field to a box-lea
 
 The `design-system/` directory is the **Fletcher Moss Design System**, a self-contained brand kit and reference export. It is a *reference*, **not** wired into the live site: the production pages do not `<link>` its `styles.css` or import its `.jsx` components, and there is no build step that consumes them. Apply the system by hand-translating its tokens and rules into each page's inline `<style>`. Treat the `.jsx`/`ui_kits` files as design specimens, not shippable code.
 
-Token source of truth is `design-system/tokens/*.css` (also flattened in `design-system/_ds_manifest.json`). Core values already reflected in the pages: park green `--green-800` `#2d5016` (brand/header) and `--green-600` `#4a7c2c` (primary action); `Lora` for all headings, `Plus Jakarta Sans` for body/UI; warm ink/paper neutrals rather than pure black/white/grey.
+Token source of truth is `design-system/tokens/*.css` (also flattened in `design-system/_ds_manifest.json`).
 
 Key principles of the "premium refresh" when restyling (full rationale in [design-system/readme.md](design-system/readme.md)):
 
@@ -72,19 +74,21 @@ All three production pages have been converted to the system (tokens copied into
 
 **Homepage feature bands:** full-bleed photographic `.feature-band` sections punctuate the content (kicker + serif headline over a scrimmed photo). Full-bleed is done inside the single `.page-wrap` container with `width:100vw; margin-left:calc(50% - 50vw)` (`body` has `overflow-x:hidden`). Keep band backgrounds static — do **not** use scroll parallax on them (an earlier parallax attempt caused a white-bar bug). Only four real club photos exist, so imagery is scarce; reuse thoughtfully.
 
-## No build/test/lint tooling
+## Tests, no build/lint tooling
 
-Verify changes by running a static file server from the repo root and checking behaviour in a browser:
+`node --test tests/*.test.mjs` runs the API regression tests with no install. The sign-up tests in `tests/high-priority.test.mjs` skip unless `FMST_REDIS_SERVER` points at a `redis-server` binary.
+
+Verify page changes by running a static file server from the repo root and checking behaviour in a browser:
 
 ```
 python3 -m http.server 8000
 ```
 
-(`.claude/launch.json` already defines this as the `static-site` preview server on port 8000.) Note that `api/*.js` functions do **not** run under a plain static server — they need `GIT_TOKEN` and only work deployed on Vercel. To exercise data-backed pages locally, mock `fetch('/api/...')` in the browser console against the root JSON file. Vercel deploys `api/*.js` automatically as serverless functions on push; there's no separate deploy command.
+Note that `api/*.js` functions do **not** run under a plain static server — they need `GIT_TOKEN` and only work deployed on Vercel. To exercise data-backed pages locally, mock `fetch('/api/...')` in the browser console against the root JSON file. Vercel deploys `api/*.js` automatically as serverless functions on push; there's no separate deploy command.
 
 ## SEO/sitemap
 
-`sitemap.xml` lists the three public pages. When adding a new page, add it here too. `google705e088e9a41894e.html` is a Google Search Console site-verification file — leave it as-is, it is not a real page.
+`sitemap.xml` lists the public pages. When adding a new page, add it here too. `google705e088e9a41894e.html` is a Google Search Console site-verification file — leave it as-is, it is not a real page.
 
 ## Skills
 
