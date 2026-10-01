@@ -11,9 +11,9 @@
 // The club's fixed weekly schedule, mirroring the cards in index.html.
 // day: 0 = Sunday ... 6 = Saturday
 export const SCHEDULE = [
-  { day: 1, label: 'Monday 6:00 to 8:00 PM',       endHour: 20 },
-  { day: 4, label: 'Thursday 6:00 to 8:00 PM',     endHour: 20 },
-  { day: 6, label: 'Saturday 11:00 AM to 2:00 PM', endHour: 14 }
+  { day: 1, label: 'Monday 6:00 to 8:00 PM',       startHour: 18, endHour: 20 },
+  { day: 4, label: 'Thursday 6:00 to 8:00 PM',     startHour: 18, endHour: 20 },
+  { day: 6, label: 'Saturday 11:00 AM to 2:00 PM', startHour: 11, endHour: 14 }
 ];
 
 // The label for whichever club night a date falls on. Derived from the date the organiser
@@ -121,6 +121,17 @@ export function sessionEndsAt(dateStr) {
   const weekday = new Date(Date.UTC(y, m - 1, d)).getUTCDay();
   const slot = SCHEDULE.find(s => s.day === weekday);
   return slot ? londonInstant(y, m, d, slot.endHour, 0) : londonInstant(y, m, d, 23, 59);
+}
+
+// When a given session starts. Unlike sessionEndsAt there is no fallback for a day the club
+// does not normally play: callers use this to decide whether play has begun, and guessing
+// wrong would let something change a board mid-game. Unknown means null.
+export function sessionStartsAt(dateStr) {
+  const [y, m, d] = String(dateStr || '').split('-').map(Number);
+  if (!y || !m || !d) return null;
+  const weekday = new Date(Date.UTC(y, m - 1, d)).getUTCDay();
+  const slot = SCHEDULE.find(s => s.day === weekday);
+  return slot ? londonInstant(y, m, d, slot.startHour, 0) : null;
 }
 
 // The next session that has not yet finished. A session stays current until it ends, so

@@ -21,6 +21,7 @@ import { checkAdminPassword, clientId } from './_lib/admin-auth.js';
 import { signupStore, sessionIdentity, admission } from './_lib/signup-store.js';
 import { randomUUID, randomInt } from 'node:crypto';
 import { archiveSession } from './_lib/archive.js';
+import { autoSyncPairings } from './_lib/pairings-sync.js';
 import {
   DEFAULT_CAPACITY, nextSession, defaultOpensAt, sessionEndsAt,
   validateName, shortenName, totalSlots, tierFor, viewModel, labelForDate,
@@ -159,6 +160,7 @@ export default async function handler(req, res) {
       const out = await signupStore({ action: 'leave', sessionId, token: String(token).slice(0, 64) });
       if (out.error) return storeFailure(res, out.error);
       if (!out.removed.length) return res.status(200).json({ ok: false, message: 'No sign-up found on this device.' });
+      await followOnPairings(now);
       return res.status(200).json({ ok: true });
     }
 
@@ -313,6 +315,7 @@ export default async function handler(req, res) {
           error: 'Nobody on the list matched those names. The list may have changed, try refreshing.'
         });
       }
+      await followOnPairings(now);
       return res.status(200).json({ ok: true, removed: out.removed, missing: out.missing });
     }
 
@@ -352,6 +355,25 @@ async function readState(now, myToken) {
   const { meta, entries, transitioning } = await signupStore({ action: 'read' });
   return { ...viewModel({ meta: { ...meta, capacity: parseCapacity(meta), ...(transitioning ? { state: 'closed' } : {}) }, entries, now, myToken }),
     sessionId: sessionIdentity(meta), transitioning };
+}
+
+// Someone has left the list, so a sub may have moved up. Hand their places on the court
+// pairings over in the same way (see api/_lib/pairings-sync.js). The place has already been
+// given up by now: this must never fail or hold up the cancellation, so errors are logged
+// and a slow GitHub is given a few seconds at most.
+async function followOnPairings(now) {
+  let timer;
+  try {
+    const result = await Promise.race([
+      autoSyncPairings(now),
+      new Promise(resolve => { timer = setTimeout(() => resolve({ skipped: 'timed out' }), 6000); })
+    ]);
+    if (result && result.applied) console.log('Pairings updated from the sign-up:', result.applied.join(', '));
+  } catch (err) {
+    console.error('Pairings follow-on update failed:', err);
+  } finally {
+    clearTimeout(timer);
+  }
 }
 
 function storeFailure(res, code) {

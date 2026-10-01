@@ -40,7 +40,8 @@ globalThis.fetch = async (url, options = {}) => {
   if (archiveHook) await archiveHook();
   githubWrites++;
   const body = JSON.parse(options.body);
-  if (archives.has(url)) return { ok: false, status: 422, json: async () => ({ message: 'Already exists' }) };
+  // Archives are write-once; the pairings board is saved over itself like any repo JSON file.
+  if (archives.has(url) && !url.endsWith('/pairings.json')) return { ok: false, status: 422, json: async () => ({ message: 'Already exists' }) };
   archives.set(url, body.content);
   return { ok: true, status: 201, json: async () => ({}) };
 };
@@ -222,4 +223,98 @@ integration('capacity edits preserve queue order, reject overflow and invalidate
   assert.equal((await signupStore({action:'read'})).meta.capacity,JSON.stringify({main:3,subs:1,waitlist:2}));
   assert.equal((await request(signup,admin({action:'capacity',capacity:{main:2.5,subs:0,waitlist:0}}))).status,400);
   assert.equal((await request(signup,{action:'capacity',sessionId:'session-A',capacity:cap})).status,401);
+});
+
+// ── The pairings board follows the sign-up ───────────────────────────────────────
+// 12 main players, 2 subs (Max, Ned) and Oli on the waiting list; a two-game, three-court
+// board made from the same sign-up session.
+const NAMES = ['Ann','Ben','Cat','Dan','Eve','Fay','Gus','Hal','Ivy','Jon','Kim','Lou','Max','Ned','Oli'];
+async function signupWithBoard({ value = meta('session-A'), stamp = 'session-A' } = {}) {
+  await initialise({ ...value, capacity: JSON.stringify({ main: 12, subs: 2, waitlist: 2 }) });
+  for (const name of NAMES) assert.equal((await request(signup, admin({ action: 'seed', name, sessionId: value.generation }))).data.ok, true);
+  const board = { numCourts: 3, numGames: 2, activeGame: 0,
+    players: NAMES.slice(0, 14).map((name, i) => ({ name, sub: i >= 12 })),
+    generatedGames: [
+      { game: 1, sitters: ['Max', 'Ned'], courts: [[['Ann','Ben'],['Cat','Dan']], [['Eve','Fay'],['Gus','Hal']], [['Ivy','Jon'],['Kim','Lou']]] },
+      { game: 2, sitters: ['Kim', 'Lou'], courts: [[['Ann','Max'],['Cat','Ned']], [['Eve','Ben'],['Gus','Dan']], [['Ivy','Fay'],['Jon','Hal']]] }
+    ],
+    ...(stamp ? { signupSession: { id: stamp, date: value.date } } : {}) };
+  const saved = await request(pairings, { password: 'test-only', ...board });
+  assert.equal(saved.status, 200, JSON.stringify(saved.data));
+  return saved.data.data;
+}
+const pairingsFile = () => {
+  const url = [...archives.keys()].find(u => u.endsWith('/pairings.json'));
+  return url ? JSON.parse(Buffer.from(archives.get(url), 'base64').toString('utf8')) : null;
+};
+
+integration('a dropout on the sign-up hands their places over on the board automatically', async () => {
+  await signupWithBoard();
+  assert.equal((await request(signup, admin({ action: 'remove', names: ['Lou'] }))).data.ok, true);
+  const board = pairingsFile();
+  assert.equal(validatePairings(board), null);
+  const [g1, g2] = board.generatedGames;
+  // Max (first sub) takes Lou's places; Oli (off the waiting list) takes Max's old ones.
+  assert.deepEqual(g1.sitters, ['Oli', 'Ned']);
+  assert.deepEqual(g1.courts[2], [['Ivy','Jon'],['Kim','Max']]);
+  assert.deepEqual(g2.sitters, ['Kim', 'Max']);
+  assert.deepEqual(g2.courts[0], [['Ann','Oli'],['Cat','Ned']]);
+  assert.deepEqual(g1.courts.slice(0, 2), [[['Ann','Ben'],['Cat','Dan']], [['Eve','Fay'],['Gus','Hal']]], 'nobody else moves');
+  assert.equal(board.autoNote.text, 'Max moved up for Lou, Oli became a sub');
+  assert.equal(board.players.find(p => p.name === 'Max').sub, false);
+  assert.equal(board.players.find(p => p.name === 'Oli').sub, true);
+  assert.equal(board.players.some(p => p.name === 'Lou'), false);
+});
+
+integration('a member cancelling their own place updates the board the same way', async () => {
+  await initialise({ ...meta('session-A'), capacity: JSON.stringify({ main: 2, subs: 1, waitlist: 1 }) });
+  for (const name of ['Ann', 'Ben']) await request(signup, admin({ action: 'seed', name }));
+  assert.equal((await request(signup, member())).data.ok, true);          // Alex P. is the sub
+  await request(signup, admin({ action: 'seed', name: 'Cat' }));          // waiting list
+  await request(pairings, { password: 'test-only', numCourts: 1, numGames: 1, activeGame: 0,
+    players: [{ name: 'Ann' }, { name: 'Ben' }, { name: 'Alex P.', sub: true }],
+    generatedGames: [{ game: 1, sitters: [], courts: [[['Ann','Ben'],['Alex P.','']]] }],
+    signupSession: { id: 'session-A', date: '2099-09-07' } });
+  assert.equal((await request(signup, { action: 'leave', sessionId: 'session-A', token: 'member-a' })).data.ok, true);
+  assert.deepEqual(pairingsFile().generatedGames[0].courts, [[['Ann','Ben'],['Cat','']]]);
+});
+
+integration('no automatic change for a board from another session, or one not made from the sign-up', async () => {
+  for (const stamp of ['session-OLD', null]) {
+    archives.clear(); await redis(['FLUSHDB']);
+    const before = await signupWithBoard({ stamp });
+    assert.equal((await request(signup, admin({ action: 'remove', names: ['Lou'] }))).data.ok, true);
+    assert.deepEqual(pairingsFile().generatedGames, before.generatedGames);
+    assert.equal(pairingsFile().autoNote, undefined);
+  }
+});
+
+integration('no automatic change once the session has started', async () => {
+  const before = await signupWithBoard({ value: { ...meta('session-A'), date: '2020-01-06' } });
+  assert.equal((await request(signup, admin({ action: 'remove', names: ['Lou'] }))).data.ok, true);
+  assert.deepEqual(pairingsFile().generatedGames, before.generatedGames);
+});
+
+integration('a GitHub failure never stops someone leaving the sign-up', async () => {
+  await signupWithBoard();
+  failArchive = true;
+  const out = await request(signup, admin({ action: 'remove', names: ['Lou'] }));
+  assert.equal(out.status, 200); assert.equal(out.data.ok, true);
+  assert.equal((await signupStore({ action: 'read' })).entries.some(e => e.name === 'Lou'), false);
+});
+
+integration('the button previews, refuses a stale preview, then applies and ties the board to the sign-up', async () => {
+  await signupWithBoard({ stamp: null });                                 // not followed automatically
+  await request(signup, admin({ action: 'remove', names: ['Lou'] }));
+  const preview = await request(pairings, { password: 'test-only', action: 'sync_preview', from: 0 });
+  assert.equal(preview.data.status, 'apply');
+  assert.equal(preview.data.sameSession, false);
+  assert.match(preview.data.summary.join(' '), /Lou has dropped out.*Max moves up into Lou's games/s);
+  const stale = await request(pairings, { password: 'test-only', action: 'sync', from: 0, expect: [] });
+  assert.equal(stale.status, 409);
+  const done = await request(pairings, { password: 'test-only', action: 'sync', from: 0, expect: preview.data.map });
+  assert.equal(done.status, 200);
+  assert.deepEqual(pairingsFile().signupSession, { id: 'session-A', date: '2099-09-07' });
+  assert.equal(validatePairings(pairingsFile()), null);
+  assert.equal((await request(pairings, { password: 'test-only', action: 'sync_preview', from: 0 })).data.status, 'unchanged');
 });
