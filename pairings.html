@@ -518,7 +518,8 @@
                 <div style="display: flex; gap: 10px; flex-wrap: wrap;">
                     <button class="edit-btn primary" onclick="copyPageLink()">Copy link</button>
                     <button class="edit-btn" id="btn-unlock" onclick="unlockEditing()">Unlock to edit</button>
-                    <button class="edit-btn primary" id="btn-change-players" onclick="cpOpen()">Change players</button>
+                    <button class="edit-btn primary" id="btn-sync-signup" onclick="sortFromSignup()">Update from sign-up</button>
+                    <button class="edit-btn" id="btn-change-players" onclick="cpOpen()">Change players</button>
                     <button class="edit-btn" id="btn-edit-players" onclick="backToSetup()">Start again from the list</button>
                     <button class="edit-btn danger" id="btn-reset" onclick="resetBoard()">Reset board</button>
                     <button class="edit-btn" id="btn-lock" onclick="lockEditing()">Done editing</button>
@@ -1050,6 +1051,7 @@
             const show = (id, on) => { const el = document.getElementById(id); if (el) el.style.display = on ? '' : 'none'; };
             show('btn-unlock', !editMode);
             show('btn-lock', editMode);
+            show('btn-sync-signup', editMode);
             show('btn-change-players', editMode);
             show('btn-edit-players', editMode);
             show('btn-reset', editMode);
@@ -1395,6 +1397,132 @@
             }
             cpClose();
             syncOptionButtons();
+            document.getElementById('gs-title').textContent = boardTitle();
+            renderGameScreen();
+        }
+
+        // ── Update from sign-up: the sign-up's own promotion rule, applied to the board ──
+        // When someone drops out of the sign-up, the first sub moves up and the first person
+        // on the waiting list becomes a sub. Here that means: the first sub takes the leaver's
+        // exact places in every game, and the new sub takes the places the promoted sub had.
+        // Nobody else's games change. It applies from the game on screen, so games already
+        // played stay as they were.
+        async function sortFromSignup() {
+            if (!editMode || saving || !generatedGames.length) return;
+            const btn = document.getElementById('btn-sync-signup');
+            btn.disabled = true;
+            let data;
+            try {
+                const res = await fetch('/api/signup');
+                if (!res.ok) throw new Error('The sign-up list returned ' + res.status);
+                data = await res.json();
+            } catch (err) {
+                console.error('Sign-up load failed:', err);
+                alert('Could not reach the sign-up list. Check your connection and try again.');
+                btn.disabled = false;
+                return;
+            }
+            btn.disabled = false;
+
+            const key = n => String(n).trim().toLowerCase();
+            const signed = [...(data.main || []), ...(data.subs || [])].map(p => String(p.name).trim()).filter(Boolean);
+            if (!signed.length) { alert(`Nobody is signed up for ${describeSignupSession(data)}, so there is nothing to compare with.`); return; }
+            const onSignup = new Set(signed.map(key));
+            const here = presentNow();
+            const onBoard = new Set(here.map(p => key(p.name)));
+            const leavers = here.filter(p => !onSignup.has(key(p.name)));
+            const joiners = signed.filter(n => !onBoard.has(key(n)));
+            if (!leavers.length && !joiners.length) {
+                alert('The board already matches the sign-up. Nobody has dropped out or joined.');
+                return;
+            }
+            if (leavers.length > here.length / 2) {
+                alert(`Most of the board is not on the sign-up for ${describeSignupSession(data)}. It may be for a different session. Use Start again from the list to set up a new board instead.`);
+                return;
+            }
+            const returning = joiners.filter(n => players.some(p => key(p.name) === key(n)));
+            if (returning.length) {
+                alert(`${returning.join(', ')} left earlier in this session. Use Change players to bring them back.`);
+                return;
+            }
+
+            // Who takes whose places. map[old] = new name, or null if nobody can fill them.
+            const map = new Map(), lines = [];
+            const queue = [...joiners];
+            const subs = here.filter(p => p.sub && !leavers.includes(p));
+            const subPlaces = here.filter(p => p.sub && leavers.includes(p));   // subs who dropped out
+            for (const gone of leavers.filter(p => !p.sub)) {
+                const up = subs.shift();
+                if (up) { map.set(gone.name, up.name); subPlaces.push(up); lines.push(`${up.name} moves up into ${gone.name}'s games.`); }
+                else if (queue.length) { const n = queue.shift(); map.set(gone.name, n); lines.push(`${n} takes ${gone.name}'s games.`); }
+                else { map.set(gone.name, null); lines.push(`Nobody is free to take ${gone.name}'s games, so whoever is sitting out fills in.`); }
+            }
+            subPlaces.sort((a, b) => here.indexOf(a) - here.indexOf(b));
+            for (const sub of subPlaces) {
+                if (queue.length) { const n = queue.shift(); map.set(sub.name, n); lines.push(`${n} becomes a sub and takes ${sub.name}'s ${leavers.includes(sub) ? 'games' : 'old places'}.`); }
+                else map.set(sub.name, null);
+            }
+            const leaving = leavers.map(p => p.name);
+            const from = activeGame;
+            // Someone who arrived after the game on screen has no places to hand over there.
+            const late = here.filter(p => map.has(p.name) && (p.joined ?? 0) > from);
+            if (late.length) {
+                alert(`${late.map(p => p.name).join(', ')} only arrived after game ${from + 1}. Go to that game first, or use Change players.`);
+                return;
+            }
+            const parts = [];
+            if (leaving.length) parts.push(`${leaving.join(', ')} ${leaving.length === 1 ? 'has' : 'have'} dropped out of the sign-up.`);
+            if (lines.length) parts.push(lines.join('\n'));
+            if (queue.length) parts.push(`${queue.join(', ')} also signed up, but there ${queue.length === 1 ? 'is no free place' : 'are no free places'} for ${queue.length === 1 ? 'them' : 'them all'}. Use Change players to redraw with ${queue.length === 1 ? 'them' : 'everyone'} in.`);
+            if (!lines.length) { alert(parts.join('\n\n')); return; }
+            parts.push(from === 0 ? 'This changes every game. Carry on?'
+                : `Games 1 to ${from} stay as they are; this changes game ${from + 1} onwards. Carry on?`);
+            if (!confirm(parts.join('\n\n'))) return;
+
+            const prev = JSON.stringify({ players, generatedGames });
+            const games = JSON.parse(JSON.stringify(generatedGames));
+            const courtGames = name => games.reduce((n, g) => n + g.courts.flat(2).filter(x => x === name).length, 0);
+            for (let gi = from; gi < games.length; gi++) {
+                const g = games[gi];
+                const swap = n => (map.has(n) ? map.get(n) : n);
+                g.sitters = g.sitters.map(swap).filter(n => n !== null);
+                g.courts = g.courts.map(c => c.map(t => t.map(n => {
+                    const next = swap(n);
+                    return next === null ? '' : next;
+                })));
+                // A place nobody could fill: bring on whoever is sitting out and has played least.
+                g.courts.forEach(c => c.forEach(t => t.forEach((n, i) => {
+                    if (n || !g.sitters.length) return;
+                    const pick = [...g.sitters].sort((a, b) => courtGames(a) - courtGames(b))[0];
+                    g.sitters = g.sitters.filter(s => s !== pick);
+                    t[i] = pick;
+                })));
+            }
+
+            // The list: each replacement takes the place (and main/sub role) of the person
+            // they replace. Leavers stay on the list only if they played an earlier game.
+            const targets = new Set([...map.values()].filter(Boolean));
+            const roster = [];
+            for (const p of here) {
+                if (!map.has(p.name)) { roster.push(p); continue; }
+                const next = map.get(p.name);
+                if (!next) continue;
+                const existing = here.find(q => q.name === next);
+                roster.push(existing ? { ...existing, sub: !!p.sub } : { name: next, sub: !!p.sub, ...(from > 0 ? { joined: from } : {}) });
+            }
+            for (const p of here) {
+                if (!map.has(p.name) || targets.has(p.name)) continue;      // still here, in a new role
+                if (from > 0 && (p.joined ?? 0) < from) roster.push({ ...p, left: from });
+            }
+            roster.push(...players.filter(p => p.name.trim() && p.left != null));
+
+            players = roster;
+            generatedGames = games;
+            renderGameScreen();
+            const ok = await saveSession({ players, numCourts, numGames, generatedGames, activeGame });
+            if (!ok) {
+                ({ players, generatedGames } = JSON.parse(prev));
+            }
             document.getElementById('gs-title').textContent = boardTitle();
             renderGameScreen();
         }

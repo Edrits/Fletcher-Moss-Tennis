@@ -16,7 +16,8 @@ const html = await readFile(new URL('../pairings.html', import.meta.url), 'utf8'
 const source = [...html.matchAll(/<script>([\s\S]*?)<\/script>/g)][0][1]
   .replace(/        loadCurrentSession\(\);\n        getWeather\(\);\n        setInterval\(getWeather, 600000\);/, '');
 
-function page({ signup } = {}) {
+function page({ signup, allowAlerts = false } = {}) {
+  const messages = [];
   const nodes = new Map();
   const node = id => {
     if (!nodes.has(id)) nodes.set(id, { id, style: {}, textContent: '', innerHTML: '', value: '', hidden: false, disabled: false,
@@ -34,12 +35,13 @@ function page({ signup } = {}) {
       if (o.method === 'POST') writes.push(JSON.parse(o.body));
       return { ok: true, json: async () => ({}) };
     },
-    alert(msg) { throw new Error('Unexpected alert: ' + msg); }, confirm: () => true, prompt: () => null
+    alert(msg) { if (!allowAlerts) throw new Error('Unexpected alert: ' + msg); messages.push(msg); },
+    confirm: msg => { messages.push(msg); return true; }, prompt: () => null
   };
   const ctx = vm.createContext(sandbox);
   vm.runInContext(source, ctx);
   vm.runInContext('renderGameScreen = function() {}; boardLoaded = true; editMode = true; rememberCredential("test-only");', ctx);
-  return { ctx, node, writes, run: code => vm.runInContext(code, ctx) };
+  return { ctx, node, writes, messages, run: code => vm.runInContext(code, ctx) };
 }
 
 const names = n => Array.from({ length: n }, (_, i) => `P${String(i + 1).padStart(2, '0')}`);
@@ -191,4 +193,69 @@ test('server: saving keeps only the known player fields', async () => {
     { name: 'A', sub: false }, { name: 'B', sub: false }, { name: 'C', sub: false },
     { name: 'D', sub: false, left: 1 }, { name: 'E', sub: true, joined: 1 }
   ]);
+});
+
+// ── Update from sign-up: the sign-up's promotion rule applied to the board ──
+// The board: P01-P12 main, P13 and P14 subs, as loaded from the sign-up.
+async function signedUpBoard(signup, { games = 4, from = 0 } = {}) {
+  const p = page({ signup, allowAlerts: true });
+  p.run(`players = ${JSON.stringify(names(14).map((name, i) => ({ name, sub: i >= 12 })))}; numCourts = 3; numGames = ${games};`);
+  await p.run('generate()');
+  const before = JSON.parse(JSON.stringify(p.run('generatedGames')));
+  p.run(`activeGame = ${from};`);
+  const writesBefore = p.writes.length;
+  await p.run('sortFromSignup()');
+  return { p, before, saved: p.writes.length > writesBefore ? p.writes.at(-1) : null };
+}
+const slotsOf = (games, name) => games.map(g => [...g.sitters.map((n, i) => n === name ? `sit${i}` : null),
+  ...g.courts.flat(2).map((n, i) => n === name ? `seat${i}` : null)].filter(Boolean).join(',')).join(' | ');
+const signupWith = (main, subs) => ({ state: 'open', date: '2026-10-01', label: 'Thursday 6:00 to 8:00 PM',
+  main: main.map(name => ({ name })), subs: subs.map(name => ({ name })), waitlist: [] });
+
+test('a dropout: the first sub takes their exact places, the new sub takes the sub\'s, nobody else moves', async () => {
+  // P12 cancelled on the sign-up: P13 moved up to main, and New X came off the waiting list.
+  const signup = signupWith([...names(11), 'P13'], ['P14', 'New X']);
+  const { p, before, saved } = await signedUpBoard(signup);
+  assert.equal(validatePairings(saved), null);
+  assert.equal(slotsOf(saved.generatedGames, 'P13'), slotsOf(before, 'P12'));
+  assert.equal(slotsOf(saved.generatedGames, 'New X'), slotsOf(before, 'P13'));
+  for (const name of [...names(11), 'P14']) assert.equal(slotsOf(saved.generatedGames, name), slotsOf(before, name), `${name} is unchanged`);
+  assert.equal(saved.players.find(x => x.name === 'P12'), undefined);
+  assert.deepEqual(saved.players.find(x => x.name === 'P13'), { name: 'P13', sub: false });
+  assert.deepEqual(saved.players.find(x => x.name === 'New X'), { name: 'New X', sub: true });
+  assert.match(p.messages.at(-1), /P13 moves up into P12's games[\s\S]*New X becomes a sub/);
+});
+
+test('mid-session, games already played are left exactly as they were', async () => {
+  const signup = signupWith([...names(11), 'P13'], ['P14', 'New X']);
+  const { before, saved } = await signedUpBoard(signup, { games: 6, from: 2 });
+  assert.equal(validatePairings(saved), null);
+  assert.deepEqual(saved.generatedGames.slice(0, 2), before.slice(0, 2));
+  assert.equal(saved.players.find(x => x.name === 'P12').left, 2);
+  assert.equal(saved.players.find(x => x.name === 'New X').joined, 2);
+  assert.equal(slotsOf(saved.generatedGames.slice(2), 'P13'), slotsOf(before.slice(2), 'P12'));
+});
+
+test('with nobody on the waiting list, whoever is sitting out fills the empty place', async () => {
+  const signup = signupWith([...names(11), 'P13'], ['P14']);
+  const { saved } = await signedUpBoard(signup);
+  assert.equal(validatePairings(saved), null);
+  assert.ok(saved.generatedGames.every(g => onCourt(g).length === 12 && g.sitters.length === 1), 'every court stays full');
+});
+
+test('a sub dropping out is replaced by the new sub directly', async () => {
+  const signup = signupWith(names(12), ['P13', 'New Y']);
+  const { before, saved } = await signedUpBoard(signup);
+  assert.equal(validatePairings(saved), null);
+  assert.equal(slotsOf(saved.generatedGames, 'New Y'), slotsOf(before, 'P14'));
+  assert.equal(slotsOf(saved.generatedGames, 'P13'), slotsOf(before, 'P13'));
+});
+
+test('nothing changes when the board already matches, or when the sign-up is for another session', async () => {
+  const same = await signedUpBoard(signupWith(names(12), ['P13', 'P14']));
+  assert.equal(same.saved, null);
+  assert.match(same.p.messages.at(-1), /already matches/);
+  const other = await signedUpBoard(signupWith(['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'P01', 'P02'], []));
+  assert.equal(other.saved, null);
+  assert.match(other.p.messages.at(-1), /different session/);
 });
