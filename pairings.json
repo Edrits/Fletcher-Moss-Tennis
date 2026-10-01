@@ -45,11 +45,11 @@
       "sub": false
     },
     {
-      "name": "Louis W.",
+      "name": "Rashid",
       "sub": false
     },
     {
-      "name": "Rashid",
+      "name": "Josh",
       "sub": true
     },
     {
@@ -63,7 +63,7 @@
     {
       "game": 1,
       "sitters": [
-        "Rashid",
+        "Josh",
         "Rod"
       ],
       "courts": [
@@ -74,7 +74,7 @@
           ],
           [
             "Ed",
-            "Louis W."
+            "Rashid"
           ]
         ],
         [
@@ -103,7 +103,7 @@
       "game": 2,
       "sitters": [
         "Alan R.",
-        "Louis W."
+        "Rashid"
       ],
       "courts": [
         [
@@ -122,7 +122,7 @@
             "Evie"
           ],
           [
-            "Rashid",
+            "Josh",
             "Ting"
           ]
         ],
@@ -157,7 +157,7 @@
         ],
         [
           [
-            "Louis W.",
+            "Rashid",
             "Rod"
           ],
           [
@@ -167,7 +167,7 @@
         ],
         [
           [
-            "Rashid",
+            "Josh",
             "Evie"
           ],
           [
@@ -210,13 +210,13 @@
             "Sofia"
           ],
           [
-            "Louis W.",
-            "Rashid"
+            "Rashid",
+            "Josh"
           ]
         ]
       ]
     }
   ],
   "activeGame": 0,
-  "updated": "2026-10-01T07:23:09.902Z"
+  "updated": "2026-10-01T08:40:56.487Z"
 }
