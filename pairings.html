@@ -410,6 +410,10 @@
             font-family: var(--font-body); font-size: 15px; background: var(--paper-0); color: var(--text-body);
         }
         .cp-summary { font-size: var(--text-sm); color: var(--ink-700); font-weight: 600; margin-top: 14px; }
+        .cp-warn {
+            font-size: var(--text-sm); font-weight: 600; color: var(--brown-800);
+            background: var(--gold-100); border-radius: var(--radius-sm); padding: 10px 14px; margin-top: 10px;
+        }
         .cp-actions { display: flex; gap: 10px; align-items: center; }
         .cp-actions .generate-btn { flex: 1; }
         .cp-actions .edit-btn { margin-top: 10px; padding: 13px 18px; }
@@ -624,6 +628,7 @@
                     </div>
                 </div>
                 <p class="cp-summary" id="cp-summary" role="status"></p>
+                <p class="cp-warn" id="cp-warn" role="status" hidden></p>
                 <div class="cp-actions">
                     <button class="generate-btn" id="cp-apply" onclick="cpApply()">Update games</button>
                     <button class="edit-btn" onclick="cpClose()">Cancel</button>
@@ -1284,6 +1289,17 @@
             text += from === 0
                 ? `All ${generatedGames.length} games are drawn again.`
                 : `Games 1 to ${from} stay as they are; ${from + 1 === generatedGames.length ? `game ${from + 1} is` : `games ${from + 1} to ${generatedGames.length} are`} drawn again.`;
+            // "Draw again from" starts on whichever game tab was open, which is not always a
+            // game in progress. Before a session that quietly costs anyone joining the games
+            // before it (Dawid was added on the game 4 tab and got one game of four), so say
+            // so plainly rather than leave it to the summary arithmetic.
+            const warn = document.getElementById('cp-warn');
+            const newNames = cp.list.filter(p => p.status === 'new').map(p => p.name);
+            const left = generatedGames.length - from;
+            warn.hidden = !(newNames.length && from > 0);
+            if (!warn.hidden) {
+                warn.textContent = `${newNames.length === 1 ? newNames[0] : 'Anyone joining'} will miss ${from === 1 ? 'game 1' : `games 1 to ${from}`} and can play ${left === 1 ? 'only 1 game' : `at most ${left} games`}. If ${from === 1 ? 'game 1 has' : 'those games have'} not been played yet, choose Game 1 above.`;
+            }
             const apply = document.getElementById('cp-apply');
             if (playing < 2) text = 'Keep at least 2 players to draw games.';
             apply.disabled = playing < 2 || saving;
