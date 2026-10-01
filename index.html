@@ -167,7 +167,11 @@
 
         .top-title .brand-name {
             font-family: var(--font-display);
-            font-size: 2em; font-weight: 600; color: #fff; margin-bottom: 3px; white-space: nowrap;
+            /* Scales with the screen up to its full 2em. At a fixed 2em the name is about
+               540px wide and, on tablets (roughly 770 to 950px, iPad portrait included),
+               pushed the sign-up button and the menu off the edge of the bar. It cannot
+               wrap here: rippleTitle() builds it from non-breaking letters above 768px. */
+            font-size: clamp(1.3rem, 2.9vw, 2em); font-weight: 600; color: #fff; margin-bottom: 3px; white-space: nowrap;
             transition: font-size var(--duration-base) var(--ease-standard);
         }
         .top-title .tagline {
