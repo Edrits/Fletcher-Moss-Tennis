@@ -78,7 +78,7 @@
             "Luke"
           ],
           [
-            "Will H.",
+            "Shyam",
             "Rod"
           ]
         ],
@@ -88,7 +88,7 @@
             "Ting"
           ],
           [
-            "Shyam",
+            "Will H.",
             "Ryan"
           ]
         ]
@@ -209,14 +209,10 @@
       ]
     }
   ],
-  "activeGame": 3,
-  "updated": "2026-10-01T16:39:35.157Z",
+  "activeGame": 0,
   "signupSession": {
     "id": "6e5836fa-4feb-46b1-94f9-8304d6d152b5",
     "date": "2026-10-01"
   },
-  "autoNote": {
-    "text": "Rod moved up for Josh",
-    "at": "2026-10-01T16:39:35.157Z"
-  }
+  "updated": "2026-10-01T16:40:48.401Z"
 }
