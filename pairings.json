@@ -178,7 +178,7 @@
       "courts": [
         [
           [
-            "Evie",
+            "Sofia",
             "Ayesa"
           ],
           [
@@ -199,7 +199,7 @@
         [
           [
             "Luke",
-            "Sofia"
+            "Evie"
           ],
           [
             "Ben",
@@ -209,10 +209,10 @@
       ]
     }
   ],
-  "activeGame": 2,
+  "activeGame": 3,
   "signupSession": {
     "id": "6e5836fa-4feb-46b1-94f9-8304d6d152b5",
     "date": "2026-10-01"
   },
-  "updated": "2026-10-01T18:02:46.961Z"
+  "updated": "2026-10-01T18:34:24.811Z"
 }
