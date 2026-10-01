@@ -35,7 +35,13 @@ export default repoHandler(async (req, res) => {
   if (invalid) return res.status(400).json({ error: invalid });
 
   const dataToSave = {
-    players: players.map(p => ({ ...p, name: p.name.trim() })),
+    // Only the known fields are stored. joined/left mark a late arrival or early leaver.
+    players: players.map(p => ({
+      name: p.name.trim(),
+      sub: !!p.sub,
+      ...(Number.isInteger(p.joined) && p.joined > 0 ? { joined: p.joined } : {}),
+      ...(Number.isInteger(p.left) ? { left: p.left } : {})
+    })),
     numCourts: numCourts || 3,
     numGames: numGames || 6,
     generatedGames: generatedGames.map(game => ({
