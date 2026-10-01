@@ -412,26 +412,30 @@
         body.view-mode .tally .tn { cursor: default !important; border-bottom: none !important; }
         .pp.ball { background: var(--paper-100); border: 1px dashed var(--ink-150); color: var(--ink-300); font-size: 15px; }
 
-        /* ── The court: a top-down doubles court drawn to real proportions, with the four
-           players in "one up, one back" positions. Team A's baseline player is top left
-           with their partner at the net below; Team B mirrors it across the net. Each name
-           sits in a positioned .spot so the dragged copy of a name is unaffected. */
-        .court { position: relative; padding: 22px 12px 12px; }
-        .court-side { position: absolute; top: 6px; font-size: 9px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--text-muted); }
-        .court-side.a { left: 16px; }
-        .court-side.b { right: 16px; }
-        .court-inner { position: relative; width: 100%; max-width: 560px; margin: 0 auto; aspect-ratio: 2.4 / 1; }
-        /* Faint lines only: a hint of a court behind the names, not a picture of one. */
-        .court-lines { position: absolute; inset: 0; width: 100%; height: 100%; display: block; overflow: visible; }
-        .court-lines .fill { fill: rgba(74,124,44,.05); stroke: none; }
-        .court-lines .ln { stroke: rgba(74,124,44,.28); stroke-width: 1; fill: none; }
-        .court-lines .net { stroke: rgba(74,124,44,.5); stroke-width: 1.5; }
-        .spot { position: absolute; width: 23%; transform: translate(-50%, -50%); display: flex; justify-content: center; }
-        .spot.a-back { left: 15%; top: 30%; }
-        .spot.a-net  { left: 37%; top: 70%; }
-        .spot.b-net  { left: 63%; top: 30%; }
-        .spot.b-back { left: 85%; top: 70%; }
-        .court .pp { width: 100%; max-width: 128px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        /* ── The court: a soft top-down doubles court drawn to real proportions, with the
+           four players in "one up, one back" positions. Team A's baseline player is top
+           left with their partner at the net below; Team B mirrors it across the net. Each
+           name sits in a positioned .spot so the dragged copy of a name is unaffected. */
+        .court-teams { margin-left: auto; font-size: 10px; font-weight: 600; letter-spacing: 1.6px; text-transform: uppercase; color: var(--text-muted); }
+        .court { padding: 0 12px 12px; }
+        .court-surface { border-radius: var(--radius-md); background: linear-gradient(160deg, var(--green-100), #d3e8cf); padding: 10px 12px; }
+        .court-inner { position: relative; width: 100%; max-width: 520px; margin: 0 auto; aspect-ratio: 2.02 / 1; }
+        .court-lines { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+        .court-lines .ln { stroke: #fff; stroke-width: 1.8; fill: none; }
+        .court-lines .net { stroke: var(--green-700); stroke-width: 1.6; opacity: .55; }
+        .court-lines .post { fill: var(--green-700); opacity: .55; }
+        .spot { position: absolute; width: 26%; transform: translate(-50%, -50%); display: flex; justify-content: center; }
+        .spot.a-back { left: 13%; top: 31%; }
+        .spot.a-net  { left: 35%; top: 69%; }
+        .spot.b-net  { left: 65%; top: 31%; }
+        .spot.b-back { left: 87%; top: 69%; }
+        .court .pp {
+            min-width: 82%; max-width: 100%; padding: 10px 14px; border: none; border-radius: 10px;
+            background: var(--paper-0); color: var(--green-800); font-size: 15px;
+            box-shadow: 0 1px 4px rgba(32,60,20,.14);
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+        }
+        .court .pp.ball { background: rgba(255,255,255,.55); border: 1px dashed var(--green-400); color: var(--ink-300); box-shadow: none; }
 
         .tally-title { font-size: 10px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--text-muted); margin-bottom: 10px; }
         .tally-grid { display: flex; flex-wrap: wrap; gap: 6px; }
@@ -524,9 +528,12 @@
             .main-container { padding: 40px 20px; margin: 60px 15px 80px 15px; }
             .section-heading h2 { font-size: var(--text-xl); }
             .pp { font-size: 12px; padding: 6px 6px; }
-            .court { padding: 20px 6px 8px; }
-            .court-inner { aspect-ratio: 2 / 1; }
-            .court .pp { padding: 6px 4px; }
+            .court { padding: 0 8px 8px; }
+            .court-surface { padding: 6px; }
+            .spot { width: 28%; }
+            .court .pp { font-size: 13.5px; padding: 8px 6px; min-width: 0; width: 100%; }
+            /* "Christopher W." and the like: a size down rather than cut off */
+            .court .pp.long { font-size: 11px; padding-left: 3px; padding-right: 3px; letter-spacing: -.1px; }
         }
     </style>
 </head>
@@ -1668,29 +1675,28 @@
                 // One seat on the court. Team A: [baseline, net]; Team B: [net, baseline].
                 const seat = (p, ti, pi, where) => `<div class="spot ${where}">${isBall(p)
                     ? `<div class="pp ball" data-loc="c${ci}-t${ti}-p${pi}" title="Empty seat, drag a player here">${BALL}</div>`
-                    : `<div class="pp${ti === 0 ? ' a' : ''}" data-loc="c${ci}-t${ti}-p${pi}" onclick="renamePlayerOnFly('${escapeArg(p)}')"${ti === 1 ? ` style="background:linear-gradient(${acc}18,${acc}18),var(--paper-0); border:1px solid ${acc}40; color:${acc};"` : ''} title="Drag to swap, or click to rename">${escapeHtml(p)}</div>`}</div>`;
+                    : `<div class="pp${ti === 0 ? ' a' : ''}${p.length > 10 ? ' long' : ''}" data-loc="c${ci}-t${ti}-p${pi}" onclick="renamePlayerOnFly('${escapeArg(p)}')"${ti === 1 ? ` style="background:linear-gradient(${acc}14,${acc}14),var(--paper-0); color:${acc};"` : ''} title="Drag to swap, or click to rename">${escapeHtml(p)}</div>`}</div>`;
                 const named = t => t.filter(p => !isBall(p)).join(' and ') || 'nobody';
                 return `
                     <div class="court-card">
                         <div class="court-hdr">
                             <div class="c-dot" style="background:${acc}"></div>
                             <span class="c-lbl" style="color:${acc}">Court ${ci+1}</span>
+                            <span class="court-teams" aria-hidden="true">Team A &middot; Team B</span>
                         </div>
                         <div class="court" role="group" aria-label="${escapeHtml(`Court ${ci+1}: ${named(t1)} against ${named(t2)}`)}">
-                            <span class="court-side a" aria-hidden="true">Team A</span>
-                            <span class="court-side b" aria-hidden="true">Team B</span>
+                          <div class="court-surface">
                             <div class="court-inner">
-                                <svg class="court-lines" viewBox="0 0 100 50" preserveAspectRatio="none" aria-hidden="true" focusable="false">
-                                    <g vector-effect="non-scaling-stroke">
-                                        <rect class="fill" x="6" y="5" width="88" height="40"/>
-                                        <rect class="ln" x="6" y="5" width="88" height="40" vector-effect="non-scaling-stroke"/>
-                                        <path class="ln" d="M6 10H94M6 40H94M26.3 10V40M73.7 10V40M26.3 25H73.7M6 25H7.4M92.6 25H94" vector-effect="non-scaling-stroke"/>
-                                        <path class="net" d="M50 2.5V47.5" vector-effect="non-scaling-stroke"/>
-                                    </g>
+                                <svg class="court-lines" viewBox="-9 -9 255.7 127.7" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+                                    <rect class="ln" x="0" y="0" width="237.7" height="109.7" vector-effect="non-scaling-stroke"/>
+                                    <path class="ln" d="M0 13.7H237.7M0 96H237.7M54.85 13.7V96M182.85 13.7V96M54.85 54.85H182.85M0 54.85H4M233.7 54.85H237.7" vector-effect="non-scaling-stroke"/>
+                                    <path class="ln net" d="M118.85 -4.5V114.2" vector-effect="non-scaling-stroke"/>
+                                    <circle class="post" cx="118.85" cy="-4.5" r="1.6"/><circle class="post" cx="118.85" cy="114.2" r="1.6"/>
                                 </svg>
                                 ${seat(t1[0], 0, 0, 'a-back')}${seat(t1[1], 0, 1, 'a-net')}
                                 ${seat(t2[0], 1, 0, 'b-net')}${seat(t2[1], 1, 1, 'b-back')}
                             </div>
+                          </div>
                         </div>
                     </div>`;
             }).join('');
