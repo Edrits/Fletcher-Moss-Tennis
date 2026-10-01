@@ -368,7 +368,7 @@ async function followOnPairings(now) {
       autoSyncPairings(now),
       new Promise(resolve => { timer = setTimeout(() => resolve({ skipped: 'timed out' }), 6000); })
     ]);
-    if (result && result.applied) console.log('Pairings updated from the sign-up:', result.applied.join(', '));
+    if (result && result.autoNote) console.log('Pairings updated from the sign-up:', result.autoNote.text);
   } catch (err) {
     console.error('Pairings follow-on update failed:', err);
   } finally {

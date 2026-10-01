@@ -21,7 +21,7 @@ export const PAIRINGS_FILE = 'pairings.json';
 
 const key = name => String(name).trim().toLowerCase();
 const presentNow = players => players.filter(p => p.name.trim() && p.left == null);
-const organiser = message => ({ status: 'organiser', message, summary: [], note: [], map: [], unplaced: [] });
+const organiser = message => ({ status: 'organiser', message, summary: [], note: [], leaving: [], map: [], unplaced: [] });
 
 // board: the saved pairings. signed: the sign-up's main players then subs, as [{ name }].
 // from: the first game to change (earlier games are kept exactly).
@@ -130,7 +130,7 @@ export function planSignupSync(board, signed, from = 0) {
   if (invalid) return organiser(`The board could not be updated from the sign-up: ${invalid}`);
   return {
     status: 'apply', message: [intro, ...summary, extra].filter(Boolean).join(' '),
-    summary: [intro, summary.join('\n'), extra].filter(Boolean), note,
+    summary: [intro, summary.join('\n'), extra].filter(Boolean), note, leaving,
     map: [...map.entries()], unplaced: queue, board: next
   };
 }
@@ -149,43 +149,55 @@ export async function readSignupPlayers() {
   const { meta = {}, entries = [], transitioning } = await signupStore({ action: 'read' });
   const groups = splitEntries(entries, capacityOf(meta));
   return {
-    id: sessionIdentity(meta), date: meta.date || null, transitioning: !!transitioning,
+    id: sessionIdentity(meta), date: meta.date || null, opensAt: meta.opensAt || null, transitioning: !!transitioning,
     signed: [...groups.main.map(e => ({ name: e.name, sub: false })), ...groups.subs.map(e => ({ name: e.name, sub: true }))]
   };
 }
 
-const sameSession = (board, signup) =>
-  !!(board && board.signupSession && board.signupSession.id === signup.id && (board.generatedGames || []).length);
+// Does this board belong to the live sign-up session? Yes if it is stamped with it. A board
+// with no stamp (made before stamping existed, or pasted in) counts as this session's if it
+// was saved after this sign-up opened: a board left over from the last session was saved
+// before then, so it is never mistaken for tonight's.
+function followsSignup(board, signup) {
+  if (!board || !(board.generatedGames || []).length) return false;
+  if (board.signupSession) return board.signupSession.id === signup.id;
+  const saved = Date.parse(board.updated || ''), opened = Date.parse(signup.opensAt || '');
+  return Number.isFinite(saved) && Number.isFinite(opened) && saved >= opened;
+}
 
 class Skip extends Error {}
 
-// After someone leaves or is removed from the sign-up. Never throws for a skipped update;
-// callers should still guard it so a GitHub hiccup can never fail the cancellation.
-export async function autoSyncPairings(now = new Date()) {
+// Bring the board into line with the sign-up if it can be done safely without anyone
+// checking: a board of this session, before the session starts, with every place handed
+// over. A board that was never stamped is only changed for one or two dropouts, as a
+// further guard. Runs when someone leaves the sign-up (api/signup.js) and whenever the
+// board is opened (api/pairings.js), so a missed update is caught up on the next look.
+// `known` is the board if the caller has just read it. Returns the saved board, or null.
+export async function autoSyncPairings(now = new Date(), known) {
   const signup = await readSignupPlayers();
-  if (signup.transitioning || !signup.date) return { skipped: 'no live session' };
+  if (signup.transitioning || !signup.date) return null;
   const starts = sessionStartsAt(signup.date);
-  if (!starts || now >= starts) return { skipped: 'session has started' };
+  if (!starts || now >= starts) return null;
 
   const decide = board => {
-    if (!sameSession(board, signup)) return null;
+    if (!followsSignup(board, signup)) return null;
     const plan = planSignupSync(board, signup.signed, 0);
-    return plan.status === 'apply' && !plan.unplaced.length ? plan : null;
+    if (plan.status !== 'apply' || plan.unplaced.length) return null;
+    if (!board.signupSession && plan.leaving.length > 2) return null;
+    return plan;
   };
-  const { data } = await readRepoJson(PAIRINGS_FILE);
-  if (!decide(data)) return { skipped: 'not a simple handover for this board' };
+  const data = known !== undefined ? known : (await readRepoJson(PAIRINGS_FILE)).data;
+  if (!decide(data)) return null;
 
-  let applied;
   try {
-    await updateRepoJson(PAIRINGS_FILE, current => {
+    return await updateRepoJson(PAIRINGS_FILE, current => {
       const plan = decide(current);          // decided again on the freshest copy
       if (!plan) throw new Skip();
-      applied = plan;
-      return { ...plan.board, autoNote: { text: plan.note.join(', '), at: now.toISOString() }, updated: now.toISOString() };
+      return { ...plan.board, signupSession: { id: signup.id, date: signup.date },
+        autoNote: { text: plan.note.join(', '), at: now.toISOString() }, updated: now.toISOString() };
     }, 'Updated court pairings from the sign-up');
   } catch (err) {
-    if (err instanceof Skip) return { skipped: 'board changed' };
+    if (err instanceof Skip) return null;
     throw err;
   }
-  return { applied: applied.note };
 }
