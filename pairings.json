@@ -45,16 +45,22 @@
       "sub": false
     },
     {
-      "name": "Rashid",
+      "name": "Ben",
       "sub": false
     },
     {
-      "name": "Ben",
-      "sub": true
+      "name": "Dawid",
+      "sub": true,
+      "joined": 3
     },
     {
       "name": "Rod",
       "sub": true
+    },
+    {
+      "name": "Rashid",
+      "sub": false,
+      "left": 3
     }
   ],
   "numCourts": 3,
@@ -210,13 +216,13 @@
             "Sofia"
           ],
           [
-            "Rashid",
-            "Ben"
+            "Ben",
+            "Dawid"
           ]
         ]
       ]
     }
   ],
   "activeGame": 3,
-  "updated": "2026-10-01T15:11:08.615Z"
+  "updated": "2026-10-01T15:15:45.522Z"
 }
