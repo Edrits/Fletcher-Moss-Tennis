@@ -39,6 +39,7 @@ globalThis.fetch = async (url, options = {}) => {
 const { default: noticeboard } = await import('../api/noticeboard.js');
 const { default: boxleague } = await import('../api/boxleague.js');
 const { default: booking } = await import('../api/booking.js');
+const { default: admin } = await import('../api/admin.js');
 
 async function call(handler, method, body, ip = '1.1.1.1') {
   const req = { method, body, headers: { 'x-forwarded-for': ip } };
@@ -142,4 +143,13 @@ test('full names are refused on admin rosters and shortened on public bookings',
   assert.equal(booked.status, 200);
   assert.equal(booked.json.bookings['mon|1|20:00'].name, 'Art S.');
   assert.equal(read('bookings.json').bookings['mon|1|20:00'].name, 'Art S.');
+});
+
+test('the shared sign-in check accepts the password, refuses a wrong one and writes nothing', async () => {
+  assert.equal((await call(admin, 'POST', { password: 'test-only' })).status, 200);
+  const wrong = await call(admin, 'POST', { password: 'nope' });
+  assert.equal(wrong.status, 401);
+  assert.match(wrong.json.error, /tries left/);
+  assert.equal((await call(admin, 'GET')).status, 405);
+  assert.deepEqual([...files.keys()], ['boxleague.json']);
 });

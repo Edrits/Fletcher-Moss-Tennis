@@ -689,16 +689,8 @@
         </div>
 
         <div class="admin-strip">
-            <button class="edit-btn" id="btn-unlock" aria-expanded="false" aria-controls="admin-login" onclick="toggleAdminLogin()">Organiser sign in</button>
+            <button class="edit-btn" id="btn-unlock" onclick="unlockAdmin()">Organiser sign in</button>
             <button class="edit-btn" id="btn-lock" style="display:none;" onclick="lockAdmin()">Done editing</button>
-            <form id="admin-login" hidden style="text-align:left; margin-top:12px;" onsubmit="event.preventDefault(); submitAdminLogin()">
-                <label class="field-label" for="admin-password">Organiser password</label>
-                <div class="admin-row">
-                    <input class="text-input" id="admin-password" type="password" autocomplete="current-password" required>
-                    <button class="edit-btn primary" id="admin-login-submit" type="submit">Sign in</button>
-                </div>
-                <p class="msg" id="login-msg" role="status"></p>
-            </form>
         </div>
 
         <div class="card" id="admin-card" style="display:none; margin-top:16px;">
@@ -821,6 +813,7 @@
         </svg>
     </a>
 
+    <script src="/admin-unlock.js"></script>
     <script>
         /* ============================================================
            Local development mock — OFF unless the URL says ?mock
@@ -1195,16 +1188,8 @@
 
         // Storage can throw outright where site data is blocked, not merely return null,
         // so every access goes through a helper rather than being written inline.
-        function rememberAdmin(pw) {
-            try { sessionStorage.setItem('pw', pw); } catch (err) { /* stays in memory only */ }
-        }
-        function forgetAdmin() {
-            try { sessionStorage.removeItem('pw'); } catch (err) { /* nothing to clear */ }
-        }
-
-        function isAdmin() {
-            try { return !!sessionStorage.getItem('pw'); } catch (err) { return false; }
-        }
+        // The password is held by admin-unlock.js, shared with every page.
+        function isAdmin() { return FMSTAdmin.isSignedIn(); }
 
         function toggleListEditing() {
             editingList = !editingList;
@@ -1408,70 +1393,40 @@
            first time it is actually used. A rejected password clears itself.
            ============================================================ */
         async function unlockAdmin() {
-            const pw = document.getElementById('admin-password').value;
-            if (!pw) return;
-            // The mock has no /api/signup to talk to, so short-circuit the round trip and
-            // let the local harness exercise the same unlock path.
-            if (USE_MOCK) {
-                const mocked = await mockPost({ action: 'verify', password: pw });
-                setShare(mocked.shareText);
-                rememberAdmin(pw);
-                setAdminUI(true);
-                prefillAdmin();
-                return;
-            }
-            // Check the password before unlocking, the same way pairings.html does, so a
-            // typo is caught here rather than surfacing later as a failed action.
-            try {
-                const res = await fetch('/api/signup', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ action: 'verify', password: pw })
-                });
-                let data = {};
-                try { data = await res.json(); } catch (err) { /* empty or non-JSON body */ }
-                // 429 means this connection has spent its wrong-password attempts. Saying
-                // "try again" here was actively harmful: it invited the retry that keeps
-                // the lockout in place, and never mentioned the fifteen minute wait, so a
-                // correct password looked like a broken page.
-                if (res.status === 429) { showMsg('login-msg', data.error || 'Too many incorrect passwords. Wait fifteen minutes and try again.', 'bad'); return; }
-                if (res.status === 401) { showMsg('login-msg', data.error || 'Incorrect password.', 'bad'); return; }
-                if (!res.ok) { showMsg('login-msg', 'Could not sign in. Please try again.', 'bad'); return; }
-                // Unlocking is also how the organiser gets the session code back after a
-                // reload. It is in no public response, so this is the only source.
-                setShare(data.shareText);
-            } catch (err) {
-                console.error('Verify failed:', err);
-                showMsg('login-msg', 'Could not connect. Please try again.', 'bad');
-                return;
-            }
-            rememberAdmin(pw);
+            // Signs in through the shared box, but checks the password against
+            // /api/signup rather than /api/admin: unlocking is also how the organiser
+            // gets the session code back after a reload. It is in no public response,
+            // so this is the only source.
+            const data = await FMSTAdmin.signIn({
+                verify: async pw => {
+                    // The mock has no /api/signup to talk to, so the local harness
+                    // exercises the same path against mockPost instead.
+                    if (USE_MOCK) return { ok: true, status: 200, data: await mockPost({ action: 'verify', password: pw }) };
+                    const res = await fetch('/api/signup', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ action: 'verify', password: pw })
+                    });
+                    return { ok: res.ok, status: res.status, data: await res.json().catch(() => ({})) };
+                }
+            });
+            if (!data) return;
+            setShare(data.shareText);
             setAdminUI(true);
             prefillAdmin();
         }
 
         function lockAdmin() {
-            forgetAdmin();
+            FMSTAdmin.signOut();
+        }
+
+        // Signing out here or on another page, or a password the server turns down,
+        // locks the organiser controls.
+        FMSTAdmin.onChange(on => {
+            if (on) return;
             setShare(null);
             setAdminUI(false);
-        }
-
-        function toggleAdminLogin() {
-            const form = document.getElementById('admin-login');
-            form.hidden = !form.hidden;
-            document.getElementById('btn-unlock').setAttribute('aria-expanded', String(!form.hidden));
-            if (!form.hidden) document.getElementById('admin-password').focus();
-        }
-
-        async function submitAdminLogin() {
-            const button = document.getElementById('admin-login-submit');
-            if (button.disabled) return;
-            button.disabled = true;
-            button.textContent = 'Signing in…';
-            showMsg('login-msg', '', null);
-            try { await unlockAdmin(); }
-            finally { button.disabled = false; button.textContent = 'Sign in'; }
-        }
+        });
 
         // The server builds the message, so the wording lives in one place and the page
         // never has to know the code in order to display it.
@@ -1502,11 +1457,6 @@
         }
 
         function setAdminUI(on) {
-            if (on) {
-                document.getElementById('admin-login').hidden = true;
-                document.getElementById('admin-password').value = '';
-                document.getElementById('btn-unlock').setAttribute('aria-expanded', 'false');
-            }
             document.getElementById('admin-card').style.display = on ? 'block' : 'none';
             document.getElementById('btn-unlock').style.display = on ? 'none' : 'inline-block';
             document.getElementById('btn-lock').style.display = on ? 'inline-block' : 'none';
@@ -1672,15 +1622,13 @@
 
         // Wraps an admin POST: adds the stored password and handles a rejection once
         async function adminPost(body) {
-            let pw = null;
-            try { pw = sessionStorage.getItem('pw'); } catch (err) { pw = null; }
+            const pw = FMSTAdmin.password();
             if (!pw) { showMsg('admin-msg', 'Unlock with the admin password first.', 'bad'); return null; }
             try {
                 const res = await apiPost(Object.assign({ password: pw }, body));
                 if (res && res.ok) return res;
                 if (res && res.error === 'bad_password') {
-                    forgetAdmin();
-                    setAdminUI(false);
+                    FMSTAdmin.signOut();
                     alert('That password was not right.');
                     return null;
                 }

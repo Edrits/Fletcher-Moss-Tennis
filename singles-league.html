@@ -284,7 +284,6 @@
         /* ── Admin panel ── */
         .admin-panel { display: none; background: var(--paper-50); padding: 25px; border-radius: var(--radius-lg); margin-top: 30px; box-shadow: var(--shadow-md); }
         .admin-panel.active { display: block; }
-        .admin-panel input[type="password"] { font-family: var(--font-body); }
 
         .admin-box-grid {
             display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -355,7 +354,6 @@
         .booking-admin { margin-top: 18px; border-top: 1px solid var(--border-subtle); padding-top: 14px; }
         .bk-link-btn { background: none; border: none; color: var(--brown-600); font-family: var(--font-body); font-size: var(--text-sm); font-weight: 600; cursor: pointer; padding: 0; text-decoration: underline; }
         .booking-admin-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-top: 12px; }
-        .booking-admin-bar input { padding: 9px 12px; border: 1px solid var(--border-strong); border-radius: var(--radius-sm); font-family: var(--font-body); font-size: var(--text-sm); }
         .btn-sm { padding: 9px 16px; font-size: var(--text-sm); }
         .bk-admin-hint { font-size: var(--text-xs); color: var(--text-muted); }
 
@@ -612,9 +610,9 @@
                 <div class="booking-admin">
                     <button type="button" class="bk-link-btn" onclick="bkToggleAdmin()">Admin controls</button>
                     <div class="booking-admin-bar" id="bookingAdminBar" hidden>
-                        <input type="password" id="bookingAdminPass" aria-label="Admin password" placeholder="Admin password" autocomplete="off">
                         <button type="button" class="btn btn-sm" style="background: var(--color-alert);" onclick="bkClearAll()">Clear all bookings</button>
                         <span class="bk-admin-hint">Cancel buttons now show on booked slots.</span>
+                        <button type="button" class="bk-link-btn" onclick="FMSTAdmin.signOut()">Sign out</button>
                     </div>
                 </div>
             </div>
@@ -633,10 +631,6 @@
         <div id="adminPanel" class="admin-panel" style="margin-top: 0; margin-bottom: 30px;">
             <h3 style="color: #8b6f47; margin-bottom: 15px;">Admin Player Management</h3>
 
-            <div class="form-group">
-                <input type="password" id="adminPass" aria-label="Admin password" placeholder="Enter admin password" style="width: 100%; padding: 12px; border: 1px solid var(--border-strong); border-radius: var(--radius-sm);">
-            </div>
-
             <!-- Dynamic Player Input Containers -->
             <h4 style="color: #2d5016; margin-top: 25px; margin-bottom: 15px; font-size: 1.2em;">Edit Player Names</h4>
             <div class="admin-box-grid" id="adminBoxesContainer"></div>
@@ -652,6 +646,7 @@
 
             <button class="btn" onclick="saveAdminLeague()" style="margin-top: 15px;">Save Player Names</button>
             <button class="btn" style="background: #999; margin-left: 10px; margin-top: 15px;" onclick="toggleAdmin()">Cancel</button>
+            <button class="bk-link-btn" style="margin-left: 10px;" onclick="FMSTAdmin.signOut()">Sign out</button>
         </div>
 
         <!-- League Boxes Render Target -->
@@ -738,6 +733,7 @@
 
     <!-- Scroll to top button -->
 
+    <script src="/admin-unlock.js"></script>
     <script>
         const API_URL = '/api/boxleague';
         let leagueData = { boxes: [] };
@@ -965,16 +961,21 @@
             }
         });
 
-        // Render dynamic forms & match deletion lists inside Admin Portal
-        function toggleAdmin() {
+        // Render dynamic forms & match deletion lists inside Admin Portal. Opening it asks
+        // for the admin password first, through the sign-in box every page shares.
+        async function toggleAdmin() {
+            const panel = document.getElementById('adminPanel');
+            if (!panel.classList.contains('active') && !(await FMSTAdmin.signIn())) return;
+            panel.classList.toggle('active');
+            renderAdminPanel();
+        }
+
+        function renderAdminPanel() {
             const panel = document.getElementById('adminPanel');
             const playersContainer = document.getElementById('adminBoxesContainer');
             const matchesContainer = document.getElementById('adminMatchesContainer');
-            
-            panel.classList.toggle('active');
-            
+
             if (panel.classList.contains('active')) {
-                document.getElementById('adminPass').value = '';
                 document.getElementById('clearMatchesCheck').checked = false;
                 playersContainer.innerHTML = '';
                 matchesContainer.innerHTML = '';
@@ -1037,41 +1038,19 @@
         }
 
         async function deleteMatch(boxId, matchIndex) {
-            const password = document.getElementById('adminPass').value;
-            if (!password) {
-                alert("Please enter your admin password in the password field first.");
-                return;
-            }
-
             if (!confirm("Are you sure you want to undo/delete this match result? This will instantly recalculate the standings.")) {
                 return;
             }
 
             try {
-                const response = await fetch(API_URL, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        type: 'delete_match',
-                        password,
-                        boxId,
-                        matchIndex
-                    })
-                });
+                const { ok, status, data: result } = await FMSTAdmin.post(API_URL, { type: 'delete_match', boxId, matchIndex });
+                if (status === 0 || status === 401 || status === 429) return;
 
-                if (response.ok) {
+                if (ok) {
                     alert("Match deleted. Standings recalculated.");
                     await loadLeague();
-                    const panel = document.getElementById('adminPanel');
-                    if (panel.classList.contains('active')) {
-                        // Re-render the admin lists, keeping the password so several
-                        // results can be undone in a row.
-                        panel.classList.remove('active');
-                        toggleAdmin();
-                        document.getElementById('adminPass').value = password;
-                    }
+                    renderAdminPanel();
                 } else {
-                    const result = await response.json();
                     alert("Error: " + (result.error || "Failed to delete match"));
                 }
             } catch (err) {
@@ -1081,13 +1060,7 @@
         }
 
         async function saveAdminLeague() {
-            const password = document.getElementById('adminPass').value;
             const clearMatches = document.getElementById('clearMatchesCheck').checked;
-
-            if (!password) {
-                alert("Please enter your admin password.");
-                return;
-            }
 
             // Each row carries the name it was loaded with, so a renamed player keeps
             // their results. A removed player's results go with them, so say so first.
@@ -1106,23 +1079,14 @@
             }
 
             try {
-                const response = await fetch(API_URL, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        type: 'admin_update_players',
-                        password,
-                        updatedBoxes,
-                        clearMatches
-                    })
-                });
+                const { ok, status, data: result } = await FMSTAdmin.post(API_URL, { type: 'admin_update_players', updatedBoxes, clearMatches });
+                if (status === 0 || status === 401 || status === 429) return;
 
-                if (response.ok) {
+                if (ok) {
                     alert("League updated successfully.");
-                    toggleAdmin();
+                    document.getElementById('adminPanel').classList.remove('active');
                     await loadLeague();
                 } else {
-                    const result = await response.json();
                     alert("Could not save: " + (result.error || "Failed to save"));
                 }
             } catch (err) {
@@ -1167,9 +1131,10 @@
             }
         }
 
-        function bkToggleAdmin() {
+        async function bkToggleAdmin() {
             const bar = document.getElementById('bookingAdminBar');
             if (bar.hasAttribute('hidden')) {
+                if (!(await FMSTAdmin.signIn())) return;
                 bar.removeAttribute('hidden');
                 document.body.classList.add('bk-admin-on');
             } else {
@@ -1177,6 +1142,14 @@
                 document.body.classList.remove('bk-admin-on');
             }
         }
+
+        // Signing out, or a password the server turns down, closes both admin areas.
+        FMSTAdmin.onChange(on => {
+            if (on) return;
+            document.getElementById('adminPanel').classList.remove('active');
+            document.getElementById('bookingAdminBar').setAttribute('hidden', '');
+            document.body.classList.remove('bk-admin-on');
+        });
 
         async function bkLoad() {
             const area = document.getElementById('bookingArea');
@@ -1263,17 +1236,11 @@
         }
 
         async function bkCancel(key) {
-            const password = document.getElementById('bookingAdminPass').value;
-            if (!password) { alert('Enter the admin password first.'); return; }
             if (!confirm('Cancel this booking?')) return;
             try {
-                const res = await fetch(BOOKING_API, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ type: 'cancel', key, password })
-                });
-                const result = await res.json().catch(() => ({}));
-                if (res.ok) {
+                const { ok, status, data: result } = await FMSTAdmin.post(BOOKING_API, { type: 'cancel', key });
+                if (status === 0 || status === 401 || status === 429) return;
+                if (ok) {
                     bkState.weekKey = result.weekKey;
                     bkState.bookings = result.bookings;
                     bkRender();
@@ -1287,17 +1254,11 @@
         }
 
         async function bkClearAll() {
-            const password = document.getElementById('bookingAdminPass').value;
-            if (!password) { alert('Enter the admin password first.'); return; }
             if (!confirm('Clear every court booking for this week?')) return;
             try {
-                const res = await fetch(BOOKING_API, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ type: 'clear', password })
-                });
-                const result = await res.json().catch(() => ({}));
-                if (res.ok) {
+                const { ok, status, data: result } = await FMSTAdmin.post(BOOKING_API, { type: 'clear' });
+                if (status === 0 || status === 401 || status === 429) return;
+                if (ok) {
                     bkState.weekKey = result.weekKey;
                     bkState.bookings = result.bookings;
                     bkRender();

@@ -24,6 +24,8 @@ Each `api/*.js` handler requires `GIT_TOKEN` as a Vercel environment variable (a
 
 Write operations (POST) are gated by a shared admin password checked server-side inside each handler; GET requests are unauthenticated and public. `boxleague.js` additionally accepts an unauthenticated `submit_score` request type for players to record match results without the admin password.
 
+On the page side, every admin sign-in goes through `admin-unlock.js` at the repo root, loaded with `<script src="/admin-unlock.js"></script>` before each page's own script. It is the one deliberate exception to "each page is self-contained": it owns the sign-in box, keeps the password in `sessionStorage` (one sign-in per tab, shared across pages), and `FMSTAdmin.post()` adds the password to admin requests and signs out on a rejection. Don't add a password field, a `prompt()` or a direct `sessionStorage` read to a page; use `FMSTAdmin.signIn()` / `FMSTAdmin.post()`. Its default check is `api/admin.js`, which only verifies the password.
+
 Every admin password check must go through `checkAdminPassword()` in `api/_lib/admin-auth.js`. It limits wrong guesses per connection through Redis, shared across all endpoints; a plain `password !== ADMIN_PASSWORD` anywhere reopens the brute-force hole on that endpoint.
 
 The admin password comes from the `ADMIN_PASSWORD` environment variable, not a literal in the source. It used to be hardcoded, and because this repo is public it was readable by anyone; that value is burned and must never be reused. Each handler returns a 500 if the variable is missing rather than falling through to an unauthenticated write.

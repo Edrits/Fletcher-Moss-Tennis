@@ -685,6 +685,7 @@
         </svg>
     </a>
 
+    <script src="/admin-unlock.js"></script>
     <script>
         // ── State ──
         let numCourts = 3, numGames = 6, activeGame = 0;
@@ -692,18 +693,11 @@
         let setupSnapshot = null; // the saved roster and courts, while the setup screen edits them
         let editMode = false;   // false = view-only; true = unlocked with admin password
         let boardLoaded = false;
-        let adminCredential = '';
-        try { adminCredential = sessionStorage.getItem('pw') || ''; } catch (err) { /* page-memory fallback */ }
-        function rememberCredential(pw) {
-            adminCredential = pw;
-            try { sessionStorage.setItem('pw', pw); } catch (err) { /* unlock again after reloading */ }
-        }
-        function forgetCredential() {
-            adminCredential = '';
-            try { sessionStorage.removeItem('pw'); } catch (err) {
-                alert('Locked on this page. Browser storage could not be cleared; close this tab when finished.');
-            }
-        }
+        // The password is held by admin-unlock.js, shared with every page. A password the
+        // server turns down signs out there, which drops this page back to view-only.
+        FMSTAdmin.onChange(on => {
+            if (!on && editMode) { editMode = false; updateModeUI(); }
+        });
         let pendingSignupLoad = new URLSearchParams(location.search).get('loadSignup') === '1';
         function rosterError(roster) {
             if (!Array.isArray(roster) || roster.some(p => !p || typeof p.name !== 'string')) return 'The player list is invalid. Please reload.';
@@ -888,31 +882,14 @@
             if (!boardLoaded) { alert('Load the saved board before making changes.'); return false; }
             const invalid = rosterError(payload.players);
             if (invalid) { alert(invalid); return false; }
-            let pw = adminCredential;
-            if (!pw) {
-                pw = prompt("Enter the admin password to save this for everyone:");
-                if (!pw) return false;
-            }
             try {
                 saving = true;
-                const res = await fetch('/api/pairings', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ password: pw, ...payload })
-                });
-                if (res.status === 401) {
-                    forgetCredential();
-                    editMode = false;
-                    updateModeUI();
-                    alert('Incorrect password.');
-                    return false;
-                }
-                if (!res.ok) {
-                    const data = await res.json().catch(() => ({}));
+                const { ok, status, data } = await FMSTAdmin.post('/api/pairings', payload);
+                if (status === 0 || status === 401 || status === 429) return false;
+                if (!ok) {
                     alert('Failed to save: ' + (data.error || 'Unknown error'));
                     return false;
                 }
-                rememberCredential(pw);
                 return true;
             } catch (err) {
                 console.error('Save failed:', err);
@@ -1154,39 +1131,25 @@
 
         async function unlockEditing() {
             if (!boardLoaded) { await loadCurrentSession(); if (!boardLoaded) return; }
-            const pw = prompt("Enter the admin password to edit pairings:");
-            if (!pw) return;
-            try {
-                const res = await fetch('/api/pairings', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ action: 'verify', password: pw })
-                });
-                if (res.status === 401) { alert('Incorrect password.'); return; }
-                if (!res.ok) { alert('Could not verify right now, please try again.'); return; }
-                rememberCredential(pw);
-                editMode = true;
-                // If nothing has been set up yet, drop straight into the setup screen
-                if (!generatedGames.length) {
-                    document.getElementById('locked-empty').style.display = 'none';
-                    backToSetup();
-                }
-                updateModeUI();
-                if (pendingSignupLoad) {
-                    pendingSignupLoad = false;
-                    history.replaceState(null, '', location.pathname);
-                    backToSetup();
-                    await loadFromSignup();
-                }
-            } catch (err) {
-                console.error('Verify failed:', err);
-                alert('Network error, could not verify the password.');
+            if (!(await FMSTAdmin.signIn())) return;
+            editMode = true;
+            // If nothing has been set up yet, drop straight into the setup screen
+            if (!generatedGames.length) {
+                document.getElementById('locked-empty').style.display = 'none';
+                backToSetup();
+            }
+            updateModeUI();
+            if (pendingSignupLoad) {
+                pendingSignupLoad = false;
+                history.replaceState(null, '', location.pathname);
+                backToSetup();
+                await loadFromSignup();
             }
         }
 
         function lockEditing() {
-            forgetCredential();
             editMode = false;
+            FMSTAdmin.signOut();
             if (setupSnapshot) {
                 ({ players, numCourts, numGames } = JSON.parse(setupSnapshot));
                 setupSnapshot = null;
@@ -1957,7 +1920,7 @@
             syncOptionButtons();
 
             // Unlocked earlier this browser session? Stay in edit mode; otherwise view-only.
-            editMode = !!adminCredential;
+            editMode = FMSTAdmin.isSignedIn();
 
             // Arrived from the "Send to court pairings" button on the sign-up page. Jump
             // straight to the setup screen and pull the list, rather than making the

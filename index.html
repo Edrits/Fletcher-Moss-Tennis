@@ -1001,10 +1001,10 @@
                 </div>
                 <div id="adminPanel" class="admin-panel">
                     <h3>Edit Noticeboard</h3>
-                    <input type="password" id="adminPass" aria-label="Admin password" placeholder="Enter admin password">
                     <textarea id="noticeText" aria-label="Noticeboard message" placeholder="Type your noticeboard content here…"></textarea>
                     <button class="btn" onclick="saveNotice()">Save changes</button>
                     <button class="btn" style="background: var(--ink-300); margin-left: 10px;" onclick="toggleAdmin()">Cancel</button>
+                    <button class="btn-ghost" style="font-size: var(--text-xs); margin-left: 10px;" onclick="FMSTAdmin.signOut()">Sign out</button>
                 </div>
             </div>
         </section>
@@ -1188,6 +1188,7 @@
     }
     </script>
 
+    <script src="/admin-unlock.js"></script>
     <script>
 
         // Hamburger menu
@@ -1252,12 +1253,14 @@
             }
         }
 
-        // Toggle admin panel
+        // Toggle admin panel. Opening it asks for the admin password first, through the
+        // sign-in box every page shares (admin-unlock.js).
         async function toggleAdmin() {
             const panel = document.getElementById('adminPanel');
             const textarea = document.getElementById('noticeText');
             const isOpening = !panel.classList.contains('active');
 
+            if (isOpening && !(await FMSTAdmin.signIn())) return;
             panel.classList.toggle('active');
 
             if (isOpening) {
@@ -1272,35 +1275,20 @@
                 } catch (error) {
                     textarea.value = '';
                 }
-                document.getElementById('adminPass').value = '';
             }
         }
 
+        FMSTAdmin.onChange(on => { if (!on) document.getElementById('adminPanel').classList.remove('active'); });
+
         // Save notice via secure function
         async function saveNotice() {
-            const password = document.getElementById('adminPass').value;
             const text = document.getElementById('noticeText').value;
 
-            if (!password) {
-                alert('Please enter the admin password');
-                return;
-            }
-
             try {
-                const response = await fetch(API_URL, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        password: password,
-                        message: text
-                    })
-                });
+                const { ok, status, data: result } = await FMSTAdmin.post(API_URL, { message: text });
+                if (status === 0 || status === 401 || status === 429) return;
 
-                const result = await response.json();
-
-                if (response.ok && result.success) {
+                if (ok && result.success) {
                     await loadNotice();
                     toggleAdmin();
                     alert('Noticeboard updated successfully');
