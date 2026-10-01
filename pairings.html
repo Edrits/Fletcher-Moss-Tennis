@@ -1247,7 +1247,10 @@
             const from = document.getElementById('cp-from');
             from.innerHTML = generatedGames.map((g, i) =>
                 `<option value="${i}">${i === 0 ? 'Game 1 (redraw them all)' : `Game ${i + 1} onwards`}</option>`).join('');
-            from.value = String(activeGame);
+            // Always start from Game 1. The open tab is often just the last one looked at, not
+            // a game in progress, and starting there quietly cost late joiners their games.
+            // Mid-session, the organiser picks the game to redraw from by hand.
+            from.value = '0';
             document.getElementById('cp-msg').textContent = CP_HINT;
             document.getElementById('cp-add-name').value = '';
             const panel = document.getElementById('cp-panel');
@@ -1289,10 +1292,8 @@
             text += from === 0
                 ? `All ${generatedGames.length} games are drawn again.`
                 : `Games 1 to ${from} stay as they are; ${from + 1 === generatedGames.length ? `game ${from + 1} is` : `games ${from + 1} to ${generatedGames.length} are`} drawn again.`;
-            // "Draw again from" starts on whichever game tab was open, which is not always a
-            // game in progress. Before a session that quietly costs anyone joining the games
-            // before it (Dawid was added on the game 4 tab and got one game of four), so say
-            // so plainly rather than leave it to the summary arithmetic.
+            // Redrawing from a later game keeps the earlier ones, so anyone joining misses
+            // them. Say so plainly rather than leave it to the summary arithmetic.
             const warn = document.getElementById('cp-warn');
             const newNames = cp.list.filter(p => p.status === 'new').map(p => p.name);
             const left = generatedGames.length - from;
