@@ -29,7 +29,7 @@
       "sub": false
     },
     {
-      "name": "Sully",
+      "name": "Josh",
       "sub": false
     },
     {
@@ -49,7 +49,7 @@
       "sub": false
     },
     {
-      "name": "Josh",
+      "name": "Ben",
       "sub": true
     },
     {
@@ -63,7 +63,7 @@
     {
       "game": 1,
       "sitters": [
-        "Josh",
+        "Ben",
         "Rod"
       ],
       "courts": [
@@ -84,7 +84,7 @@
           ],
           [
             "Sofia",
-            "Sully"
+            "Josh"
           ]
         ],
         [
@@ -118,11 +118,11 @@
         ],
         [
           [
-            "Sully",
+            "Josh",
             "Evie"
           ],
           [
-            "Josh",
+            "Ben",
             "Ting"
           ]
         ],
@@ -148,7 +148,7 @@
         [
           [
             "Alan R.",
-            "Sully"
+            "Josh"
           ],
           [
             "Will H.",
@@ -167,7 +167,7 @@
         ],
         [
           [
-            "Josh",
+            "Ben",
             "Evie"
           ],
           [
@@ -181,7 +181,7 @@
       "game": 4,
       "sitters": [
         "Ryan",
-        "Sully"
+        "Josh"
       ],
       "courts": [
         [
@@ -211,12 +211,12 @@
           ],
           [
             "Rashid",
-            "Josh"
+            "Ben"
           ]
         ]
       ]
     }
   ],
   "activeGame": 0,
-  "updated": "2026-10-01T08:40:56.487Z"
+  "updated": "2026-10-01T12:43:47.039Z"
 }
