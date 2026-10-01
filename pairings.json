@@ -51,6 +51,10 @@
     {
       "name": "Rashid",
       "sub": true
+    },
+    {
+      "name": "Rod",
+      "sub": true
     }
   ],
   "numCourts": 3,
@@ -59,23 +63,92 @@
     {
       "game": 1,
       "sitters": [
-        "Rashid"
+        "Rashid",
+        "Rod"
       ],
       "courts": [
         [
           [
-            "Louis W.",
-            "Ting"
+            "Alan R.",
+            "Will H."
           ],
           [
-            "Shyam",
-            "Luke"
+            "Ed",
+            "Louis W."
           ]
         ],
         [
           [
-            "Ryan",
-            "Ayesa"
+            "Evie",
+            "Luke"
+          ],
+          [
+            "Sofia",
+            "Sully"
+          ]
+        ],
+        [
+          [
+            "Ayesa",
+            "Ting"
+          ],
+          [
+            "Shyam",
+            "Ryan"
+          ]
+        ]
+      ]
+    },
+    {
+      "game": 2,
+      "sitters": [
+        "Alan R.",
+        "Louis W."
+      ],
+      "courts": [
+        [
+          [
+            "Shyam",
+            "Will H."
+          ],
+          [
+            "Rod",
+            "Ryan"
+          ]
+        ],
+        [
+          [
+            "Sully",
+            "Evie"
+          ],
+          [
+            "Rashid",
+            "Ting"
+          ]
+        ],
+        [
+          [
+            "Ayesa",
+            "Ed"
+          ],
+          [
+            "Luke",
+            "Sofia"
+          ]
+        ]
+      ]
+    },
+    {
+      "game": 3,
+      "sitters": [
+        "Ayesa",
+        "Shyam"
+      ],
+      "courts": [
+        [
+          [
+            "Alan R.",
+            "Sully"
           ],
           [
             "Will H.",
@@ -84,88 +157,22 @@
         ],
         [
           [
-            "Evie",
-            "Ed"
+            "Louis W.",
+            "Rod"
           ],
           [
-            "Sully",
-            "Alan R."
+            "Ting",
+            "Ed"
           ]
-        ]
-      ]
-    },
-    {
-      "game": 2,
-      "sitters": [
-        "Louis W."
-      ],
-      "courts": [
+        ],
         [
           [
             "Rashid",
-            "Ayesa"
+            "Evie"
           ],
           [
             "Luke",
             "Ryan"
-          ]
-        ],
-        [
-          [
-            "Alan R.",
-            "Evie"
-          ],
-          [
-            "Sofia",
-            "Ting"
-          ]
-        ],
-        [
-          [
-            "Will H.",
-            "Shyam"
-          ],
-          [
-            "Ed",
-            "Sully"
-          ]
-        ]
-      ]
-    },
-    {
-      "game": 3,
-      "sitters": [
-        "Alan R."
-      ],
-      "courts": [
-        [
-          [
-            "Sofia",
-            "Ayesa"
-          ],
-          [
-            "Shyam",
-            "Louis W."
-          ]
-        ],
-        [
-          [
-            "Will H.",
-            "Sully"
-          ],
-          [
-            "Ting",
-            "Rashid"
-          ]
-        ],
-        [
-          [
-            "Evie",
-            "Ryan"
-          ],
-          [
-            "Ed",
-            "Luke"
           ]
         ]
       ]
@@ -173,13 +180,24 @@
     {
       "game": 4,
       "sitters": [
-        "Shyam"
+        "Ryan",
+        "Sully"
       ],
       "courts": [
         [
           [
-            "Sofia",
-            "Alan R."
+            "Evie",
+            "Ayesa"
+          ],
+          [
+            "Alan R.",
+            "Ed"
+          ]
+        ],
+        [
+          [
+            "Shyam",
+            "Ting"
           ],
           [
             "Will H.",
@@ -188,27 +206,17 @@
         ],
         [
           [
+            "Rod",
+            "Sofia"
+          ],
+          [
             "Louis W.",
-            "Ryan"
-          ],
-          [
-            "Ting",
-            "Sully"
-          ]
-        ],
-        [
-          [
-            "Evie",
             "Rashid"
-          ],
-          [
-            "Ed",
-            "Ayesa"
           ]
         ]
       ]
     }
   ],
   "activeGame": 0,
-  "updated": "2026-09-30T17:55:59.142Z"
+  "updated": "2026-10-01T07:23:09.902Z"
 }
