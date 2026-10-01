@@ -279,10 +279,13 @@ integration('a member cancelling their own place updates the board the same way'
   assert.deepEqual(pairingsFile().generatedGames[0].courts, [[['Ann','Ben'],['Cat','']]]);
 });
 
-integration('no automatic change for a board from another session, or one not made from the sign-up', async () => {
+// A sign-up that opened after the board was saved: the board is from an earlier session.
+const openedLater = { ...meta('session-A'), opensAt: '2099-09-06T19:00:00.000Z' };
+
+integration('no automatic change for a board from another session, or one saved before this sign-up opened', async () => {
   for (const stamp of ['session-OLD', null]) {
     archives.clear(); await redis(['FLUSHDB']);
-    const before = await signupWithBoard({ stamp });
+    const before = await signupWithBoard({ stamp, value: openedLater });
     assert.equal((await request(signup, admin({ action: 'remove', names: ['Lou'] }))).data.ok, true);
     assert.deepEqual(pairingsFile().generatedGames, before.generatedGames);
     assert.equal(pairingsFile().autoNote, undefined);
@@ -304,7 +307,7 @@ integration('a GitHub failure never stops someone leaving the sign-up', async ()
 });
 
 integration('the button previews, refuses a stale preview, then applies and ties the board to the sign-up', async () => {
-  await signupWithBoard({ stamp: null });                                 // not followed automatically
+  await signupWithBoard({ stamp: null, value: openedLater });            // not followed automatically
   await request(signup, admin({ action: 'remove', names: ['Lou'] }));
   const preview = await request(pairings, { password: 'test-only', action: 'sync_preview', from: 0 });
   assert.equal(preview.data.status, 'apply');
@@ -317,4 +320,34 @@ integration('the button previews, refuses a stale preview, then applies and ties
   assert.deepEqual(pairingsFile().signupSession, { id: 'session-A', date: '2099-09-07' });
   assert.equal(validatePairings(pairingsFile()), null);
   assert.equal((await request(pairings, { password: 'test-only', action: 'sync_preview', from: 0 })).data.status, 'unchanged');
+});
+
+integration('a board saved since this sign-up opened is followed without a stamp, and gets stamped', async () => {
+  await signupWithBoard({ stamp: null });
+  assert.equal((await request(signup, admin({ action: 'remove', names: ['Lou'] }))).data.ok, true);
+  const board = pairingsFile();
+  assert.equal(validatePairings(board), null);
+  assert.deepEqual(board.generatedGames[0].courts[2], [['Ivy','Jon'],['Kim','Max']]);
+  assert.deepEqual(board.signupSession, { id: 'session-A', date: '2099-09-07' });
+});
+
+integration('an unstamped board is not changed automatically for more than two dropouts at once', async () => {
+  const before = await signupWithBoard({ stamp: null });
+  await request(signup, admin({ action: 'seed', name: 'Pat' }));
+  assert.equal((await request(signup, admin({ action: 'remove', names: ['Lou', 'Kim', 'Jon'] }))).data.ok, true);
+  assert.deepEqual(pairingsFile().generatedGames, before.generatedGames);
+});
+
+integration('opening the board catches up an update that was missed', async () => {
+  await signupWithBoard();
+  failArchive = true;                                                     // GitHub down when Lou leaves
+  assert.equal((await request(signup, admin({ action: 'remove', names: ['Lou'] }))).data.ok, true);
+  failArchive = false;
+  assert.equal(pairingsFile().players.some(p => p.name === 'Lou'), true, 'missed at the time');
+  const shown = await request(pairings);                                  // someone opens the board
+  assert.equal(shown.data.players.some(p => p.name === 'Lou'), false);
+  assert.deepEqual(shown.data.generatedGames[0].courts[2], [['Ivy','Jon'],['Kim','Max']]);
+  assert.equal(pairingsFile().autoNote.text, 'Max moved up for Lou, Oli became a sub');
+  const again = await request(pairings);                                  // nothing more to do
+  assert.deepEqual(again.data.generatedGames, shown.data.generatedGames);
 });

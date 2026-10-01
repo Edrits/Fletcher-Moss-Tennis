@@ -2,7 +2,7 @@
 import { validatePairings } from './_lib/pairings-core.js';
 import { checkAdminPassword } from './_lib/admin-auth.js';
 import { readRepoJson, updateRepoJson, repoHandler, httpError } from './_lib/repo-json.js';
-import { planSignupSync, readSignupPlayers, PAIRINGS_FILE } from './_lib/pairings-sync.js';
+import { planSignupSync, readSignupPlayers, autoSyncPairings, PAIRINGS_FILE } from './_lib/pairings-sync.js';
 
 const DATA_FILE = PAIRINGS_FILE;
 
@@ -16,10 +16,28 @@ const defaultData = {
   updated: null
 };
 
+// Opening the board catches it up with the sign-up if a dropout was missed (see
+// autoSyncPairings). Best effort only: on any error or after a few seconds the board is
+// shown as saved, so viewing it can never fail because of this.
+async function catchUp(data) {
+  let timer;
+  try {
+    return await Promise.race([
+      autoSyncPairings(new Date(), data),
+      new Promise(resolve => { timer = setTimeout(() => resolve(null), 4000); })
+    ]);
+  } catch (err) {
+    console.error('Pairings catch-up failed:', err);
+    return null;
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
 export default repoHandler(async (req, res) => {
   if (req.method === 'GET') {
     const { data } = await readRepoJson(DATA_FILE);
-    return res.status(200).json(data || defaultData);
+    return res.status(200).json((await catchUp(data)) || data || defaultData);
   }
 
   const { action, password, players, numCourts, numGames, generatedGames, activeGame, signupSession, from, expect } = req.body || {};
