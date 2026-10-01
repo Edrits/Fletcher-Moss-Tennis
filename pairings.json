@@ -49,18 +49,12 @@
       "sub": false
     },
     {
-      "name": "Dawid",
-      "sub": true,
-      "joined": 3
-    },
-    {
       "name": "Rod",
       "sub": true
     },
     {
-      "name": "Rashid",
-      "sub": false,
-      "left": 3
+      "name": "Dawid",
+      "sub": false
     }
   ],
   "numCourts": 3,
@@ -80,7 +74,7 @@
           ],
           [
             "Ed",
-            "Rashid"
+            "Dawid"
           ]
         ],
         [
@@ -109,7 +103,7 @@
       "game": 2,
       "sitters": [
         "Alan R.",
-        "Rashid"
+        "Dawid"
       ],
       "courts": [
         [
@@ -163,7 +157,7 @@
         ],
         [
           [
-            "Rashid",
+            "Dawid",
             "Rod"
           ],
           [
