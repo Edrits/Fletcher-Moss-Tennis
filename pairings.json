@@ -64,7 +64,7 @@
       "game": 1,
       "sitters": [
         "Will H.",
-        "Rod"
+        "Sofia"
       ],
       "courts": [
         [
@@ -83,7 +83,7 @@
             "Luke"
           ],
           [
-            "Sofia",
+            "Rod",
             "Josh"
           ]
         ],
@@ -218,5 +218,5 @@
     }
   ],
   "activeGame": 0,
-  "updated": "2026-10-01T14:12:44.007Z"
+  "updated": "2026-10-01T14:12:51.508Z"
 }
