@@ -15,7 +15,9 @@ process.env.KV_REST_API_TOKEN = 'test-only';
 const { planSignupSync } = await import('../api/_lib/pairings-sync.js');
 
 const html = await readFile(new URL('../pairings.html', import.meta.url), 'utf8');
-const source = [...html.matchAll(/<script>([\s\S]*?)<\/script>/g)][0][1]
+// The page loads the shared admin sign-in before its own script, so the sandbox does too.
+const adminUnlock = await readFile(new URL('../admin-unlock.js', import.meta.url), 'utf8');
+const source = 'var window = globalThis;\n' + adminUnlock + [...html.matchAll(/<script>([\s\S]*?)<\/script>/g)][0][1]
   .replace(/        loadCurrentSession\(\);\n        getWeather\(\);\n        setInterval\(getWeather, 600000\);/, '');
 
 function page({ signup, allowAlerts = false } = {}) {
@@ -30,7 +32,7 @@ function page({ signup, allowAlerts = false } = {}) {
   const sandbox = {
     console, URLSearchParams, JSON, Math, Set, Map,
     location: { search: '', pathname: '/pairings.html' }, history: { replaceState() {} },
-    setTimeout, clearTimeout, setInterval() {}, sessionStorage: { getItem: () => '', setItem() {}, removeItem() {} },
+    setTimeout, clearTimeout, setInterval() {}, sessionStorage: { getItem: k => (k === 'pw' ? 'test-only' : null), setItem() {}, removeItem() {} },
     document: { getElementById: node, querySelectorAll: () => [], querySelector: () => null, addEventListener() {}, body: node('body') },
     fetch: async (url, o = {}) => {
       if (String(url).includes('/api/signup')) return { ok: true, json: async () => signup };
@@ -42,7 +44,7 @@ function page({ signup, allowAlerts = false } = {}) {
   };
   const ctx = vm.createContext(sandbox);
   vm.runInContext(source, ctx);
-  vm.runInContext('renderGameScreen = function() {}; boardLoaded = true; editMode = true; rememberCredential("test-only");', ctx);
+  vm.runInContext('renderGameScreen = function() {}; boardLoaded = true; editMode = true;', ctx);
   return { ctx, node, writes, messages, run: code => vm.runInContext(code, ctx) };
 }
 

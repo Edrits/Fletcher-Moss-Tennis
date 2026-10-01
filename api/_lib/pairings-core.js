@@ -1,3 +1,5 @@
+import { isFullName, FULL_NAME_ERROR } from './names.js';
+
 // Names are player identities in the board. Empty seats are deliberately not identities.
 //
 // A player can arrive or leave part-way through a session. `joined` is the first game
@@ -11,6 +13,7 @@ export function validatePairings({ players, numCourts, numGames, generatedGames,
   }
   const names = players.map(p => p.name.trim()).filter(Boolean);
   if (new Set(names).size !== names.length) return 'Give each player a different name, for example Alex P. and Alex R.';
+  if (names.some(isFullName)) return FULL_NAME_ERROR;
   if (!Number.isInteger(numCourts) || numCourts < 1 || numCourts > 4 ||
       !Number.isInteger(numGames) || numGames < 1 || numGames > 50 || !Array.isArray(generatedGames)) {
     return 'The court or game settings are invalid.';

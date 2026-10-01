@@ -45,16 +45,16 @@
       "sub": false
     },
     {
-      "name": "Rashid",
-      "sub": false
-    },
-    {
       "name": "Ben",
-      "sub": true
+      "sub": false
     },
     {
       "name": "Rod",
       "sub": true
+    },
+    {
+      "name": "Dawid",
+      "sub": false
     }
   ],
   "numCourts": 3,
@@ -63,18 +63,18 @@
     {
       "game": 1,
       "sitters": [
-        "Ben",
-        "Rod"
+        "Will H.",
+        "Sofia"
       ],
       "courts": [
         [
           [
             "Alan R.",
-            "Will H."
+            "Ben"
           ],
           [
             "Ed",
-            "Rashid"
+            "Dawid"
           ]
         ],
         [
@@ -83,7 +83,7 @@
             "Luke"
           ],
           [
-            "Sofia",
+            "Rod",
             "Josh"
           ]
         ],
@@ -103,7 +103,7 @@
       "game": 2,
       "sitters": [
         "Alan R.",
-        "Rashid"
+        "Dawid"
       ],
       "courts": [
         [
@@ -157,7 +157,7 @@
         ],
         [
           [
-            "Rashid",
+            "Dawid",
             "Rod"
           ],
           [
@@ -180,7 +180,7 @@
     {
       "game": 4,
       "sitters": [
-        "Ryan",
+        "Luke",
         "Josh"
       ],
       "courts": [
@@ -201,7 +201,7 @@
           ],
           [
             "Will H.",
-            "Luke"
+            "Ryan"
           ]
         ],
         [
@@ -210,13 +210,13 @@
             "Sofia"
           ],
           [
-            "Rashid",
-            "Ben"
+            "Ben",
+            "Dawid"
           ]
         ]
       ]
     }
   ],
-  "activeGame": 0,
-  "updated": "2026-10-01T12:43:47.039Z"
+  "activeGame": 3,
+  "updated": "2026-10-01T15:15:45.522Z"
 }

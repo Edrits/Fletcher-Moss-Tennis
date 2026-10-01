@@ -18,6 +18,8 @@
 // Booking a slot is public; cancelling or clearing needs the admin password.
 import { checkAdminPassword } from './_lib/admin-auth.js';
 import { readRepoJson, updateRepoJson, repoHandler, httpError } from './_lib/repo-json.js';
+import { shortenName, normaliseName } from './_lib/signup-core.js';
+import { isFullName } from './_lib/names.js';
 
 const DATA_FILE = 'bookings.json';
 
@@ -59,9 +61,12 @@ SCHEDULE.days.forEach(day =>
   )
 );
 
+// Booking is public, so a full name is shortened to first name and initial rather than
+// refused, the same as sign-up: "John Smith" is stored as "John S.".
 function sanitiseName(raw) {
   if (typeof raw !== 'string') return '';
-  return raw.replace(/\s+/g, ' ').trim().slice(0, 40);
+  const name = normaliseName(raw).slice(0, 40);
+  return isFullName(name) ? shortenName(name) : name;
 }
 
 // Return the stored data, but blanked to an empty week whenever the stored

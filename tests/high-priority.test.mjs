@@ -166,6 +166,7 @@ integration('pairings validation preserves real data, underfilled and wiped boar
   const saved=JSON.parse(await readFile(new URL('../pairings.json',import.meta.url)));
   assert.equal(validatePairings(saved),null);
   assert.ok(validatePairings({...saved,players:[...saved.players,saved.players[0]]}));
+  assert.match(validatePairings({...saved,players:[...saved.players,{name:'John Smith',sub:false}]}),/first name and initial/);
   const empty={players:[],numCourts:1,numGames:1,activeGame:0,generatedGames:[{sitters:[],courts:[[['',''],['','']]]}]};
   assert.equal(validatePairings(empty),null);
   const partial={...empty,players:[{name:'Alex P.'}],generatedGames:[{sitters:[],courts:[[['Alex P.',''],['','']]]}]};
@@ -183,7 +184,8 @@ integration('pairings validation preserves real data, underfilled and wiped boar
 
 test('pairings loads with denied storage and rejects duplicate generation before any save',async()=>{
   const html=await readFile(new URL('../pairings.html',import.meta.url),'utf8');
-  const source=[...html.matchAll(/<script>([\s\S]*?)<\/script>/g)][0][1].replace(/        loadCurrentSession\(\);\n        getWeather\(\);\n        setInterval\(getWeather, 600000\);/,'');
+  const adminUnlock=await readFile(new URL('../admin-unlock.js',import.meta.url),'utf8');
+  const source='var window = globalThis;\n'+adminUnlock+[...html.matchAll(/<script>([\s\S]*?)<\/script>/g)][0][1].replace(/        loadCurrentSession\(\);\n        getWeather\(\);\n        setInterval\(getWeather, 600000\);/,'');
   const nodes=new Map();const node=id=>{if(!nodes.has(id))nodes.set(id,{style:{},textContent:'',innerHTML:'',classList:{toggle(){},add(){},remove(){}},querySelectorAll(){return []}});return nodes.get(id)};
   const saved=JSON.parse(await readFile(new URL('../pairings.json',import.meta.url)));let writes=0, lastWrite;
   const sandbox={console,URLSearchParams,location:{search:'',pathname:'/pairings.html'},history:{replaceState(){}},setTimeout,clearTimeout,setInterval(){},
@@ -195,13 +197,15 @@ test('pairings loads with denied storage and rejects duplicate generation before
   await vm.runInContext('loadCurrentSession()',ctx);assert.equal(node('game-screen').style.display,'block');
   await vm.runInContext("players=['Alex','B','C','D','Alex'].map(name=>({name,sub:false}));numCourts=1;numGames=1;generate()",ctx);
   assert.match(node('val-msg').textContent,/different name/);assert.equal(writes,0);
-  vm.runInContext("rememberCredential('fake');",ctx);assert.equal(vm.runInContext('adminCredential',ctx),'fake');
+  // Storage is denied, so nobody is signed in. Stand in for a completed sign-in.
+  assert.equal(vm.runInContext('FMSTAdmin.isSignedIn()',ctx),false);
+  vm.runInContext("FMSTAdmin.post=async(url,body)=>{const r=await fetch(url,{method:'POST',body:JSON.stringify({...body,password:'fake'})});return {ok:r.ok,status:200,data:await r.json()}};",ctx);
   await vm.runInContext("players=['A','B','C','D','E','F'].map(name=>({name,sub:false}));numCourts=1;numGames=4;generate()",ctx);
   assert.equal(lastWrite.numCourts,1);
   assert.equal(validatePairings(lastWrite),null);
   assert.equal(lastWrite.generatedGames.length,4);
   assert.ok(lastWrite.generatedGames.every(game=>game.courts.length===1 && game.sitters.length===2));
-  vm.runInContext('forgetCredential()',ctx);assert.equal(vm.runInContext('adminCredential',ctx),'');
+  vm.runInContext('FMSTAdmin.signOut()',ctx);assert.equal(vm.runInContext('FMSTAdmin.isSignedIn()',ctx),false);
 });
 
 integration('capacity edits preserve queue order, reject overflow and invalidate old admissions', async () => {
