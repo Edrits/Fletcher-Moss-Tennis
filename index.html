@@ -126,6 +126,7 @@
             transition: padding var(--duration-base) var(--ease-standard),
                         background var(--duration-base) var(--ease-standard),
                         box-shadow var(--duration-base) var(--ease-standard),
+                        margin-bottom var(--duration-base) var(--ease-standard),
                         transform 0.5s ease, opacity 0.5s ease;
         }
 
@@ -136,8 +137,14 @@
             background: linear-gradient(90deg, transparent, var(--gold-300) 22%, var(--gold-accent) 50%, var(--gold-300) 78%, transparent);
         }
 
-        /* Compacts into a slim frosted strip once you scroll past the hero */
+        /* Compacts into a slim frosted strip once you scroll past the hero. The margin gives
+           the page back exactly the height the bar loses (--bar-shrink, measured by
+           measureTopBar()), and animates with it, so the content below never moves. If
+           it moved, the browser would shift the scroll to keep your place, which can
+           carry the scroll back over the line and un-compact the bar: on laptops it
+           flickered between big and small when you stopped scrolling just past the hero. */
         .top-bar.compact {
+            margin-bottom: var(--bar-shrink, 0px);
             padding: 6px 30px;
             background: linear-gradient(160deg, rgba(21,43,12,.93) 0%, rgba(45,80,22,.93) 100%);
             backdrop-filter: blur(var(--blur-glass));
@@ -147,6 +154,7 @@
         .top-bar.compact .top-logo { width: 62px; height: 62px; }
         .top-bar.compact .top-title .brand-name { font-size: 1.3em; }
         .top-bar.compact .top-title .tagline { opacity: 0; max-height: 0; margin: 0; }
+        .top-bar.measuring, .top-bar.measuring * { transition: none !important; animation: none !important; }
 
         @media (max-width: 768px) {
             .top-bar.mobile-hidden { transform: translateY(-100%); opacity: 0; }
@@ -1319,18 +1327,49 @@
         // Top bar: compacts into a slim strip past the hero so the nav stays reachable.
         // On mobile it still tucks away while scrolling down, and returns on scroll up.
         //
-        // Two things keep this steady rather than jittery as the bar shrinks:
+        // Three things keep this steady rather than jittery as the bar shrinks:
         //
-        // 1. Hysteresis. Compacting shortens the bar by roughly 90px, and because the bar
-        //    is position:sticky it sits in the flow, so that shrink pulls the whole page up
-        //    under the pointer. With a single 120px threshold that shift can land the
-        //    scroll position back on the other side of the line, which un-compacts, which
-        //    shifts it back: the bar visibly flutters. Separate on and off points mean the
-        //    scroll has to travel a real distance before the state can flip back.
-        // 2. One update per frame. The listener used to run layout-affecting class changes
+        // 1. The page does not move. Compacting shortens the bar by about 68px, and because
+        //    the bar is position:sticky it sits in the flow, so on its own that shrink pulls
+        //    the page up. The browser then scrolls back the same distance to keep your
+        //    place, which is more than the gap between the on and off points below, so the
+        //    bar un-compacted, the page dropped back, and it compacted again, over and over.
+        //    The compact bar now carries a bottom margin equal to what it lost (see
+        //    .top-bar.compact), measured here rather than hard-coded because the bar's
+        //    height depends on the screen width and the font.
+        // 2. Hysteresis. Separate on and off points mean the scroll has to travel a real
+        //    distance before the state can flip back.
+        // 3. One update per frame. The listener used to run layout-affecting class changes
         //    on every scroll event, which fire far faster than the screen redraws.
         let lastScrollPosition = 0;
         let scrollQueued = false;
+        let compactBarHeight = 0;
+
+        // Measured on a hidden copy of the bar, so the real one never changes size here.
+        function measureTopBar() {
+            const bar = document.getElementById('topBar');
+            const copy = bar.cloneNode(true);
+            copy.removeAttribute('id');
+            copy.querySelectorAll('[id]').forEach(el => el.removeAttribute('id'));
+            copy.classList.remove('compact', 'mobile-hidden');
+            copy.classList.add('measuring');
+            copy.setAttribute('aria-hidden', 'true');
+            copy.style.cssText = 'position:absolute; top:0; left:0; visibility:hidden; pointer-events:none;';
+            document.body.appendChild(copy);
+            const full = copy.offsetHeight;
+            copy.classList.add('compact');
+            compactBarHeight = copy.offsetHeight;
+            copy.remove();
+            document.documentElement.style.setProperty('--bar-shrink', Math.max(0, full - compactBarHeight) + 'px');
+        }
+        measureTopBar();
+        // Fonts arriving and the screen width both change the bar's height.
+        if (document.fonts) document.fonts.ready.then(measureTopBar);
+        let measureQueued;
+        window.addEventListener('resize', () => {
+            clearTimeout(measureQueued);
+            measureQueued = setTimeout(measureTopBar, 150);
+        });
 
         function updateTopBar() {
             scrollQueued = false;
@@ -1355,11 +1394,9 @@
         }
 
         // Header tabs and menu links to a section on this page. Left to the browser, they
-        // landed with the section heading hidden: the browser picks the scroll position
-        // while the bar is full height, the bar then compacts on the way down and pulls
-        // the page up by about 90px, and the sticky bar covers the top of what is left.
-        // So the bar is compacted first, the position measured in that layout, and the
-        // bar held compact until the scroll finishes.
+        // landed with the section heading hidden under the sticky bar. So the scroll stops
+        // short of the section by the compact bar's height, and the bar is held compact
+        // until the scroll finishes.
         let jumpingToSection = false;
         let jumpTimer;
 
@@ -1374,7 +1411,7 @@
             // On phones the bar tucks away on the way down, so only leave room for it
             // when it will be on screen at the end.
             const barShown = window.innerWidth > 768 || y < window.pageYOffset;
-            const top = Math.max(0, y - (barShown ? bar.offsetHeight : 0) - 16);
+            const top = Math.max(0, y - (barShown ? compactBarHeight || bar.offsetHeight : 0) - 16);
             const done = () => { jumpingToSection = false; clearTimeout(jumpTimer); window.removeEventListener('scrollend', done); };
             window.addEventListener('scrollend', done);
             clearTimeout(jumpTimer);
