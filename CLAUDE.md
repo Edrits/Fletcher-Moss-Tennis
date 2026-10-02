@@ -76,7 +76,9 @@ All three production pages have been converted to the system (tokens copied into
 
 **Copy style:** plain and human. No em dashes as parenthetical breaks (write two sentences instead); write time ranges as "6:00 to 8:00 PM". Reuse the club's existing phrasing rather than inventing marketing lines.
 
-**Homepage feature bands:** full-bleed photographic `.feature-band` sections punctuate the content (kicker + serif headline over a scrimmed photo). Full-bleed is done inside the single `.page-wrap` container with `width:100vw; margin-left:calc(50% - 50vw)` (`body` has `overflow-x:hidden`). Keep band backgrounds static — do **not** use scroll parallax on them (an earlier parallax attempt caused a white-bar bug). Only four real club photos exist, so imagery is scarce; reuse thoughtfully.
+**Homepage feature bands:** full-bleed photographic `.feature-band` sections punctuate the content (kicker + serif headline over a scrimmed photo). Full-bleed is done inside the single `.page-wrap` container with `width:100vw; margin-left:calc(50% - 50vw)` (`body` has `overflow-x:hidden`). Keep band backgrounds static — do **not** use scroll parallax on them (an earlier parallax attempt caused a white-bar bug).
+
+**Homepage top bar:** it shrinks once you scroll past the hero, and it is `position: sticky`, so it sits in the page flow. Any shrink that moves the content below makes the browser shift the scroll to keep the reader's place, which can carry the scroll back over the threshold and loop: the bar flickers between big and small. This has happened twice. The fix is that `.top-bar.compact` carries a bottom margin of `--bar-shrink` (measured by `measureTopBar()`), so the content never moves. Don't remove that margin, and if you change anything that affects the bar's height, check that stopping a scroll just past the hero on a laptop switches the bar exactly once. Tuning the 140/90px thresholds alone does not fix it. Only four real club photos exist, so imagery is scarce; reuse thoughtfully.
 
 ## Tests, no build/lint tooling
 
