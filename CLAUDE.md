@@ -32,6 +32,10 @@ The admin password comes from the `ADMIN_PASSWORD` environment variable, not a l
 
 **Important operational caveat:** the live noticeboard, league and pairings backends each commit to `main` whenever someone uses the site, so `origin/main` frequently moves under you. Always `git pull --rebase origin main` before pushing (a plain push will often be rejected as non-fast-forward). These auto-commits only touch the JSON data files, so they rebase cleanly against code/markup changes.
 
+### Court booking (`api/booking.js`, `bookings.json`)
+
+The singles court booking lives on `singles-league.html`. Courts 1 to 4 can be booked for the hour after each session (Monday and Thursday 8 to 9 PM, Saturday 1 to 2 PM) by name only. Once booked, a slot is locked unless the admin clears it. There is no scheduled job for the weekly reset: the file stores a `weekKey` (the Sunday that starts the week, in Europe/London), and any read or write that finds a stale week starts from an empty grid.
+
 ### League scoring (domain logic in `api/boxleague.js`)
 
 `recalculateBox()` is the single source of truth for standings, re-run server-side after every change. Matches store `winner` and an optional `noShow` (there is no game-score field — scores were removed). Players self-report results including walkovers; only roster edits and match deletion require the admin password. Leagues hold any number of players (blank admin rows are dropped).
@@ -43,7 +47,7 @@ The admin password comes from the `ADMIN_PASSWORD` environment variable, not a l
 - **Live state: Upstash Redis**, via the Vercel marketplace integration. `api/_lib/redis.js` is a thin REST client and reads `KV_REST_API_URL` / `KV_REST_API_TOKEN` (or the `UPSTASH_REDIS_REST_*` spelling).
 - **History: the repo.** `api/_lib/archive.js` writes the finished list to `signups/<date>.json` once, when the session is reset. One commit per session, not one per tap.
 
-The queue is a single Redis list and **its order is the queue**: positions 1-16 are main players (4 courts of 4), 17-18 are subs, 19-28 are the waiting list. Removing anyone shifts everyone below up one, which is exactly the club's promotion rule (next in line becomes a sub, sub 1 becomes main 16) with no separate promotion code.
+The queue is a single Redis list and **its order is the queue**: with the default capacity (`DEFAULT_CAPACITY` in `api/_lib/signup-core.js`), positions 1-16 are main players (4 courts of 4), 17-18 are subs, 19-28 are the waiting list. The organiser can change the capacity for a session (the `capacity` action), and it is stored with that session. Removing anyone shifts everyone below up one, which is exactly the club's promotion rule (next in line becomes a sub, sub 1 becomes main 16) with no separate promotion code.
 
 `STORE_SCRIPT` in `api/_lib/signup-store.js` is Lua and runs inside Redis. Joining checks the token, checks capacity, and resolves a display-name clash in **one atomic step**. Splitting any of that into separate commands reintroduces the race.
 
@@ -72,17 +76,27 @@ Key principles of the "premium refresh" when restyling (full rationale in [desig
 - **Shadow-only cards** (no coloured accent borders), soft warm two-layer shadows (`--shadow-*`), 12–18px radii; pills reserved for status chips and the circular logo.
 - The club **badge** (`fletcher-moss-logo.png`) is the one mark that stays photographic — never redraw or iconify it.
 
-All three production pages have been converted to the system (tokens copied into each page's inline `:root`). Keep them in sync when a shared token or the header/footer changes.
+All four production pages (`index.html`, `singles-league.html`, `pairings.html`, `signup.html`) use the system, with the tokens copied into each page's inline `:root`. Keep them in sync when a shared token or the header/footer changes.
+
+**Shared header and menu:** the four pages carry the same header markup, styles and script, so a change to one goes into all four. Wide screens get a row of tabs (`.nav-links` holding `.nav-rail` groups, with the current page or section highlighted). Narrower screens get the cream Sign-up button (`.top-cta`) and the menu button, whose panel (`.mobile-nav`) carries every link. The switch-over widths were measured so the full club name and every tab fit: 1760px on the homepage, 1360px on the other pages. On the homepage, in-page section links go through `jumpToSection()` so the section heading lands just below the sticky bar instead of hidden under it.
 
 **Copy style:** plain and human. No em dashes as parenthetical breaks (write two sentences instead); write time ranges as "6:00 to 8:00 PM". Reuse the club's existing phrasing rather than inventing marketing lines.
 
-**Homepage feature bands:** full-bleed photographic `.feature-band` sections punctuate the content (kicker + serif headline over a scrimmed photo). Full-bleed is done inside the single `.page-wrap` container with `width:100vw; margin-left:calc(50% - 50vw)` (`body` has `overflow-x:hidden`). Keep band backgrounds static — do **not** use scroll parallax on them (an earlier parallax attempt caused a white-bar bug).
+**Homepage feature bands:** full-bleed photographic `.feature-band` sections punctuate the content (kicker + serif headline over a scrimmed photo). Full-bleed is done inside the single `.page-wrap` container with `width:100vw; margin-left:calc(50% - 50vw)` (`body` has `overflow-x:hidden`). Keep band backgrounds static — do **not** use scroll parallax on them (an earlier parallax attempt caused a white-bar bug). Only four real club photos exist, so imagery is scarce; reuse thoughtfully.
 
-**Homepage top bar:** it shrinks once you scroll past the hero, and it is `position: sticky`, so it sits in the page flow. Any shrink that moves the content below makes the browser shift the scroll to keep the reader's place, which can carry the scroll back over the threshold and loop: the bar flickers between big and small. This has happened twice. The fix is that `.top-bar.compact` carries a bottom margin of `--bar-shrink` (measured by `measureTopBar()`), so the content never moves. Don't remove that margin, and if you change anything that affects the bar's height, check that stopping a scroll just past the hero on a laptop switches the bar exactly once. Tuning the 140/90px thresholds alone does not fix it. Only four real club photos exist, so imagery is scarce; reuse thoughtfully.
+**Homepage top bar:** it shrinks once you scroll past the hero, and it is `position: sticky`, so it sits in the page flow. Any shrink that moves the content below makes the browser shift the scroll to keep the reader's place, which can carry the scroll back over the threshold and loop: the bar flickers between big and small. This has happened twice. The fix is that `.top-bar.compact` carries a bottom margin of `--bar-shrink` (measured by `measureTopBar()`), so the content never moves. Don't remove that margin, and if you change anything that affects the bar's height, check that stopping a scroll just past the hero on a laptop switches the bar exactly once. Tuning the 140/90px thresholds alone does not fix it.
 
 ## Tests, no build/lint tooling
 
-`node --test tests/*.test.mjs` runs the API regression tests with no install. The sign-up tests in `tests/high-priority.test.mjs` skip unless `FMST_REDIS_SERVER` points at a `redis-server` binary.
+`node --test tests/*.test.mjs` runs the API regression tests with no install. They run the real handlers against an in-memory GitHub Contents API and Redis, so no secrets or network are needed. The sign-up tests in `tests/high-priority.test.mjs` skip unless `FMST_REDIS_SERVER` points at a `redis-server` binary:
+
+```
+FMST_REDIS_SERVER=$(which redis-server) node --test tests/*.test.mjs
+node --test tests/pairings-change.test.mjs                     # one file
+node --test --test-name-pattern="booked twice" tests/*.test.mjs  # one test by name
+```
+
+Two browser harnesses cover the client side. Serve the repo root (below), then open `/test-signup.html`, which imports `api/_lib/signup-core.js` directly and prints a pass/fail table, or `/tests/browser-high-priority.html`, which loads `signup.html` against mocked API responses.
 
 Verify page changes by running a static file server from the repo root and checking behaviour in a browser:
 
@@ -92,6 +106,10 @@ python3 -m http.server 8000
 
 Note that `api/*.js` functions do **not** run under a plain static server — they need `GIT_TOKEN` and only work deployed on Vercel. To exercise data-backed pages locally, mock `fetch('/api/...')` in the browser console against the root JSON file. Vercel deploys `api/*.js` automatically as serverless functions on push; there's no separate deploy command.
 
+## What is not deployed
+
+`.vercelignore` keeps `tests/`, `test-signup.html`, `PM-REPORTS/` and `design-system/` in git but off the live site. Add any new internal-only file there too, because this repo is public and anything deployed is reachable on the club's domain.
+
 ## SEO/sitemap
 
 `sitemap.xml` lists the public pages. When adding a new page, add it here too. `google705e088e9a41894e.html` is a Google Search Console site-verification file — leave it as-is, it is not a real page.
@@ -99,5 +117,7 @@ Note that `api/*.js` functions do **not** run under a plain static server — th
 ## Skills
 
 Project-specific Claude Code skills live under `.claude/skills/<name>/SKILL.md` and are indexed in [SKILLS.md](SKILLS.md). Check there before creating a new skill, and add a row when adding one.
+
+`/pm` writes to `PM-REPORTS/`, where `BACKLOG.md` is the standing list of known issues and the dated sweep files are history. [NEXT-STEPS.md](NEXT-STEPS.md) records the agreed growth plan (analytics first, then a first-session and FAQ page).
 
 `fletcher-moss-design` generates on-brand interfaces and prototypes from the design system. The loadable skill is [.claude/skills/fletcher-moss-design/SKILL.md](.claude/skills/fletcher-moss-design/SKILL.md), which points at the brand kit in `design-system/`. The original export also ships a `design-system/SKILL.md`, but Claude Code only scans `.claude/skills/`, so that copy never loads. Leave it as part of the untouched export and keep the `.claude/skills/` copy as the live one.
