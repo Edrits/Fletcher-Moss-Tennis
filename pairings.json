@@ -112,8 +112,8 @@
         ],
         [
           [
-            "Rod",
-            "Evie"
+            "Evie",
+            "Rod"
           ],
           [
             "Ben",
@@ -209,10 +209,10 @@
       ]
     }
   ],
-  "activeGame": 3,
+  "activeGame": 1,
   "signupSession": {
     "id": "6e5836fa-4feb-46b1-94f9-8304d6d152b5",
     "date": "2026-10-01"
   },
-  "updated": "2026-10-03T08:31:26.445Z"
+  "updated": "2026-10-03T08:31:33.055Z"
 }
