@@ -11,7 +11,19 @@
           "points": 3
         },
         {
+          "name": "Sully",
+          "played": 1,
+          "won": 1,
+          "points": 3
+        },
+        {
           "name": "Ryan",
+          "played": 1,
+          "won": 0,
+          "points": 1
+        },
+        {
+          "name": "Alan R.",
           "played": 1,
           "won": 0,
           "points": 1
@@ -119,19 +131,7 @@
           "points": 0
         },
         {
-          "name": "Alan R.",
-          "played": 0,
-          "won": 0,
-          "points": 0
-        },
-        {
           "name": "Quazim",
-          "played": 0,
-          "won": 0,
-          "points": 0
-        },
-        {
-          "name": "Sully",
           "played": 0,
           "won": 0,
           "points": 0
@@ -186,6 +186,13 @@
           "winner": "Josh",
           "noShow": null,
           "date": "2026-09-30T08:43:46.014Z"
+        },
+        {
+          "player1": "Alan R.",
+          "player2": "Sully",
+          "winner": "Sully",
+          "noShow": null,
+          "date": "2026-10-06T02:02:55.099Z"
         }
       ]
     }
