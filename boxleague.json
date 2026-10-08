@@ -17,6 +17,12 @@
           "points": 3
         },
         {
+          "name": "Emma B",
+          "played": 1,
+          "won": 1,
+          "points": 3
+        },
+        {
           "name": "Ryan",
           "played": 1,
           "won": 0,
@@ -35,13 +41,13 @@
           "points": 1
         },
         {
-          "name": "Hannah",
-          "played": 0,
+          "name": "Ayesa",
+          "played": 1,
           "won": 0,
-          "points": 0
+          "points": 1
         },
         {
-          "name": "Ayesa",
+          "name": "Hannah",
           "played": 0,
           "won": 0,
           "points": 0
@@ -161,12 +167,6 @@
           "points": 0
         },
         {
-          "name": "Emma B",
-          "played": 0,
-          "won": 0,
-          "points": 0
-        },
-        {
           "name": "Jesse",
           "played": 0,
           "won": 0,
@@ -200,6 +200,13 @@
           "winner": "Josh",
           "noShow": null,
           "date": "2026-10-06T09:26:37.573Z"
+        },
+        {
+          "player1": "Ayesa",
+          "player2": "Emma B",
+          "winner": "Emma B",
+          "noShow": null,
+          "date": "2026-10-08T17:54:18.405Z"
         }
       ]
     }
