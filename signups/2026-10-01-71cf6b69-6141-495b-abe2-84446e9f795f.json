@@ -1,0 +1,78 @@
+{
+  "date": "2026-10-01",
+  "label": "Thursday 6:00 to 8:00 PM",
+  "capacity": {
+    "main": 12,
+    "subs": 2,
+    "waitlist": 10
+  },
+  "archiveId": "71cf6b69-6141-495b-abe2-84446e9f795f",
+  "archivedAt": "2026-10-09T15:43:17.832Z",
+  "players": [
+    {
+      "position": 1,
+      "name": "Ed",
+      "at": "2026-09-30T08:19:28.514Z"
+    },
+    {
+      "position": 2,
+      "name": "Evie",
+      "at": "2026-09-30T16:22:48.150Z"
+    },
+    {
+      "position": 3,
+      "name": "Ting",
+      "at": "2026-09-30T17:30:01.883Z"
+    },
+    {
+      "position": 4,
+      "name": "Will H.",
+      "at": "2026-09-30T17:30:03.389Z"
+    },
+    {
+      "position": 5,
+      "name": "Sofia",
+      "at": "2026-09-30T17:30:04.035Z"
+    },
+    {
+      "position": 6,
+      "name": "Luke",
+      "at": "2026-09-30T17:30:18.521Z"
+    },
+    {
+      "position": 7,
+      "name": "Ryan",
+      "at": "2026-09-30T17:30:22.042Z"
+    },
+    {
+      "position": 8,
+      "name": "Ayesa",
+      "at": "2026-09-30T17:30:54.838Z"
+    },
+    {
+      "position": 9,
+      "name": "Shyam",
+      "at": "2026-09-30T17:32:22.634Z"
+    },
+    {
+      "position": 10,
+      "name": "Alan R.",
+      "at": "2026-09-30T17:38:37.440Z"
+    },
+    {
+      "position": 11,
+      "name": "Rod",
+      "at": "2026-09-30T20:20:45.388Z"
+    },
+    {
+      "position": 12,
+      "name": "Ben",
+      "at": "2026-09-30T21:07:58.265Z"
+    },
+    {
+      "position": 13,
+      "name": "Dawid",
+      "at": "2026-10-01T09:34:29.769Z"
+    }
+  ]
+}
