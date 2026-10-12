@@ -600,6 +600,8 @@
         .h2h td { height: 38px; text-align: left; }
         .h2h .mc-run { display: flex; justify-content: flex-end; gap: 3px; min-width: calc(var(--runs) * 37px - 3px); }
         .h2h .mc-streak-cell { width: 44px; padding: 0 22px 0 6px; text-align: left; }
+        .h2h .mc-game { display: flex; flex-direction: column; align-items: center; width: 34px; flex-shrink: 0; }
+        .h2h .mc-opp { display: none; max-width: 100%; margin-top: 2px; font-size: 9px; font-weight: 600; line-height: 1.2; color: var(--text-muted); overflow: hidden; white-space: nowrap; }
         .h2h .mc-none { font-size: var(--text-xs); color: var(--text-muted); font-style: italic; }
         .mc-streak { display: inline-block; min-width: 30px; padding: 2px 6px; border-radius: 99px; background: var(--paper-100); color: var(--ink-500); font-size: 11px; font-weight: 800; text-align: center; font-variant-numeric: tabular-nums; }
         .mc-streak.is-hot { background: var(--gold-100); color: var(--brown-600); }
@@ -649,6 +651,10 @@
             .mc-grid-scroll { padding: 0 0 6px; }
             .h2h tbody th { padding-left: 14px; }
             .h2h .mc-streak-cell { padding-right: 14px; }
+            /* Phones cannot hover for the opponent, so name them under each square. */
+            .h2h .mc-opp { display: block; }
+            .h2h td { height: 52px; }
+            .h2h .mc-run { align-items: flex-start; }
             .h2h tbody th { max-width: 128px; }
         }
     </style>
@@ -964,6 +970,12 @@
 
         function opponentOf(m, name) { return m.player1 === name ? m.player2 : m.player1; }
 
+        // First name, cut to fit under a form square on a phone.
+        function shortName(name) {
+            const first = String(name).split(' ')[0];
+            return first.length > 5 ? first.slice(0, 4) : first;
+        }
+
         // Latest result between two players, from `name`'s point of view.
         function resultFor(box, name, other) {
             const games = (box.matches || []).filter(m =>
@@ -1020,7 +1032,7 @@
                 const cells = games.map(m => {
                     const won = m.winner === p.name;
                     const what = `${won ? 'Beat' : 'Lost to'} ${opponentOf(m, p.name)}${m.noShow ? ' by walkover' : ''}`;
-                    return `<span class="cell ${won ? 'is-win' : 'is-loss'}${m.noShow ? ' is-wo' : ''}" title="${bkEscape(what)}">${won ? 'W' : 'L'}<span class="visually-hidden">: ${bkEscape(what)}.</span></span>`;
+                    return `<span class="mc-game"><span class="cell ${won ? 'is-win' : 'is-loss'}${m.noShow ? ' is-wo' : ''}" title="${bkEscape(what)}">${won ? 'W' : 'L'}<span class="visually-hidden">: ${bkEscape(what)}.</span></span><span class="mc-opp" aria-hidden="true">${bkEscape(shortName(opponentOf(m, p.name)))}</span></span>`;
                 }).join('');
                 const last = games[games.length - 1];
                 const isHot = !!last && last.winner === p.name;
