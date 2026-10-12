@@ -419,7 +419,8 @@
         /* League finishing touches: quiet surfaces and clear task hierarchy. */
         [hidden] { display: none !important; }
         :is(a, button, input, select):focus-visible { outline: 3px solid var(--green-600); outline-offset: 4px; }
-        #standings, #record-result { scroll-margin-top: 150px; }
+        .visually-hidden { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+        #standings, #record-result, #court-booking, #adminPanel { scroll-margin-top: 150px; }
         /* Hero geometry, shared by the hero and the booking card that tucks under it.
            The cutout trophy is 517 x 668; its wooden plinth starts ~77% of the way
            down and spans 24% to 74% of its width. The plinth drops below the hero
@@ -447,6 +448,9 @@
                 linear-gradient(115deg, #19321a, #25371d);
         }
         .league-hero .section-heading { text-align: left; margin: 0; min-width: 0; }
+        .hero-admin { position: absolute; top: 18px; right: 22px; z-index: 1; display: inline-flex; align-items: center; gap: 6px; min-height: 36px; padding: 6px 12px; border: 1px solid rgba(244,242,234,.28); border-radius: var(--radius-sm); background: rgba(21,43,12,.45); color: #d5ddcc; font-family: var(--font-body); font-size: var(--text-xs); font-weight: 600; cursor: pointer; transition: background var(--duration-base), color var(--duration-base), border-color var(--duration-base); }
+        .hero-admin:hover { background: rgba(244,242,234,.12); border-color: rgba(244,242,234,.6); color: #fff; }
+        .hero-admin .icon { width: .95rem; height: .95rem; }
         .league-hero .kicker { color: #bccba7; }
         .league-hero h2 { font-size: clamp(2rem, 4vw, 3rem); color: var(--paper-50); }
         /* The slot reserves the trophy's column; the trophy hangs from its bottom
@@ -557,6 +561,97 @@
         @media (max-width: 380px) {
             .main-container { --cup-h: 220px; }
         }
+
+        /* ============================================================
+           Standings concept: league table first, latest results alongside,
+           head-to-head grid optional underneath.
+           ============================================================ */
+        .match-centre { margin-bottom: 36px; }
+        .mc-head { display: flex; align-items: end; justify-content: space-between; gap: 20px; flex-wrap: wrap; margin-bottom: 18px; }
+        .mc-head h2 { font-size: var(--text-2xl); line-height: var(--leading-tight); }
+
+        .mc-tabs { display: inline-flex; gap: 4px; padding: 4px; background: var(--paper-100); border-radius: var(--radius-md); box-shadow: inset 0 1px 2px rgba(32,36,29,.06); }
+        .mc-tab { border: none; background: transparent; font-family: var(--font-body); font-size: var(--text-sm); font-weight: 600; color: var(--ink-700); padding: 9px 18px; min-height: 44px; border-radius: var(--radius-sm); cursor: pointer; transition: background var(--duration-base), color var(--duration-base); }
+        .mc-tab:hover { color: var(--green-800); }
+        .mc-tab[aria-selected="true"] { background: var(--paper-0); color: var(--green-900); box-shadow: var(--shadow-sm); }
+
+
+        /* Grid and side panel */
+        .mc-layout { display: grid; grid-template-columns: minmax(0, 1fr) 320px; gap: 24px; align-items: start; }
+        .mc-grid-card, .mc-side-card { background: var(--paper-0); border-radius: var(--radius-lg); box-shadow: var(--shadow-sm); }
+        .mc-grid-card { padding: 4px 0; min-width: 0; }
+        .mc-grid-card[open] { padding-bottom: 18px; }
+        .mc-grid-head { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 16px 22px; cursor: pointer; list-style: none; border-radius: var(--radius-lg); }
+        .mc-grid-head::-webkit-details-marker { display: none; }
+        .mc-grid-head:hover h3 { color: var(--green-700); }
+        .mc-chevron { width: 1.4rem; height: 1.4rem; color: var(--green-600); transition: transform var(--duration-base) var(--ease-standard); }
+        .mc-grid-card[open] .mc-chevron { transform: rotate(180deg); }
+        .mc-grid-card[open] .mc-grid-head { padding-bottom: 14px; }
+        .mc-grid-head h3, .mc-side-card h3 { font-size: var(--text-lg); }
+        .mc-grid-head p { font-size: var(--text-xs); color: var(--text-muted); margin-top: 2px; }
+        .mc-grid-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; padding: 0 22px 6px; }
+
+        .h2h { border-collapse: separate; border-spacing: 3px; width: auto; font-size: var(--text-xs); }
+        .h2h th, .h2h td { padding: 0; border: none; text-align: center; white-space: nowrap; background: none; }
+        .h2h thead th { height: 30px; width: 34px; color: var(--text-muted); font-weight: 700; font-variant-numeric: tabular-nums; text-transform: none; letter-spacing: 0; border-radius: 6px; }
+        .h2h tbody th { position: sticky; left: 0; z-index: 1; background: var(--paper-0); text-align: left; padding-right: 10px; font-size: var(--text-sm); font-weight: 600; color: var(--ink-900); max-width: 150px; overflow: hidden; text-overflow: ellipsis; text-transform: none; letter-spacing: 0; box-shadow: 4px 0 6px -4px rgba(32,36,29,.12); }
+        .h2h tbody th .mc-num { display: inline-block; width: 1.6em; color: var(--text-muted); font-variant-numeric: tabular-nums; font-weight: 700; }
+        .h2h thead th:first-child { position: sticky; left: 0; z-index: 2; background: var(--paper-0); }
+        .h2h tbody tr:hover { background: none; }
+        .h2h td { width: 34px; height: 34px; }
+        .h2h .cell { display: flex; align-items: center; justify-content: center; width: 34px; height: 34px; border-radius: 7px; font-family: var(--font-body); font-size: var(--text-xs); font-weight: 800; border: none; padding: 0; }
+        .h2h .is-self { background: repeating-linear-gradient(135deg, var(--paper-100) 0 4px, var(--paper-50) 4px 8px); }
+        .h2h .is-win { background: var(--green-600); color: #fff; }
+        .h2h .is-loss { background: var(--paper-100); color: var(--ink-500); }
+        .h2h .is-wo { box-shadow: inset 0 0 0 2px var(--gold-accent); }
+        .h2h .is-open { background: var(--paper-0); box-shadow: inset 0 0 0 1px var(--border-subtle); cursor: pointer; color: transparent; transition: background var(--duration-base), box-shadow var(--duration-base), color var(--duration-base); }
+        .h2h .is-open:hover, .h2h .is-open:focus-visible { background: var(--green-50); box-shadow: inset 0 0 0 1.5px var(--green-500); color: var(--green-700); outline: none; }
+        /* Crosshair: highlights the hovered row and column */
+        .h2h .is-row th, .h2h th.is-col { color: var(--green-800); }
+        .h2h .is-row td .cell.is-open, .h2h td.is-col .cell.is-open { background: var(--green-50); }
+
+        .mc-key { display: flex; flex-wrap: wrap; gap: 6px 18px; list-style: none; padding: 12px 22px 0; font-size: var(--text-xs); color: var(--text-muted); }
+        .mc-key li { display: inline-flex; align-items: center; gap: 6px; }
+        .mc-swatch { display: inline-flex; align-items: center; justify-content: center; width: 20px; height: 20px; border-radius: 5px; font-size: 11px; font-weight: 800; }
+        .mc-swatch.is-win { background: var(--green-600); color: #fff; }
+        .mc-swatch.is-loss { background: var(--paper-100); color: var(--ink-500); }
+        .mc-swatch.is-wo { background: var(--green-600); color: #fff; box-shadow: inset 0 0 0 2px var(--gold-accent); }
+        .mc-swatch.is-open { box-shadow: inset 0 0 0 1px var(--border-strong); }
+
+        .mc-side { display: grid; gap: 20px; }
+        .mc-side-card { padding: 20px; }
+        .mc-side-card h3 { margin-bottom: 10px; }
+        .mc-table { width: 100%; font-size: var(--text-sm); table-layout: fixed; }
+        .mc-table th, .mc-table td { padding: 7px 4px; }
+        .mc-table th { background: none; color: var(--text-muted); border-bottom: 1px solid var(--border-subtle); }
+        .mc-table td:nth-child(2), .mc-table th:nth-child(2) { text-align: left; }
+        .mc-table td:nth-child(2) { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .mc-table td:nth-child(n+3), .mc-table th:nth-child(n+3) { width: 34px; text-align: right; }
+        .mc-table td:first-child, .mc-table th:first-child { width: 26px; color: var(--text-muted); }
+        .mc-head .mc-points { margin: 0 0 0 auto; text-align: right; font-size: var(--text-xs); color: var(--text-muted); line-height: 1.6; }
+        .mc-standings-card { padding: 8px 22px 14px; min-width: 0; }
+        .mc-grid-card { margin-top: 24px; }
+        .mc-results { list-style: none; display: grid; gap: 10px; }
+        .mc-results li { font-size: var(--text-sm); color: var(--ink-700); line-height: 1.45; padding-left: 14px; position: relative; }
+        .mc-results li::before { content: ''; position: absolute; left: 0; top: .55em; width: 6px; height: 6px; border-radius: 50%; background: var(--green-500); }
+        .mc-results li.empty { color: var(--text-muted); font-style: italic; padding-left: 0; }
+        .mc-results li.empty::before { display: none; }
+        .mc-results .mc-wo { font-size: var(--text-xs); color: var(--brown-600); font-weight: 600; }
+
+        @media (max-width: 1080px) {
+            .mc-layout { grid-template-columns: minmax(0, 1fr); }
+            .mc-side { position: static; grid-template-columns: repeat(auto-fit, minmax(min(280px, 100%), 1fr)); }
+        }
+        @media (max-width: 768px) {
+            .mc-head h2 { font-size: var(--text-xl); }
+            .mc-tabs { width: 100%; }
+            .mc-head .mc-points { margin: 0; text-align: left; }
+            .mc-standings-card { padding: 4px 14px 10px; }
+            .mc-tab { flex: 1; }
+            .mc-grid-head, .mc-key { padding-left: 14px; padding-right: 14px; }
+            .mc-grid-scroll { padding: 0 14px 6px; }
+            .h2h tbody th { max-width: 112px; }
+        }
     </style>
 </head>
 <body>
@@ -624,12 +719,14 @@
 
     <main class="main-container">
         <div class="league-hero">
+          <button type="button" class="hero-admin" onclick="openAdmin()" aria-controls="adminPanel"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg> Admin Portal</button>
           <div class="section-heading">
             <span class="kicker">Club singles</span>
             <h2>FMST Singles League</h2>
-            <p class="league-intro">Book a court, follow your group and record your result.</p>
+            <p class="league-intro">Book a court, follow the standings and record your result.</p>
             <nav class="league-actions" aria-label="League shortcuts">
                 <a class="btn" href="#record-result">Record a result</a>
+                <a class="league-link" href="#court-booking" onclick="openBooking(event)">Book a court <span aria-hidden="true">↓</span></a>
                 <a class="league-link" href="#standings">View standings <span aria-hidden="true">↓</span></a>
             </nav>
           </div>
@@ -642,7 +739,7 @@
         </div>
 
         <!-- Court booking: expandable panel above the league standings -->
-        <section class="booking-section">
+        <section class="booking-section" id="court-booking">
             <button class="booking-toggle" id="bookingToggle" aria-expanded="false" aria-controls="bookingBody" onclick="bkToggle()">
                 <span class="bk-title">
                     <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18M8 2v4M16 2v4"/></svg>
@@ -668,15 +765,41 @@
             </div>
         </section>
 
-        <div class="standings-heading" id="standings">
-            <h2>Standings</h2>
-            <p class="points-note"><strong>3</strong> win · <strong>1</strong> played · <strong>0</strong> no-show<br><span>Walkovers count as wins.</span></p>
-        </div>
+        <!-- Standings, latest results, and an optional head-to-head grid -->
+        <section class="match-centre" id="standings" aria-labelledby="mc-heading">
+            <div class="mc-head">
+                <h2 id="mc-heading">Standings</h2>
+                <p class="mc-points"><strong>3</strong> win · <strong>1</strong> played · <strong>0</strong> no-show<br>Walkovers count as wins.</p>
+                <div class="mc-tabs" id="mcTabs" role="tablist" aria-label="Choose a league"></div>
+            </div>
 
-        <!-- Admin Toggle -->
-        <div style="text-align: right; margin-bottom: 25px;">
-            <button onclick="toggleAdmin()" class="btn-admin"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg> Admin Portal</button>
-        </div>
+            <div class="mc-layout">
+                <div class="mc-side-card mc-standings-card" id="mcStandings"></div>
+                <aside class="mc-side">
+                    <div class="mc-side-card">
+                        <h3>Latest results</h3>
+                        <ul class="mc-results" id="mcResults"></ul>
+                    </div>
+                </aside>
+            </div>
+
+            <details class="mc-grid-card" id="mcGrid">
+                <summary class="mc-grid-head">
+                    <span>
+                        <h3>Head to head</h3>
+                        <p>Every result in one grid. Read across a row, and tap an empty square to record that match.</p>
+                    </span>
+                    <svg class="icon mc-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+                </summary>
+                <div class="mc-grid-scroll" id="leagueBoxes"><div class="spinner"></div></div>
+                <ul class="mc-key" aria-label="Key">
+                    <li><span class="mc-swatch is-win">W</span> Won</li>
+                    <li><span class="mc-swatch is-loss">L</span> Lost</li>
+                    <li><span class="mc-swatch is-wo">W</span> Walkover</li>
+                    <li><span class="mc-swatch is-open"></span> Still to play</li>
+                </ul>
+            </details>
+        </section>
 
         <div id="adminPanel" class="admin-panel" style="margin-top: 0; margin-bottom: 30px;">
             <h3 style="color: #8b6f47; margin-bottom: 15px;">Admin Player Management</h3>
@@ -698,9 +821,6 @@
             <button class="btn" style="background: #999; margin-left: 10px; margin-top: 15px;" onclick="toggleAdmin()">Cancel</button>
             <button class="bk-link-btn" style="margin-left: 10px;" onclick="FMSTAdmin.signOut()">Sign out</button>
         </div>
-
-        <!-- League Boxes Render Target -->
-        <div id="leagueBoxes">Loading league standings...</div>
 
         <!-- Submit Score Form -->
         <section class="form-section" id="record-result" aria-labelledby="result-heading">
@@ -788,14 +908,22 @@
         const API_URL = '/api/boxleague';
         let leagueData = { boxes: [] };
 
+        // Concept preview: add ?demo to the URL to fill the grid with sample
+        // results from the real roster, since /api only runs on Vercel.
+        const DEMO = new URLSearchParams(location.search).has('demo');
+        let currentBoxId = null;
+
+        function storeGet(key) { try { return localStorage.getItem(key); } catch (e) { return null; } }
+        function storeSet(key, value) { try { localStorage.setItem(key, value); } catch (e) { /* private mode */ } }
+
         async function loadLeague() {
-            // Trigger Visual CSS Spinner state
             document.getElementById('leagueBoxes').innerHTML = '<div class="spinner"></div>';
-            
+
             try {
-                const response = await fetch(API_URL);
+                const response = await fetch(DEMO ? 'boxleague.json' : API_URL, { cache: 'no-store' });
                 if (response.ok) {
                     leagueData = await response.json();
+                    if (DEMO) addDemoResults(leagueData);
                     renderLeague();
                 } else {
                     document.getElementById('leagueBoxes').textContent = "Failed to load standings.";
@@ -806,15 +934,52 @@
             }
         }
 
-        function renderLeague() {
-            const container = document.getElementById('leagueBoxes');
-            container.innerHTML = '';
+        // Mirrors recalculateBox() in api/boxleague.js. Demo only.
+        function addDemoResults(data) {
+            let seed = 7;
+            const rand = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+            data.boxes.forEach(box => {
+                box.matches = box.matches || [];
+                const names = box.players.map(p => p.name);
+                names.forEach((a, i) => names.slice(i + 1).forEach(b => {
+                    if (rand() > 0.38 || resultFor(box, a, b)) return;
+                    const winner = rand() > 0.5 ? a : b;
+                    const noShow = rand() < 0.08 ? (winner === a ? b : a) : null;
+                    box.matches.push({ player1: a, player2: b, winner, noShow });
+                }));
+                box.matches.sort(() => rand() - 0.5);
+                box.players.forEach(p => { p.played = 0; p.won = 0; p.points = 0; });
+                box.matches.forEach(m => {
+                    const w = box.players.find(p => p.name === m.winner);
+                    const l = box.players.find(p => p.name === (m.winner === m.player1 ? m.player2 : m.player1));
+                    w.played++; l.played++; w.won++; w.points += 3;
+                    if (m.noShow !== l.name) l.points += 1;
+                });
+                box.players.sort((a, b) => b.points - a.points || b.won - a.won);
+            });
+        }
 
+        function currentBox() {
+            return leagueData.boxes.find(b => b.id == currentBoxId) || leagueData.boxes[0];
+        }
+
+        function opponentOf(m, name) { return m.player1 === name ? m.player2 : m.player1; }
+
+        // Latest result between two players, from `name`'s point of view.
+        function resultFor(box, name, other) {
+            const games = (box.matches || []).filter(m =>
+                (m.player1 === name && m.player2 === other) || (m.player1 === other && m.player2 === name));
+            if (!games.length) return null;
+            const m = games[games.length - 1];
+            return { won: m.winner === name, walkover: !!m.noShow, count: games.length };
+        }
+
+        function renderLeague() {
             const boxSelect = document.getElementById('matchBoxId');
             boxSelect.innerHTML = '<option value="">Choose your group</option>';
 
             if (!leagueData.boxes || leagueData.boxes.length === 0) {
-                container.innerHTML = '<p style="text-align: center; color: var(--text-muted);">No boxes configured.</p>';
+                document.getElementById('leagueBoxes').innerHTML = '<p style="color: var(--text-muted);">No leagues set up yet.</p>';
                 return;
             }
 
@@ -823,60 +988,102 @@
                 opt.value = box.id;
                 opt.textContent = box.name;
                 boxSelect.appendChild(opt);
-
-                const boxSection = document.createElement('div');
-                boxSection.className = 'box-container';
-
-                const leadingPoints = Math.max(0, ...box.players.map(p => Number(p.points) || 0));
-                const jointLead = box.players.filter(p => Number(p.points) === leadingPoints).length > 1;
-                const crown = `<svg class="leader-crown" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="${jointLead ? 'Joint league leader' : 'League leader'}"><title>${jointLead ? 'Joint league leader' : 'League leader'}</title><path d="m3 6 4 4 5-7 5 7 4-4-2 12H5L3 6ZM5 21h14"/></svg>`;
-                let playerRows = box.players.map((p, index) => `
-                    <tr>
-                        <td><strong>${index + 1}</strong></td>
-                        <td>${bkEscape(p.name)}${leadingPoints > 0 && Number(p.points) === leadingPoints ? crown : ''}</td>
-                        <td>${p.played || 0}</td>
-                        <td>${p.won || 0}</td>
-                        <td><strong>${p.points || 0}</strong></td>
-                    </tr>
-                `).join('');
-
-                let matchRows = (box.matches && box.matches.length > 0)
-                    ? box.matches.slice(-5).reverse().map(m => m.noShow ? `
-                        <li class="result-line">
-                            <strong>${bkEscape(m.winner)}</strong> won by walkover. ${bkEscape(m.noShow)} didn't show
-                        </li>
-                      ` : `
-                        <li class="result-line">
-                            <strong>${bkEscape(m.winner)}</strong> beat ${bkEscape(m.winner === m.player1 ? m.player2 : m.player1)}
-                        </li>
-                      `).join('')
-                    : '<li class="result-line empty">No matches played yet in this round.</li>';
-
-                boxSection.innerHTML = `
-                    <h3 class="box-title">${bkEscape(box.name)}</h3>
-                    <div class="table-responsive">
-                        <table class="standings-table">
-                            <thead>
-                                <tr>
-                                    <th scope="col" class="position-column" aria-label="Position"><span class="full-heading">Pos</span><span class="short-heading" aria-hidden="true">#</span></th>
-                                    <th scope="col">Player</th>
-                                    <th scope="col" class="score-column" aria-label="Played"><span class="full-heading">Played</span><abbr class="short-heading" title="Played" aria-hidden="true">P</abbr></th>
-                                    <th scope="col" class="score-column" aria-label="Won"><span class="full-heading">Won</span><abbr class="short-heading" title="Won" aria-hidden="true">W</abbr></th>
-                                    <th scope="col" class="score-column points-column" aria-label="Points"><span class="full-heading">Points</span><abbr class="short-heading" title="Points" aria-hidden="true">Pts</abbr></th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                ${playerRows}
-                            </tbody>
-                        </table>
-                    </div>
-                    <h4 class="results-title">Recent Results</h4>
-                    <ul>
-                        ${matchRows}
-                    </ul>
-                `;
-                container.appendChild(boxSection);
             });
+
+            if (!currentBoxId) currentBoxId = storeGet('fmst-league-tab');
+            if (!leagueData.boxes.some(b => b.id == currentBoxId)) currentBoxId = leagueData.boxes[0].id;
+
+            // Tabs only earn their place when there is more than one league.
+            document.getElementById('mcTabs').hidden = leagueData.boxes.length < 2;
+            document.getElementById('mcTabs').innerHTML = leagueData.boxes.map(box => `
+                <button type="button" role="tab" class="mc-tab" aria-selected="${box.id == currentBoxId}" onclick="selectBox('${bkEscape(box.id)}')">${bkEscape(box.name)}</button>
+            `).join('');
+
+            renderMatchCentre();
+        }
+
+        function selectBox(id) {
+            currentBoxId = id;
+            storeSet('fmst-league-tab', id);
+            renderLeague();
+        }
+
+        function renderMatchCentre() {
+            const box = currentBox();
+            const players = box.players;
+            const matches = box.matches || [];
+
+
+            // Head-to-head grid
+            const head = players.map((p, i) => `<th scope="col" title="${bkEscape(p.name)}" data-col="${i}">${i + 1}</th>`).join('');
+            const rows = players.map((p, r) => {
+                const cells = players.map((o, c) => {
+                    if (r === c) return `<td data-col="${c}"><span class="cell is-self" aria-hidden="true"></span></td>`;
+                    const res = resultFor(box, p.name, o.name);
+                    if (!res) {
+                        return `<td data-col="${c}"><button type="button" class="cell is-open" aria-label="${bkEscape(p.name)} v ${bkEscape(o.name)}, not played yet. Record this result." onclick="prefillResult(${r}, ${c})">+</button></td>`;
+                    }
+                    const word = res.won ? 'beat' : 'lost to';
+                    const wo = res.walkover ? ' by walkover' : '';
+                    return `<td data-col="${c}"><span class="cell ${res.won ? 'is-win' : 'is-loss'}${res.walkover ? ' is-wo' : ''}" title="${bkEscape(p.name)} ${word} ${bkEscape(o.name)}${wo}">${res.won ? 'W' : 'L'}<span class="visually-hidden">, ${bkEscape(p.name)} ${word} ${bkEscape(o.name)}${wo}</span></span></td>`;
+                }).join('');
+                return `<tr><th scope="row"><span class="mc-num">${r + 1}</span>${bkEscape(p.name)}</th>${cells}</tr>`;
+            }).join('');
+            const grid = document.getElementById('leagueBoxes');
+            grid.innerHTML = `<table class="h2h"><thead><tr><th aria-label="Player"></th>${head}</tr></thead><tbody>${rows}</tbody></table>`;
+            wireCrosshair(grid.querySelector('.h2h'));
+
+            // Standings
+            const leadingPoints = Math.max(0, ...players.map(p => Number(p.points) || 0));
+            const jointLead = players.filter(p => Number(p.points) === leadingPoints).length > 1;
+            const crown = `<svg class="leader-crown" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="${jointLead ? 'Joint league leader' : 'League leader'}"><title>${jointLead ? 'Joint league leader' : 'League leader'}</title><path d="m3 6 4 4 5-7 5 7 4-4-2 12H5L3 6ZM5 21h14"/></svg>`;
+            document.getElementById('mcStandings').innerHTML = `
+                <table class="mc-table">
+                    <thead><tr><th scope="col" aria-label="Position">#</th><th scope="col">Player</th><th scope="col"><abbr title="Played">P</abbr></th><th scope="col"><abbr title="Won">W</abbr></th><th scope="col"><abbr title="Points">Pts</abbr></th></tr></thead>
+                    <tbody>${players.map((p, i) => `
+                        <tr>
+                            <td>${i + 1}</td>
+                            <td>${bkEscape(p.name)}${leadingPoints > 0 && Number(p.points) === leadingPoints ? crown : ''}</td>
+                            <td>${p.played || 0}</td>
+                            <td>${p.won || 0}</td>
+                            <td><strong>${p.points || 0}</strong></td>
+                        </tr>`).join('')}
+                    </tbody>
+                </table>`;
+
+            // Latest results
+            document.getElementById('mcResults').innerHTML = matches.length
+                ? matches.slice(-6).reverse().map(m => m.noShow
+                    ? `<li><strong>${bkEscape(m.winner)}</strong> beat ${bkEscape(opponentOf(m, m.winner))} <span class="mc-wo">walkover</span></li>`
+                    : `<li><strong>${bkEscape(m.winner)}</strong> beat ${bkEscape(opponentOf(m, m.winner))}</li>`).join('')
+                : '<li class="empty">No matches played yet in this round.</li>';
+
+        }
+
+
+        // Highlight the row and column under the pointer.
+        function wireCrosshair(table) {
+            const clear = () => table.querySelectorAll('.is-row, .is-col').forEach(el => el.classList.remove('is-row', 'is-col'));
+            table.addEventListener('pointerover', e => {
+                const td = e.target.closest('td');
+                clear();
+                if (!td) return;
+                td.parentElement.classList.add('is-row');
+                table.querySelectorAll(`[data-col="${td.dataset.col}"]`).forEach(el => el.classList.add('is-col'));
+            });
+            table.addEventListener('pointerleave', clear);
+        }
+
+        // Fill in the result form for a pairing and take the player there.
+        function prefillResult(r, c) {
+            const box = currentBox();
+            boxSelect.value = box.id;
+            boxSelect.dispatchEvent(new Event('change'));
+            p1Select.value = box.players[r].name;
+            p2Select.value = box.players[c].name;
+            updateWinnerOptions();
+            document.getElementById('record-result').scrollIntoView({ behavior: 'smooth' });
+            setTimeout(() => winnerSelect.focus({ preventScroll: true }), 400);
         }
 
         const boxSelect = document.getElementById('matchBoxId');
@@ -1181,6 +1388,20 @@
             }
         }
 
+        // Hero shortcut: open the booking panel if it is shut, then go to it.
+        function openBooking(e) {
+            if (e) e.preventDefault();
+            if (document.getElementById('bookingBody').hasAttribute('hidden')) bkToggle();
+            document.getElementById('court-booking').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Hero shortcut: sign in and open the admin panel if it is shut, then go to it.
+        async function openAdmin() {
+            const panel = document.getElementById('adminPanel');
+            if (!panel.classList.contains('active')) await toggleAdmin();
+            if (panel.classList.contains('active')) panel.scrollIntoView({ behavior: 'smooth' });
+        }
+
         async function bkToggleAdmin() {
             const bar = document.getElementById('bookingAdminBar');
             if (bar.hasAttribute('hidden')) {
@@ -1327,6 +1548,7 @@
 
         loadLeague();
         bkLoad();
+        if (location.hash === '#court-booking') openBooking();
     </script>
 </body>
 </html>
