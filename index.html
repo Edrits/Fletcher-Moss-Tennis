@@ -1277,6 +1277,7 @@
             document.getElementById('mobileNavScrim').classList.toggle('open', open);
             btn.setAttribute('aria-expanded', open ? 'true' : 'false');
             btn.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+            if (open) navScrollStart = window.scrollY;
         }
 
         function toggleMobileNav() {
@@ -1293,6 +1294,16 @@
                 document.getElementById('hamburger').focus();
             }
         });
+
+        // Close the menu once the page itself scrolls. Scrolling inside the menu does not
+        // count: it has overscroll-behavior: contain, so it never moves the page. The small
+        // threshold stops the jitter of a tap or the mobile address bar closing it early.
+        let navScrollStart = null;
+        window.addEventListener('scroll', () => {
+            const nav = document.getElementById('mobileNav');
+            if (!nav.classList.contains('open')) return;
+            if (Math.abs(window.scrollY - navScrollStart) > 10) closeMobileNav();
+        }, { passive: true });
 
         // Vercel serverless function endpoint
         const API_URL = '/api/noticeboard';
