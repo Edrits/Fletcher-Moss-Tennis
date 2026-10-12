@@ -589,26 +589,24 @@
         .mc-grid-card[open] .mc-grid-head { padding-bottom: 14px; }
         .mc-grid-head h3, .mc-side-card h3 { font-size: var(--text-lg); }
         .mc-grid-head p { font-size: var(--text-xs); color: var(--text-muted); margin-top: 2px; }
-        .mc-grid-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; padding: 0 22px 6px; }
+        .mc-grid-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; padding: 0 0 6px; }
 
         .h2h { border-collapse: separate; border-spacing: 3px; width: auto; font-size: var(--text-xs); }
         .h2h th, .h2h td { padding: 0; border: none; text-align: center; white-space: nowrap; background: none; }
-        .h2h thead th { height: 30px; width: 34px; color: var(--text-muted); font-weight: 700; font-variant-numeric: tabular-nums; text-transform: none; letter-spacing: 0; border-radius: 6px; }
-        .h2h tbody th { position: sticky; left: 0; z-index: 1; background: var(--paper-0); text-align: left; padding-right: 10px; font-size: var(--text-sm); font-weight: 600; color: var(--ink-900); max-width: 150px; overflow: hidden; text-overflow: ellipsis; text-transform: none; letter-spacing: 0; box-shadow: 4px 0 6px -4px rgba(32,36,29,.12); }
+        .h2h { border-spacing: 0 3px; }
+        .h2h tbody th { position: sticky; left: 0; z-index: 1; background: var(--paper-0); text-align: left; padding: 0 10px 0 22px; font-size: var(--text-sm); font-weight: 600; color: var(--ink-900); max-width: 172px; overflow: hidden; text-overflow: ellipsis; text-transform: none; letter-spacing: 0; box-shadow: 4px 0 6px -4px rgba(32,36,29,.12); }
         .h2h tbody th .mc-num { display: inline-block; width: 1.6em; color: var(--text-muted); font-variant-numeric: tabular-nums; font-weight: 700; }
-        .h2h thead th:first-child { position: sticky; left: 0; z-index: 2; background: var(--paper-0); }
         .h2h tbody tr:hover { background: none; }
-        .h2h td { width: 34px; height: 34px; }
-        .h2h .cell { display: flex; align-items: center; justify-content: center; width: 34px; height: 34px; border-radius: 7px; font-family: var(--font-body); font-size: var(--text-xs); font-weight: 800; border: none; padding: 0; }
-        .h2h .is-self { background: repeating-linear-gradient(135deg, var(--paper-100) 0 4px, var(--paper-50) 4px 8px); }
+        .h2h td { height: 38px; text-align: left; }
+        .h2h .mc-run { display: flex; justify-content: flex-end; gap: 3px; min-width: calc(var(--runs) * 37px - 3px); }
+        .h2h .mc-streak-cell { width: 44px; padding: 0 22px 0 6px; text-align: left; }
+        .h2h .mc-none { font-size: var(--text-xs); color: var(--text-muted); font-style: italic; }
+        .mc-streak { display: inline-block; min-width: 30px; padding: 2px 6px; border-radius: 99px; background: var(--paper-100); color: var(--ink-500); font-size: 11px; font-weight: 800; text-align: center; font-variant-numeric: tabular-nums; }
+        .mc-streak.is-hot { background: var(--gold-100); color: var(--brown-600); }
+        .h2h .cell { display: flex; flex-shrink: 0; align-items: center; justify-content: center; width: 34px; height: 34px; border-radius: 7px; font-family: var(--font-body); font-size: var(--text-xs); font-weight: 800; border: none; padding: 0; }
         .h2h .is-win { background: var(--green-600); color: #fff; }
         .h2h .is-loss { background: var(--paper-100); color: var(--ink-500); }
         .h2h .is-wo { box-shadow: inset 0 0 0 2px var(--gold-accent); }
-        .h2h .is-open { background: var(--paper-0); box-shadow: inset 0 0 0 1px var(--border-subtle); cursor: pointer; color: transparent; transition: background var(--duration-base), box-shadow var(--duration-base), color var(--duration-base); }
-        .h2h .is-open:hover, .h2h .is-open:focus-visible { background: var(--green-50); box-shadow: inset 0 0 0 1.5px var(--green-500); color: var(--green-700); outline: none; }
-        /* Crosshair: highlights the hovered row and column */
-        .h2h .is-row th, .h2h th.is-col { color: var(--green-800); }
-        .h2h .is-row td .cell.is-open, .h2h td.is-col .cell.is-open { background: var(--green-50); }
 
         .mc-key { display: flex; flex-wrap: wrap; gap: 6px 18px; list-style: none; padding: 12px 22px 0; font-size: var(--text-xs); color: var(--text-muted); }
         .mc-key li { display: inline-flex; align-items: center; gap: 6px; }
@@ -616,7 +614,6 @@
         .mc-swatch.is-win { background: var(--green-600); color: #fff; }
         .mc-swatch.is-loss { background: var(--paper-100); color: var(--ink-500); }
         .mc-swatch.is-wo { background: var(--green-600); color: #fff; box-shadow: inset 0 0 0 2px var(--gold-accent); }
-        .mc-swatch.is-open { box-shadow: inset 0 0 0 1px var(--border-strong); }
 
         .mc-side { display: grid; gap: 20px; }
         .mc-side-card { padding: 20px; }
@@ -649,8 +646,10 @@
             .mc-standings-card { padding: 4px 14px 10px; }
             .mc-tab { flex: 1; }
             .mc-grid-head, .mc-key { padding-left: 14px; padding-right: 14px; }
-            .mc-grid-scroll { padding: 0 14px 6px; }
-            .h2h tbody th { max-width: 112px; }
+            .mc-grid-scroll { padding: 0 0 6px; }
+            .h2h tbody th { padding-left: 14px; }
+            .h2h .mc-streak-cell { padding-right: 14px; }
+            .h2h tbody th { max-width: 128px; }
         }
     </style>
 </head>
@@ -783,11 +782,11 @@
                 </aside>
             </div>
 
-            <details class="mc-grid-card" id="mcGrid">
+            <details class="mc-grid-card" id="mcGrid" ontoggle="if (this.open) leagueBoxes.scrollLeft = leagueBoxes.scrollWidth">
                 <summary class="mc-grid-head">
                     <span>
-                        <h3>Head to head</h3>
-                        <p>Every result in one grid. Read across a row, and tap an empty square to record that match.</p>
+                        <h3>Form guide</h3>
+                        <p>Every result in the order it was played, newest on the right.</p>
                     </span>
                     <svg class="icon mc-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
                 </summary>
@@ -796,7 +795,7 @@
                     <li><span class="mc-swatch is-win">W</span> Won</li>
                     <li><span class="mc-swatch is-loss">L</span> Lost</li>
                     <li><span class="mc-swatch is-wo">W</span> Walkover</li>
-                    <li><span class="mc-swatch is-open"></span> Still to play</li>
+                    <li><span class="mc-streak is-hot">W3</span> Current streak</li>
                 </ul>
             </details>
         </section>
@@ -1014,24 +1013,30 @@
             const matches = box.matches || [];
 
 
-            // Head-to-head grid
-            const head = players.map((p, i) => `<th scope="col" title="${bkEscape(p.name)}" data-col="${i}">${i + 1}</th>`).join('');
+            // Form guide: each player's results in the order they were played,
+            // newest on the right, with rows in league order.
             const rows = players.map((p, r) => {
-                const cells = players.map((o, c) => {
-                    if (r === c) return `<td data-col="${c}"><span class="cell is-self" aria-hidden="true"></span></td>`;
-                    const res = resultFor(box, p.name, o.name);
-                    if (!res) {
-                        return `<td data-col="${c}"><button type="button" class="cell is-open" aria-label="${bkEscape(p.name)} v ${bkEscape(o.name)}, not played yet. Record this result." onclick="prefillResult(${r}, ${c})">+</button></td>`;
-                    }
-                    const word = res.won ? 'beat' : 'lost to';
-                    const wo = res.walkover ? ' by walkover' : '';
-                    return `<td data-col="${c}"><span class="cell ${res.won ? 'is-win' : 'is-loss'}${res.walkover ? ' is-wo' : ''}" title="${bkEscape(p.name)} ${word} ${bkEscape(o.name)}${wo}">${res.won ? 'W' : 'L'}<span class="visually-hidden">, ${bkEscape(p.name)} ${word} ${bkEscape(o.name)}${wo}</span></span></td>`;
+                const games = matches.filter(m => m.player1 === p.name || m.player2 === p.name);
+                const cells = games.map(m => {
+                    const won = m.winner === p.name;
+                    const what = `${won ? 'Beat' : 'Lost to'} ${opponentOf(m, p.name)}${m.noShow ? ' by walkover' : ''}`;
+                    return `<span class="cell ${won ? 'is-win' : 'is-loss'}${m.noShow ? ' is-wo' : ''}" title="${bkEscape(what)}">${won ? 'W' : 'L'}<span class="visually-hidden">: ${bkEscape(what)}.</span></span>`;
                 }).join('');
-                return `<tr><th scope="row"><span class="mc-num">${r + 1}</span>${bkEscape(p.name)}</th>${cells}</tr>`;
+                const last = games[games.length - 1];
+                const isHot = !!last && last.winner === p.name;
+                let run = 0;
+                for (let k = games.length - 1; k >= 0 && (games[k].winner === p.name) === isHot; k--) run++;
+                const streak = run > 1
+                    ? `<span class="mc-streak${isHot ? ' is-hot' : ''}" title="${run} ${isHot ? 'wins' : 'losses'} in a row">${isHot ? 'W' : 'L'}${run}</span>`
+                    : '';
+                return `<tr><th scope="row"><span class="mc-num">${r + 1}</span>${bkEscape(p.name)}</th><td><span class="mc-run">${cells || '<span class="mc-none">No matches yet</span>'}</span></td><td class="mc-streak-cell">${streak}</td></tr>`;
             }).join('');
-            const grid = document.getElementById('leagueBoxes');
-            grid.innerHTML = `<table class="h2h"><thead><tr><th aria-label="Player"></th>${head}</tr></thead><tbody>${rows}</tbody></table>`;
-            wireCrosshair(grid.querySelector('.h2h'));
+            // Right-align every run so the latest results line up in one column,
+            // then start the view at that end, where the streaks are.
+            const longest = Math.max(1, ...players.map(p => matches.filter(m => m.player1 === p.name || m.player2 === p.name).length));
+            const form = document.getElementById('leagueBoxes');
+            form.innerHTML = `<table class="h2h" style="--runs: ${longest}"><tbody>${rows}</tbody></table>`;
+            form.scrollLeft = form.scrollWidth;
 
             // Standings
             const leadingPoints = Math.max(0, ...players.map(p => Number(p.points) || 0));
@@ -1061,30 +1066,7 @@
         }
 
 
-        // Highlight the row and column under the pointer.
-        function wireCrosshair(table) {
-            const clear = () => table.querySelectorAll('.is-row, .is-col').forEach(el => el.classList.remove('is-row', 'is-col'));
-            table.addEventListener('pointerover', e => {
-                const td = e.target.closest('td');
-                clear();
-                if (!td) return;
-                td.parentElement.classList.add('is-row');
-                table.querySelectorAll(`[data-col="${td.dataset.col}"]`).forEach(el => el.classList.add('is-col'));
-            });
-            table.addEventListener('pointerleave', clear);
-        }
 
-        // Fill in the result form for a pairing and take the player there.
-        function prefillResult(r, c) {
-            const box = currentBox();
-            boxSelect.value = box.id;
-            boxSelect.dispatchEvent(new Event('change'));
-            p1Select.value = box.players[r].name;
-            p2Select.value = box.players[c].name;
-            updateWinnerOptions();
-            document.getElementById('record-result').scrollIntoView({ behavior: 'smooth' });
-            setTimeout(() => winnerSelect.focus({ preventScroll: true }), 400);
-        }
 
         const boxSelect = document.getElementById('matchBoxId');
         const p1Select = document.getElementById('matchPlayer1');
