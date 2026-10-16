@@ -321,6 +321,20 @@ export default async function handler(req, res) {
       return res.status(200).json({ ok: true, removed: out.removed, missing: out.missing });
     }
 
+    // Put back the organiser's last removal, exactly as it was: same entry, same place,
+    // and the person can still cancel from their own phone. Nothing to undo after the
+    // session changes, after 24 hours, or once undone.
+    if (action === 'undo_remove') {
+      const meta = await hgetall(KEYS.meta);
+      if (!meta.date) return res.status(400).json({ error: 'Open a session first' });
+      const cap = parseCapacity(meta);
+      const out = await signupStore({ action: 'undo_remove', sessionId, limit: cap.main + cap.subs + cap.waitlist });
+      if (out.error === 'nothing_to_undo') return res.status(409).json({ ok: false, error: out.error, message: 'There is no removal to undo. It may already have been undone, or the session has changed.' });
+      if (out.error === 'full') return res.status(409).json({ ok: false, error: out.error, message: 'The list is full, so there is no room to put them back. Make room first, or raise the number of places.' });
+      if (out.error) return storeFailure(res, out.error);
+      return res.status(200).json({ ok: true, restored: out.restored });
+    }
+
     // Archive and clear without opening the next one.
     if (action === 'reset') {
       const pending = await signupStore({ action: 'freeze', sessionId, id: randomUUID(),

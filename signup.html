@@ -815,6 +815,8 @@
                     <button class="edit-btn" onclick="adminSeed()">Add to list</button>
                 </div>
                 <p class="admin-note">Leave the place empty to add them at the end. Give a number to put them at that place, for example to undo a removal. Everyone from that place down moves down one.</p>
+                <button class="edit-btn" style="margin-top:10px;" onclick="undoRemove()">Undo last removal</button>
+                <p class="admin-note">Puts the last person you removed back in their old place, as if they never left. Works for 24 hours, until you remove someone else.</p>
             </details>
 
             <details class="admin-details">
@@ -1252,10 +1254,29 @@
             const res = await adminPost({ action: 'remove', names: [name] });
             if (res && res.ok) {
                 showMsg('admin-msg', 'Removed ' + (res.removed || []).join(', ') + '. Everyone below moved up.', 'good');
+                const el = document.getElementById('admin-msg');
+                const undo = document.createElement('button');
+                undo.className = 'edit-btn';
+                undo.style.marginLeft = '10px';
+                undo.textContent = 'Undo';
+                undo.onclick = undoRemove;
+                if (el) el.appendChild(undo);
             } else {
                 showMsg('admin-msg', (res && res.error) || 'Could not remove that person.', 'bad');
             }
             await refresh();
+        }
+
+        // Puts the last removal back exactly where it was. Also on the Add a player panel,
+        // so it still works after the page has been closed (for up to 24 hours).
+        async function undoRemove() {
+            if (!isAdmin()) return;
+            const res = await adminPost({ action: 'undo_remove' });
+            if (res && res.ok) {
+                const back = (res.restored || []).map(r => r.name + ' (number ' + r.position + ')').join(', ');
+                showMsg('admin-msg', 'Put back ' + back + '. Everyone below moved down one.', 'good');
+                await refresh();
+            }
         }
 
         function escapeHtml(value) {

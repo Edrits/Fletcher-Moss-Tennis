@@ -2,12 +2,17 @@ import { command, KEYS } from './redis.js';
 
 // No expiry: a failed archive must leave a recoverable, frozen list, not reopen a race.
 export const TRANSITION_KEY = 'fm:signup:transition';
+// The organiser's last removal, kept so it can be undone: the exact stored entries (token
+// included, so the person can still cancel their own place) and where each one was.
+// Never sent to the browser. Replaced by the next removal; ignored once the session changes.
+export const UNDO_KEY = 'fm:signup:undo';
+const UNDO_SECONDS = 24 * 60 * 60;
 export const sessionIdentity = meta => meta.generation || (meta.date ? `legacy:${meta.date}` : 'empty');
 
 // Every live-list writer uses the same gate. Freeze, snapshot and final replacement are
 // atomic; the slow GitHub request happens between them without allowing queue changes.
 export const STORE_SCRIPT = `
-local queue, metaKey, transitionKey = KEYS[1], KEYS[2], KEYS[3]
+local queue, metaKey, transitionKey, undoKey = KEYS[1], KEYS[2], KEYS[3], KEYS[4]
 local input = cjson.decode(ARGV[1])
 local function reply(value) return cjson.encode(value) end
 local function fail(code) return reply({error=code}) end
@@ -106,28 +111,67 @@ if input.action == 'join' or input.action == 'seed' then
   return reply({position=#rows+1,name=name})
 end
 if input.action == 'leave' or input.action == 'remove' then
-  local wanted, removed = {},{}
+  local wanted, removed, saved = {},{},{}
   for _,name in ipairs(input.names or {}) do wanted[name]=true end
-  for _,raw in ipairs(redis.call('LRANGE',queue,0,-1)) do
+  for index,raw in ipairs(redis.call('LRANGE',queue,0,-1)) do
     local entry=cjson.decode(raw)
     local key=entry.key or string.lower(entry.name)
     if (input.action == 'leave' and entry.token == input.token) or
        (input.action == 'remove' and wanted[key]) then
       redis.call('LREM',queue,1,raw)
       table.insert(removed,entry.name); wanted[key]=nil
+      table.insert(saved,{raw=raw,position=index})
     end
+  end
+  if input.action == 'remove' and #saved > 0 then
+    redis.call('SET',undoKey,cjson.encode({session=identity,entries=saved}),'EX',input.undoSeconds)
   end
   local missing={}
   for name,_ in pairs(wanted) do table.insert(missing,name) end
   return reply({ok=true,removed=removed,missing=missing})
 end
+if input.action == 'undo_remove' then
+  local stored = redis.call('GET',undoKey)
+  if not stored then return fail('nothing_to_undo') end
+  local undo = cjson.decode(stored)
+  if undo.session ~= identity then redis.call('DEL',undoKey); return fail('nothing_to_undo') end
+  local present = {}
+  local rows = entries()
+  for _,entry in ipairs(rows) do present[entry.token]=true; present[entry.key or string.lower(entry.name)]=true end
+  local back = {}
+  for _,item in ipairs(undo.entries) do
+    local entry = cjson.decode(item.raw)
+    -- Someone who has since signed up again (or a namesake) is not doubled up.
+    if not present[entry.token] and not present[entry.key or string.lower(entry.name)] then
+      table.insert(back,{raw=item.raw,position=item.position,name=entry.name})
+    end
+  end
+  if #back == 0 then redis.call('DEL',undoKey); return fail('nothing_to_undo') end
+  if #rows + #back > input.limit then return fail('full') end
+  -- Lowest place first, so each lands exactly where it was when the list is otherwise unchanged.
+  table.sort(back,function(a,b) return a.position < b.position end)
+  local restored = {}
+  for _,item in ipairs(back) do
+    local length = redis.call('LLEN',queue)
+    if item.position <= length then
+      redis.call('LINSERT',queue,'BEFORE',redis.call('LINDEX',queue,item.position-1),item.raw)
+      table.insert(restored,{name=item.name,position=item.position})
+    else
+      redis.call('RPUSH',queue,item.raw)
+      table.insert(restored,{name=item.name,position=length+1})
+    end
+  end
+  redis.call('DEL',undoKey)
+  return reply({ok=true,restored=restored})
+end
 return fail('unknown_action')
 `;
 
 export async function signupStore(input) {
-  const result = JSON.parse(await command(['EVAL', STORE_SCRIPT, 3, KEYS.queue, KEYS.meta, TRANSITION_KEY, JSON.stringify(input)]));
+  const payload = input.action === 'remove' ? { ...input, undoSeconds: UNDO_SECONDS } : input;
+  const result = JSON.parse(await command(['EVAL', STORE_SCRIPT, 4, KEYS.queue, KEYS.meta, TRANSITION_KEY, UNDO_KEY, JSON.stringify(payload)]));
   // Redis Lua encodes empty tables as objects. Keep API arrays stable.
-  for (const key of ['entries', 'removed', 'missing']) {
+  for (const key of ['entries', 'removed', 'missing', 'restored']) {
     if (result[key] && !Array.isArray(result[key])) result[key] = [];
   }
   return result;

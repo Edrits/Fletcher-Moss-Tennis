@@ -367,3 +367,32 @@ integration('an organiser can put someone back at a given place, and past the en
   assert.equal((await request(signup, { ...member(), position: 1 })).data.ok, true);
   assert.equal(JSON.parse((await redis(['LRANGE', 'fm:signup:queue', 0, 0]))[0]).name, 'Ann');
 });
+
+integration('undo puts a removed player back in their old place, still able to cancel their own place', async () => {
+  await initialise(meta('session-A'));
+  for (const name of ['Ann', 'Ben']) await request(signup, admin({ action: 'seed', name }));
+  assert.equal((await request(signup, member())).data.ok, true);                 // Alex P. is third
+  await request(signup, admin({ action: 'seed', name: 'Cat' }));
+  assert.equal((await request(signup, admin({ action: 'remove', names: ['alex p.'] }))).data.ok, true);
+  const queue = async () => (await redis(['LRANGE', 'fm:signup:queue', 0, -1])).map(raw => JSON.parse(raw).name);
+  assert.deepEqual(await queue(), ['Ann', 'Ben', 'Cat']);
+  const undone = (await request(signup, admin({ action: 'undo_remove' }))).data;
+  assert.equal(undone.ok, true);
+  assert.deepEqual(undone.restored, [{ name: 'Alex P.', position: 3 }]);
+  assert.deepEqual(await queue(), ['Ann', 'Ben', 'Alex P.', 'Cat']);
+  // Same entry, same token: the member can still give up their own place.
+  assert.equal((await request(signup, { action: 'leave', sessionId: 'session-A', token: 'member-a' })).data.ok, true);
+  // Only once, and a member leaving is not something the organiser can undo.
+  assert.equal((await request(signup, admin({ action: 'undo_remove' }))).data.error, 'nothing_to_undo');
+});
+
+integration('undo is refused when the list has filled up, and skips someone already back on', async () => {
+  await initialise({ ...meta('session-A'), capacity: JSON.stringify({ main: 2, subs: 0, waitlist: 0 }) });
+  for (const name of ['Ann', 'Ben']) await request(signup, admin({ action: 'seed', name }));
+  await request(signup, admin({ action: 'remove', names: ['ann'] }));
+  await request(signup, admin({ action: 'seed', name: 'Cat' }));
+  assert.equal((await request(signup, admin({ action: 'undo_remove' }))).data.error, 'full');
+  await request(signup, admin({ action: 'remove', names: ['cat'] }));
+  await request(signup, admin({ action: 'seed', name: 'Cat' }));
+  assert.equal((await request(signup, admin({ action: 'undo_remove' }))).data.error, 'nothing_to_undo');
+});
