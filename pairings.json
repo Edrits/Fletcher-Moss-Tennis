@@ -5,31 +5,27 @@
       "sub": false
     },
     {
-      "name": "Evie",
-      "sub": false
-    },
-    {
       "name": "Ting",
       "sub": false
     },
     {
-      "name": "Will H.",
+      "name": "Chris",
       "sub": false
     },
     {
-      "name": "Sofia",
+      "name": "Luke B.",
       "sub": false
     },
     {
-      "name": "Luke",
+      "name": "Imran",
       "sub": false
     },
     {
-      "name": "Ryan",
+      "name": "Mike P.",
       "sub": false
     },
     {
-      "name": "Rod",
+      "name": "Adam B.",
       "sub": false
     },
     {
@@ -41,55 +37,90 @@
       "sub": false
     },
     {
-      "name": "Alan R.",
+      "name": "Ryan P.",
       "sub": false
     },
     {
-      "name": "Ben",
+      "name": "Jesse R.",
       "sub": false
     },
     {
-      "name": "Dawid",
+      "name": "Emma",
       "sub": false
+    },
+    {
+      "name": "Rod",
+      "sub": false
+    },
+    {
+      "name": "Sully",
+      "sub": false
+    },
+    {
+      "name": "Ali",
+      "sub": false
+    },
+    {
+      "name": "Richard",
+      "sub": false
+    },
+    {
+      "name": "Luke B.2",
+      "sub": true
+    },
+    {
+      "name": "Linda",
+      "sub": true
     }
   ],
-  "numCourts": 3,
+  "numCourts": 4,
   "numGames": 4,
   "generatedGames": [
     {
       "game": 1,
       "sitters": [
-        "Sofia"
+        "Luke B.2",
+        "Linda"
       ],
       "courts": [
         [
           [
-            "Alan R.",
-            "Ben"
+            "Emma",
+            "Ali"
           ],
           [
             "Ed",
-            "Dawid"
+            "Ryan P."
           ]
         ],
         [
           [
-            "Evie",
-            "Luke"
+            "Rod",
+            "Jesse R."
           ],
           [
-            "Shyam",
-            "Rod"
+            "Ting",
+            "Ayesa"
           ]
         ],
         [
           [
-            "Ayesa",
-            "Ting"
+            "Imran",
+            "Shyam"
           ],
           [
-            "Will H.",
-            "Ryan"
+            "Chris",
+            "Sully"
+          ]
+        ],
+        [
+          [
+            "Adam B.",
+            "Luke B."
+          ],
+          [
+            "Mike P.",
+            "Richard"
           ]
         ]
       ]
@@ -97,37 +128,48 @@
     {
       "game": 2,
       "sitters": [
-        "Dawid"
+        "Ali",
+        "Richard"
       ],
       "courts": [
         [
           [
-            "Shyam",
-            "Will H."
+            "Ting",
+            "Adam B."
           ],
-          [
-            "Alan R.",
-            "Ryan"
-          ]
-        ],
-        [
-          [
-            "Evie",
-            "Ben"
-          ],
-          [
-            "Rod",
-            "Ting"
-          ]
-        ],
-        [
           [
             "Ayesa",
-            "Ed"
+            "Linda"
+          ]
+        ],
+        [
+          [
+            "Luke B.",
+            "Rod"
           ],
           [
-            "Luke",
-            "Sofia"
+            "Sully",
+            "Ryan P."
+          ]
+        ],
+        [
+          [
+            "Luke B.2",
+            "Mike P."
+          ],
+          [
+            "Ed",
+            "Shyam"
+          ]
+        ],
+        [
+          [
+            "Jesse R.",
+            "Emma"
+          ],
+          [
+            "Imran",
+            "Chris"
           ]
         ]
       ]
@@ -135,37 +177,48 @@
     {
       "game": 3,
       "sitters": [
-        "Shyam"
+        "Rod",
+        "Sully"
       ],
       "courts": [
         [
           [
-            "Luke",
-            "Rod"
+            "Ting",
+            "Luke B."
           ],
           [
-            "Will H.",
-            "Dawid"
+            "Emma",
+            "Chris"
           ]
         ],
         [
           [
-            "Sofia",
+            "Linda",
+            "Ryan P."
+          ],
+          [
+            "Shyam",
+            "Luke B.2"
+          ]
+        ],
+        [
+          [
+            "Jesse R.",
             "Ayesa"
           ],
           [
-            "Ting",
-            "Ed"
+            "Mike P.",
+            "Ali"
           ]
         ],
         [
           [
-            "Ben",
-            "Evie"
+            "Imran",
+            "Ed"
           ],
           [
-            "Alan R.",
-            "Ryan"
+            "Adam B.",
+            "Richard"
           ]
         ]
       ]
@@ -173,46 +226,57 @@
     {
       "game": 4,
       "sitters": [
-        "Alan R."
+        "Jesse R.",
+        "Emma"
       ],
       "courts": [
         [
           [
-            "Ryan",
+            "Luke B.2",
+            "Ryan P."
+          ],
+          [
+            "Ting",
+            "Sully"
+          ]
+        ],
+        [
+          [
+            "Adam B.",
+            "Linda"
+          ],
+          [
+            "Chris",
+            "Ali"
+          ]
+        ],
+        [
+          [
+            "Richard",
+            "Ed"
+          ],
+          [
+            "Shyam",
             "Ayesa"
-          ],
-          [
-            "Ed",
-            "Sofia"
           ]
         ],
         [
           [
-            "Ben",
-            "Evie"
+            "Imran",
+            "Rod"
           ],
           [
-            "Rod",
-            "Will H."
-          ]
-        ],
-        [
-          [
-            "Luke",
-            "Shyam"
-          ],
-          [
-            "Dawid",
-            "Ting"
+            "Luke B.",
+            "Mike P."
           ]
         ]
       ]
     }
   ],
-  "activeGame": 1,
+  "activeGame": 0,
   "signupSession": {
-    "id": "6e5836fa-4feb-46b1-94f9-8304d6d152b5",
-    "date": "2026-10-01"
+    "id": "a20a2d95-fda0-494e-94f1-1bc093aaf46f",
+    "date": "2026-10-17"
   },
-  "updated": "2026-10-03T08:31:36.502Z"
+  "updated": "2026-10-16T22:32:21.203Z"
 }
