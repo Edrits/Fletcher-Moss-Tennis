@@ -351,3 +351,19 @@ integration('opening the board catches up an update that was missed', async () =
   const again = await request(pairings);                                  // nothing more to do
   assert.deepEqual(again.data.generatedGames, shown.data.generatedGames);
 });
+
+integration('an organiser can put someone back at a given place, and past the end means the back', async () => {
+  await initialise(meta('session-A'));
+  for (const name of ['Ann', 'Ben', 'Cat', 'Dan']) await request(signup, admin({ action: 'seed', name }));
+  assert.equal((await request(signup, admin({ action: 'remove', names: ['ben'] }))).data.ok, true);
+  const back = (await request(signup, admin({ action: 'seed', name: 'Ben', position: 2 }))).data;
+  assert.equal(back.ok, true);
+  assert.equal(back.position, 2);
+  const late = (await request(signup, admin({ action: 'seed', name: 'Eve', position: 40 }))).data;
+  assert.equal(late.position, 5);
+  const names = (await redis(['LRANGE', 'fm:signup:queue', 0, -1])).map(raw => JSON.parse(raw).name);
+  assert.deepEqual(names, ['Ann', 'Ben', 'Cat', 'Dan', 'Eve']);
+  // A member cannot choose their place: the field is ignored on a normal join.
+  assert.equal((await request(signup, { ...member(), position: 1 })).data.ok, true);
+  assert.equal(JSON.parse((await redis(['LRANGE', 'fm:signup:queue', 0, 0]))[0]).name, 'Ann');
+});

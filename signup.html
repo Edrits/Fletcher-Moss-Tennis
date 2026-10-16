@@ -811,9 +811,10 @@
                 <label for="adm-seed">Add a name yourself</label>
                 <div class="admin-row">
                     <input class="text-input" id="adm-seed" type="text" maxlength="30" placeholder="Name">
+                    <input class="text-input" id="adm-seed-pos" type="number" min="1" inputmode="numeric" placeholder="Place" aria-label="Place in the list (optional)" style="max-width:90px;">
                     <button class="edit-btn" onclick="adminSeed()">Add to list</button>
                 </div>
-                <p class="admin-note">Added to the end of the queue.</p>
+                <p class="admin-note">Leave the place empty to add them at the end. Give a number to put them at that place, for example to undo a removal. Everyone from that place down moves down one.</p>
             </details>
 
             <details class="admin-details">
@@ -1758,9 +1759,17 @@
             const input = document.getElementById('adm-seed');
             const name = input.value.trim();
             if (!name) { showMsg('admin-msg', 'Type a name to add.', 'bad'); return; }
-            const res = await adminPost({ action: 'seed', name: name });
+            const posInput = document.getElementById('adm-seed-pos');
+            const raw = posInput.value.trim();
+            const position = raw === '' ? undefined : Number(raw);
+            if (position !== undefined && !(Number.isInteger(position) && position >= 1)) {
+                showMsg('admin-msg', 'The place should be a whole number, 1 or more, or left empty.', 'bad'); return;
+            }
+            if (position !== undefined && !confirm('Put ' + name + ' at number ' + position + '? Everyone from there down moves down one place.')) return;
+            const res = await adminPost({ action: 'seed', name: name, ...(position !== undefined ? { position } : {}) });
             if (res) {
                 input.value = '';
+                posInput.value = '';
                 // The stored name, not the typed one. Typing "John Smith" seats "John S.",
                 // and reporting the typed name sends the organiser looking for a row that
                 // is not there.

@@ -90,7 +90,7 @@ export default async function handler(req, res) {
       return res.status(405).json({ error: 'Method not allowed' });
     }
 
-    const { action, name, names, token, password, date, label, opensAt, capacity, organiser, force, pin, sessionId } = req.body || {};
+    const { action, name, names, token, password, date, label, opensAt, capacity, organiser, force, pin, sessionId, position } = req.body || {};
 
     // ── Member actions, no password ──────────────────────────────────────────────
     if (action === 'join') {
@@ -289,7 +289,9 @@ export default async function handler(req, res) {
       const result = await signupStore(admission(meta, {
         token: `admin:${randomUUID()}`, admin: true,
         name: shortenName(check.name),
-        at: now.toISOString()
+        at: now.toISOString(),
+        // Optional place in the queue (1 = top). Past the end, or missing, means the back.
+        position: Number.isInteger(position) && position >= 1 ? position : undefined
       }));
       if (result.error) {
         return res.status(400).json({ error: JOIN_ERRORS[result.error] || 'Could not add that person' });

@@ -93,7 +93,16 @@ if input.action == 'join' or input.action == 'seed' then
   while used[key] do
     suffix=suffix+1; name=input.name .. suffix; key=input.nameKey .. suffix
   end
-  redis.call('RPUSH',queue,cjson.encode({name=name,key=key,token=input.token,at=input.at}))
+  local entry = cjson.encode({name=name,key=key,token=input.token,at=input.at})
+  -- An organiser can put someone back at a given place (say after removing them by
+  -- mistake). Everyone from that place down moves one down, the reverse of a removal.
+  local at = tonumber(input.position)
+  if input.action == 'seed' and at and at >= 1 and at <= #rows then
+    at = math.floor(at)
+    redis.call('LINSERT',queue,'BEFORE',redis.call('LINDEX',queue,at-1),entry)
+    return reply({position=at,name=name})
+  end
+  redis.call('RPUSH',queue,entry)
   return reply({position=#rows+1,name=name})
 end
 if input.action == 'leave' or input.action == 'remove' then
@@ -124,7 +133,7 @@ export async function signupStore(input) {
   return result;
 }
 
-export function admission(meta, { token, name, pin = '', admin = false, at = new Date().toISOString() }) {
+export function admission(meta, { token, name, pin = '', admin = false, at = new Date().toISOString(), position }) {
   const starts = meta.opensAt ? Date.parse(meta.opensAt) : 0;
   const ends = meta.endsAt ? Date.parse(meta.endsAt) : 8640000000000000;
   if (!Number.isFinite(starts) || !Number.isFinite(ends)) throw new Error('The session times are invalid. Ask the organiser to correct them.');
@@ -133,5 +142,5 @@ export function admission(meta, { token, name, pin = '', admin = false, at = new
   if (!cap || ['main','subs','waitlist'].some(k => !Number.isInteger(cap[k]) || cap[k]<0 || cap[k]>60)) throw new Error('The session capacity is invalid.');
   return {action:admin?'seed':'join',sessionId:sessionIdentity(meta),token,name,nameKey:name.toLowerCase(),pin,
     opensAt:meta.opensAt || '',endsAt:meta.endsAt || '',capacity:meta.capacity || '',starts,ends,
-    limit:cap.main+cap.subs+cap.waitlist,at};
+    limit:cap.main+cap.subs+cap.waitlist,at,...(admin && Number.isInteger(position) && position >= 1 ? {position} : {})};
 }
