@@ -66,7 +66,8 @@
     },
     {
       "name": "Linda",
-      "sub": true
+      "sub": true,
+      "left": 1
     }
   ],
   "numCourts": 4,
@@ -122,157 +123,147 @@
     },
     {
       "game": 2,
-      "sitters": [
-        "Richard"
-      ],
+      "sitters": [],
       "courts": [
         [
           [
-            "Ting",
-            "Adam B."
+            "Ayesa",
+            "Ryan P."
           ],
           [
-            "Ayesa",
-            "Linda"
+            "Ting",
+            "Chris"
           ]
         ],
         [
           [
             "Luke B.",
-            "Rod"
+            "Luke B.2"
           ],
           [
-            "Luke B.2",
-            "Ryan P."
+            "Adam B.",
+            "Jesse R."
           ]
         ],
         [
           [
-            "Ali",
-            "Mike P."
+            "Imran",
+            "Richard"
           ],
           [
             "Ed",
-            "Shyam"
+            "Mike P."
           ]
         ],
         [
           [
-            "Jesse R.",
+            "Shyam",
             "Emma"
           ],
           [
-            "Imran",
-            "Chris"
+            "Ali",
+            "Rod"
           ]
         ]
       ]
     },
     {
       "game": 3,
-      "sitters": [
-        "Luke B.2"
-      ],
+      "sitters": [],
       "courts": [
         [
           [
-            "Ting",
-            "Luke B."
+            "Jesse R.",
+            "Ting"
           ],
           [
-            "Emma",
-            "Chris"
+            "Chris",
+            "Imran"
           ]
         ],
         [
-          [
-            "Linda",
-            "Ryan P."
-          ],
           [
             "Shyam",
-            "Rod"
-          ]
-        ],
-        [
-          [
-            "Jesse R.",
             "Ayesa"
           ],
           [
-            "Mike P.",
-            "Ali"
+            "Ed",
+            "Luke B."
           ]
         ],
         [
           [
-            "Imran",
-            "Ed"
+            "Emma",
+            "Richard"
           ],
           [
             "Adam B.",
-            "Richard"
+            "Luke B.2"
+          ]
+        ],
+        [
+          [
+            "Rod",
+            "Mike P."
+          ],
+          [
+            "Ali",
+            "Ryan P."
           ]
         ]
       ]
     },
     {
       "game": 4,
-      "sitters": [
-        "Emma"
-      ],
+      "sitters": [],
       "courts": [
         [
           [
             "Jesse R.",
-            "Ryan P."
+            "Mike P."
           ],
           [
-            "Ting",
+            "Ali",
+            "Shyam"
+          ]
+        ],
+        [
+          [
+            "Ayesa",
+            "Ting"
+          ],
+          [
+            "Emma",
             "Luke B.2"
           ]
         ],
         [
           [
-            "Adam B.",
-            "Linda"
+            "Richard",
+            "Luke B."
           ],
           [
             "Chris",
-            "Ali"
-          ]
-        ],
-        [
-          [
-            "Richard",
-            "Ed"
-          ],
-          [
-            "Shyam",
-            "Ayesa"
+            "Ryan P."
           ]
         ],
         [
           [
             "Imran",
-            "Rod"
+            "Ed"
           ],
           [
-            "Luke B.",
-            "Mike P."
+            "Adam B.",
+            "Rod"
           ]
         ]
       ]
     }
   ],
-  "activeGame": 0,
+  "activeGame": 1,
   "signupSession": {
     "id": "a20a2d95-fda0-494e-94f1-1bc093aaf46f",
     "date": "2026-10-17"
   },
-  "updated": "2026-10-17T04:51:20.621Z",
-  "autoNote": {
-    "text": "Luke B.2 moved up for Sully",
-    "at": "2026-10-17T04:51:20.621Z"
-  }
+  "updated": "2026-10-17T09:34:47.212Z"
 }
