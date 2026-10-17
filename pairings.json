@@ -53,7 +53,7 @@
       "sub": false
     },
     {
-      "name": "Sully",
+      "name": "Luke B.2",
       "sub": false
     },
     {
@@ -63,10 +63,6 @@
     {
       "name": "Richard",
       "sub": false
-    },
-    {
-      "name": "Luke B.2",
-      "sub": true
     },
     {
       "name": "Linda",
@@ -79,7 +75,6 @@
     {
       "game": 1,
       "sitters": [
-        "Luke B.2",
         "Linda"
       ],
       "courts": [
@@ -110,7 +105,7 @@
           ],
           [
             "Chris",
-            "Sully"
+            "Luke B.2"
           ]
         ],
         [
@@ -128,7 +123,6 @@
     {
       "game": 2,
       "sitters": [
-        "Ali",
         "Richard"
       ],
       "courts": [
@@ -148,13 +142,13 @@
             "Rod"
           ],
           [
-            "Sully",
+            "Luke B.2",
             "Ryan P."
           ]
         ],
         [
           [
-            "Luke B.2",
+            "Ali",
             "Mike P."
           ],
           [
@@ -177,8 +171,7 @@
     {
       "game": 3,
       "sitters": [
-        "Rod",
-        "Sully"
+        "Luke B.2"
       ],
       "courts": [
         [
@@ -198,7 +191,7 @@
           ],
           [
             "Shyam",
-            "Luke B.2"
+            "Rod"
           ]
         ],
         [
@@ -226,18 +219,17 @@
     {
       "game": 4,
       "sitters": [
-        "Jesse R.",
         "Emma"
       ],
       "courts": [
         [
           [
-            "Luke B.2",
+            "Jesse R.",
             "Ryan P."
           ],
           [
             "Ting",
-            "Sully"
+            "Luke B.2"
           ]
         ],
         [
@@ -278,5 +270,9 @@
     "id": "a20a2d95-fda0-494e-94f1-1bc093aaf46f",
     "date": "2026-10-17"
   },
-  "updated": "2026-10-16T22:34:20.315Z"
+  "updated": "2026-10-17T04:51:20.621Z",
+  "autoNote": {
+    "text": "Luke B.2 moved up for Sully",
+    "at": "2026-10-17T04:51:20.621Z"
+  }
 }
