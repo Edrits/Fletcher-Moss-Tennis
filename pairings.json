@@ -173,7 +173,7 @@
       "courts": [
         [
           [
-            "Jesse R.",
+            "Ayesa",
             "Ting"
           ],
           [
@@ -184,7 +184,7 @@
         [
           [
             "Shyam",
-            "Ayesa"
+            "Jesse R."
           ],
           [
             "Ed",
@@ -260,10 +260,10 @@
       ]
     }
   ],
-  "activeGame": 1,
+  "activeGame": 2,
   "signupSession": {
     "id": "a20a2d95-fda0-494e-94f1-1bc093aaf46f",
     "date": "2026-10-17"
   },
-  "updated": "2026-10-17T09:34:47.212Z"
+  "updated": "2026-10-17T11:13:06.863Z"
 }
