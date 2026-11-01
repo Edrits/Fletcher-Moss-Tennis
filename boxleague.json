@@ -11,13 +11,19 @@
           "points": 6
         },
         {
-          "name": "Sully",
-          "played": 1,
+          "name": "Emma B",
+          "played": 2,
           "won": 1,
-          "points": 3
+          "points": 4
         },
         {
-          "name": "Emma B",
+          "name": "Ayesa",
+          "played": 2,
+          "won": 1,
+          "points": 4
+        },
+        {
+          "name": "Sully",
           "played": 1,
           "won": 1,
           "points": 3
@@ -36,12 +42,6 @@
         },
         {
           "name": "Will",
-          "played": 1,
-          "won": 0,
-          "points": 1
-        },
-        {
-          "name": "Ayesa",
           "played": 1,
           "won": 0,
           "points": 1
@@ -207,6 +207,13 @@
           "winner": "Emma B",
           "noShow": null,
           "date": "2026-10-08T17:54:18.405Z"
+        },
+        {
+          "player1": "Ayesa",
+          "player2": "Emma B",
+          "winner": "Ayesa",
+          "noShow": null,
+          "date": "2026-11-01T19:40:05.518Z"
         }
       ]
     }
