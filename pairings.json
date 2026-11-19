@@ -1,11 +1,7 @@
 {
   "players": [
     {
-      "name": "Rebecca",
-      "sub": false
-    },
-    {
-      "name": "Keaton",
+      "name": "Ed",
       "sub": false
     },
     {
@@ -13,186 +9,162 @@
       "sub": false
     },
     {
-      "name": "Emma",
+      "name": "Luke B.",
       "sub": false
     },
     {
-      "name": "Ash",
+      "name": "Owen M.",
       "sub": false
     },
     {
-      "name": "Owen",
+      "name": "Nehal",
       "sub": false
     },
     {
-      "name": "Sope",
+      "name": "Sasha",
       "sub": false
     },
     {
-      "name": "Linda",
+      "name": "Josh",
       "sub": false
     },
     {
-      "name": "Chris",
+      "name": "Tom",
       "sub": false
     },
     {
-      "name": "Gabriel",
-      "sub": false
+      "name": "Will M.",
+      "sub": true
     },
     {
-      "name": "Sidharth",
-      "sub": false
+      "name": "Will H.",
+      "sub": true
     }
   ],
-  "numCourts": 3,
+  "numCourts": 2,
   "numGames": 4,
   "generatedGames": [
     {
       "game": 1,
-      "sitters": [],
+      "sitters": [
+        "Will M.",
+        "Will H."
+      ],
       "courts": [
         [
           [
-            "Chris",
-            "Ash"
+            "Nehal",
+            "Owen M."
           ],
           [
-            "Linda",
-            "Owen"
+            "Tom",
+            "Art"
           ]
         ],
         [
           [
-            "Art",
-            "Keaton"
+            "Luke B.",
+            "Sasha"
           ],
           [
-            "Sidharth",
-            "Emma"
-          ]
-        ],
-        [
-          [
-            "Gabriel",
-            "Rebecca"
-          ],
-          [
-            "Sope",
-            ""
+            "Ed",
+            "Josh"
           ]
         ]
       ]
     },
     {
       "game": 2,
-      "sitters": [],
+      "sitters": [
+        "Josh",
+        "Tom"
+      ],
       "courts": [
         [
           [
-            "Linda",
-            "Owen"
+            "Nehal",
+            "Will M."
           ],
           [
-            "Chris",
-            "Emma"
+            "Luke B.",
+            "Ed"
           ]
         ],
         [
           [
-            "Rebecca",
-            "Art"
+            "Will H.",
+            "Sasha"
           ],
           [
-            "Keaton",
-            "Sidharth"
-          ]
-        ],
-        [
-          [
-            "Sope",
-            "Gabriel"
-          ],
-          [
-            "Ash",
-            ""
+            "Art",
+            "Owen M."
           ]
         ]
       ]
     },
     {
       "game": 3,
-      "sitters": [],
+      "sitters": [
+        "Nehal",
+        "Sasha"
+      ],
       "courts": [
         [
           [
-            "Keaton",
-            "Art"
+            "Tom",
+            "Josh"
           ],
           [
-            "Ash",
-            "Sope"
+            "Art",
+            "Ed"
           ]
         ],
         [
           [
-            "Gabriel",
-            "Sidharth"
+            "Will M.",
+            "Luke B."
           ],
           [
-            "Chris",
-            "Owen"
-          ]
-        ],
-        [
-          [
-            "Emma",
-            "Rebecca"
-          ],
-          [
-            "Linda",
-            ""
+            "Will H.",
+            "Owen M."
           ]
         ]
       ]
     },
     {
       "game": 4,
-      "sitters": [],
+      "sitters": [
+        "Luke B.",
+        "Owen M."
+      ],
       "courts": [
         [
           [
-            "Rebecca",
-            "Keaton"
+            "Will M.",
+            "Ed"
           ],
           [
-            "Linda",
-            "Sidharth"
+            "Art",
+            "Will H."
           ]
         ],
         [
           [
-            "Sope",
-            "Emma"
+            "Nehal",
+            "Tom"
           ],
           [
-            "Ash",
-            "Art"
-          ]
-        ],
-        [
-          [
-            "Chris",
-            "Gabriel"
-          ],
-          [
-            "Owen",
-            ""
+            "Josh",
+            "Sasha"
           ]
         ]
       ]
     }
   ],
   "activeGame": 0,
-  "updated": "2026-11-14T10:03:21.640Z"
+  "signupSession": {
+    "id": "bdd812de-7e16-4570-8598-765e83b2df68",
+    "date": "2026-11-19"
+  },
+  "updated": "2026-11-19T07:17:27.256Z"
 }
